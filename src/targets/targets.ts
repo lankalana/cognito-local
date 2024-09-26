@@ -42,6 +42,7 @@ import { RespondToAuthChallenge } from "./respondToAuthChallenge";
 import { RevokeToken } from "./revokeToken";
 import { SignUp } from "./signUp";
 import { UpdateGroup } from "./updateGroup";
+import { UpdateIdentityProvider } from "./updateIdentityProvider";
 import { UpdateUserAttributes } from "./updateUserAttributes";
 import { UpdateUserPool } from "./updateUserPool";
 import { UpdateUserPoolClient } from "./updateUserPoolClient";
@@ -91,6 +92,7 @@ export const Targets = {
   RevokeToken,
   SignUp,
   UpdateGroup,
+  UpdateIdentityProvider,
   UpdateUserAttributes,
   UpdateUserPool,
   UpdateUserPoolClient,
