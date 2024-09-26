@@ -1,11 +1,13 @@
 import {
   GroupType,
+  IdentityProviderType,
   UserPoolClientType,
   UserPoolType,
   UserType,
 } from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { AppClient } from "../services/appClient";
 import { Group, User, UserPool } from "../services/userPoolService";
+import { IdentityProvider } from "../services/userPoolService";
 
 export const appClientToResponseObject = (
   appClient: AppClient
@@ -55,6 +57,19 @@ export const groupToResponseObject =
     Precedence: group.Precedence,
     RoleArn: group.RoleArn,
     UserPoolId: userPoolId,
+  });
+
+export const identityProviderToResponseObject =
+  (userPoolId: string) =>
+  (identityProvider: IdentityProvider): IdentityProviderType => ({
+    UserPoolId: userPoolId,
+    ProviderName: identityProvider.ProviderName,
+    ProviderType: identityProvider.ProviderType,
+    ProviderDetails: identityProvider.ProviderDetails,
+    AttributeMapping: identityProvider.AttributeMapping,
+    IdpIdentifiers: identityProvider.IdpIdentifiers,
+    LastModifiedDate: identityProvider.LastModifiedDate,
+    CreationDate: identityProvider.CreationDate,
   });
 
 export const userPoolToResponseObject = (userPool: UserPool): UserPoolType => ({

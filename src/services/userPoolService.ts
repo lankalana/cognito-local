@@ -1,7 +1,10 @@
 import {
   AttributeListType,
   AttributeType,
+  IdentityProviderType,
+  IdpIdentifierType,
   MFAOptionListType,
+  ProviderNameType,
   SchemaAttributesListType,
   StringType,
   UserMFASettingListType,
@@ -131,6 +134,11 @@ export interface Group {
   members?: readonly string[];
 }
 
+// just use the types from the sdk, but make UserPoolId and ProviderName required
+export type IdentityProvider = IdentityProviderType & {
+  ProviderName: ProviderNameType;
+};
+
 // just use the types from the sdk, but make Id required
 export type UserPool = UserPoolType & {
   Id: string;
@@ -143,14 +151,27 @@ export interface UserPoolService {
   saveAppClient(ctx: Context, appClient: AppClient): Promise<void>;
   deleteAppClient(ctx: Context, appClient: AppClient): Promise<void>;
   deleteGroup(ctx: Context, group: Group): Promise<void>;
+  deleteIdentityProvider(
+    ctx: Context,
+    identityProvider: IdentityProvider
+  ): Promise<void>;
   deleteUser(ctx: Context, user: User): Promise<void>;
   getGroupByGroupName(ctx: Context, groupName: string): Promise<Group | null>;
+  getIdentityProviderByIdentifier(
+    ctx: Context,
+    identifier: IdpIdentifierType
+  ): Promise<IdentityProvider | null>;
+  getIdentityProviderByProviderName(
+    ctx: Context,
+    providerName: ProviderNameType
+  ): Promise<IdentityProvider | null>;
   getUserByUsername(ctx: Context, username: string): Promise<User | null>;
   getUserByRefreshToken(
     ctx: Context,
     refreshToken: string
   ): Promise<User | null>;
   listGroups(ctx: Context): Promise<readonly Group[]>;
+  listIdentityProviders(ctx: Context): Promise<readonly IdentityProvider[]>;
   listUsers(
     ctx: Context,
     filter?: string | undefined
@@ -159,6 +180,10 @@ export interface UserPoolService {
   updateOptions(ctx: Context, userPool: UserPool): Promise<void>;
   removeUserFromGroup(ctx: Context, group: Group, user: User): Promise<void>;
   saveGroup(ctx: Context, group: Group): Promise<void>;
+  saveIdentityProvider(
+    ctx: Context,
+    identityProvider: IdentityProvider
+  ): Promise<void>;
   saveUser(ctx: Context, user: User): Promise<void>;
   storeRefreshToken(
     ctx: Context,
@@ -229,6 +254,23 @@ export class UserPoolServiceImpl implements UserPoolService {
     await this.dataStore.delete(ctx, ["Groups", group.GroupName]);
   }
 
+  public async deleteIdentityProvider(
+    ctx: Context,
+    identityProvider: IdentityProvider
+  ): Promise<void> {
+    ctx.logger.debug(
+      {
+        userPoolId: identityProvider.UserPoolId,
+        idendityProviderName: identityProvider.ProviderName,
+      },
+      "UserPoolServiceImpl.deleteIdentityProvider"
+    );
+    await this.dataStore.delete(ctx, [
+      "IdentityProviders",
+      identityProvider.ProviderName,
+    ]);
+  }
+
   public async deleteUser(ctx: Context, user: User): Promise<void> {
     ctx.logger.debug(
       { username: user.Username },
@@ -245,6 +287,37 @@ export class UserPoolServiceImpl implements UserPoolService {
   ): Promise<Group | null> {
     ctx.logger.debug("UserPoolServiceImpl.getGroupByGroupName");
     const result = await this.dataStore.get<Group>(ctx, ["Groups", groupName]);
+
+    return result ?? null;
+  }
+
+  public async getIdentityProviderByIdentifier(
+    ctx: Context,
+    identifier: IdpIdentifierType
+  ): Promise<IdentityProvider | null> {
+    ctx.logger.debug(
+      { identifier },
+      "UserPoolServiceImpl.getIdentityProviderByIdentifier"
+    );
+    const identityProviders = await this.listIdentityProviders(ctx);
+    const identityProvider = identityProviders.find(
+      (identityProvider) =>
+        Array.isArray(identityProvider.IdpIdentifiers) &&
+        identityProvider.IdpIdentifiers.includes(identifier)
+    );
+
+    return identityProvider ?? null;
+  }
+
+  public async getIdentityProviderByProviderName(
+    ctx: Context,
+    providerName: ProviderNameType
+  ): Promise<IdentityProvider | null> {
+    ctx.logger.debug("UserPoolServiceImpl.getIdentityProviderByProviderName");
+    const result = await this.dataStore.get<IdentityProvider>(ctx, [
+      "IdentityProviders",
+      providerName,
+    ]);
 
     return result ?? null;
   }
@@ -383,6 +456,19 @@ export class UserPoolServiceImpl implements UserPoolService {
     return Object.values(groups);
   }
 
+  async listIdentityProviders(
+    ctx: Context
+  ): Promise<readonly IdentityProvider[]> {
+    ctx.logger.debug("UserPoolServiceImpl.listIdentityProviders");
+    const groups = await this.dataStore.get<Record<string, IdentityProvider>>(
+      ctx,
+      "IdentityProviders",
+      {}
+    );
+
+    return Object.values(groups);
+  }
+
   public async addUserToGroup(
     ctx: Context,
     group: Group,
@@ -444,6 +530,22 @@ export class UserPoolServiceImpl implements UserPoolService {
     ctx.logger.debug({ group }, "UserPoolServiceImpl.saveGroup");
 
     await this.dataStore.set<Group>(ctx, ["Groups", group.GroupName], group);
+  }
+
+  async saveIdentityProvider(
+    ctx: Context,
+    identityProvider: IdentityProvider
+  ): Promise<void> {
+    ctx.logger.debug(
+      { identityProvider },
+      "UserPoolServiceImpl.saveIdentityProvider"
+    );
+
+    await this.dataStore.set<IdentityProvider>(
+      ctx,
+      ["IdentityProviders", identityProvider.ProviderName],
+      identityProvider
+    );
   }
 
   async listUserGroupMembership(
