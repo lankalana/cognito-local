@@ -35,6 +35,7 @@ import { GetUserAttributeVerificationCode } from "./getUserAttributeVerification
 import { GetUserPoolMfaConfig } from "./getUserPoolMfaConfig";
 import { InitiateAuth } from "./initiateAuth";
 import { ListGroups } from "./listGroups";
+import { ListIdentityProviders } from "./listIdentityProviders";
 import { ListUserPoolClients } from "./listUserPoolClients";
 import { ListUserPools } from "./listUserPools";
 import { ListUsers } from "./listUsers";
@@ -86,6 +87,7 @@ export const Targets = {
   GetUserPoolMfaConfig,
   InitiateAuth,
   ListGroups,
+  ListIdentityProviders,
   ListUserPoolClients,
   ListUserPools,
   ListUsers,
