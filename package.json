@@ -23,8 +23,6 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.16.0",
-    "@commitlint/cli": "^15.0.0",
-    "@commitlint/config-conventional": "^15.0.0",
     "@jest/globals": "^27.4.3",
     "@types/aws-lambda": "^8.10.85",
     "@types/body-parser": "^1.19.0",
