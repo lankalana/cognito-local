@@ -21,6 +21,7 @@ import { CreateIdentityProvider } from "./createIdentityProvider";
 import { CreateUserPool } from "./createUserPool";
 import { CreateUserPoolClient } from "./createUserPoolClient";
 import { DeleteGroup } from "./deleteGroup";
+import { DeleteIdentityProvider } from "./deleteIdentityProvider";
 import { DeleteUser } from "./deleteUser";
 import { DeleteUserAttributes } from "./deleteUserAttributes";
 import { DeleteUserPool } from "./deleteUserPool";
@@ -71,6 +72,7 @@ export const Targets = {
   CreateUserPool,
   CreateUserPoolClient,
   DeleteGroup,
+  DeleteIdentityProvider,
   DeleteUser,
   DeleteUserAttributes,
   DeleteUserPool,
