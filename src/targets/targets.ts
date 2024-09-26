@@ -17,6 +17,7 @@ import { ChangePassword } from "./changePassword";
 import { ConfirmForgotPassword } from "./confirmForgotPassword";
 import { ConfirmSignUp } from "./confirmSignUp";
 import { CreateGroup } from "./createGroup";
+import { CreateIdentityProvider } from "./createIdentityProvider";
 import { CreateUserPool } from "./createUserPool";
 import { CreateUserPoolClient } from "./createUserPoolClient";
 import { DeleteGroup } from "./deleteGroup";
@@ -65,6 +66,7 @@ export const Targets = {
   ConfirmForgotPassword,
   ConfirmSignUp,
   CreateGroup,
+  CreateIdentityProvider,
   CreateUserPool,
   CreateUserPoolClient,
   DeleteGroup,
