@@ -26,6 +26,7 @@ import { DeleteUser } from "./deleteUser";
 import { DeleteUserAttributes } from "./deleteUserAttributes";
 import { DeleteUserPool } from "./deleteUserPool";
 import { DeleteUserPoolClient } from "./deleteUserPoolClient";
+import { DescribeIdentityProvider } from "./describeIdentityProvider";
 import { DescribeUserPool } from "./describeUserPool";
 import { DescribeUserPoolClient } from "./describeUserPoolClient";
 import { ForgotPassword } from "./forgotPassword";
@@ -78,6 +79,7 @@ export const Targets = {
   DeleteUserAttributes,
   DeleteUserPool,
   DeleteUserPoolClient,
+  DescribeIdentityProvider,
   DescribeUserPool,
   DescribeUserPoolClient,
   ForgotPassword,
