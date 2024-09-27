@@ -1,0 +1,63 @@
+name: Validate
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    name: Lint
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install
+      - run: yarn lint
+
+  unit_test:
+    runs-on: ubuntu-latest
+    name: Unit Test
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install
+      - run: yarn test
+
+  smoke_test:
+    runs-on: ubuntu-latest
+    name: Smoke Test
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install
+      - run: scripts/smoke-test
+
+  integration_test:
+    runs-on: ubuntu-latest
+    name: Integration Test
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install
+      - run: yarn integration-test
