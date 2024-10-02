@@ -72,6 +72,12 @@ export class GroupNotFoundError extends ResourceNotFoundError {
   }
 }
 
+export class IdentityProviderNotFoundError extends ResourceNotFoundError {
+  public constructor() {
+    super("Identity provider not found");
+  }
+}
+
 export class UnexpectedLambdaExceptionError extends CognitoError {
   public constructor() {
     super(

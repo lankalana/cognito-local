@@ -1,7 +1,12 @@
 import { v4 } from "uuid";
 import { AppClient } from "../services/appClient";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import { Group, User, UserPool } from "../services/userPoolService";
+import {
+  Group,
+  IdentityProvider,
+  User,
+  UserPool,
+} from "../services/userPoolService";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;
@@ -40,6 +45,18 @@ export const group = (partial?: Partial<Group>): Group => ({
   Precedence: partial?.Precedence ?? undefined,
   RoleArn: partial?.RoleArn ?? undefined,
   members: partial?.members ?? undefined,
+});
+
+export const identityProvider = (
+  partial?: Partial<IdentityProvider>
+): IdentityProvider => ({
+  ProviderName: partial?.ProviderName ?? id("IdentityProvider"),
+  ProviderType: partial?.ProviderType ?? undefined,
+  ProviderDetails: partial?.ProviderDetails ?? undefined,
+  AttributeMapping: partial?.AttributeMapping ?? undefined,
+  IdpIdentifiers: partial?.IdpIdentifiers ?? undefined,
+  LastModifiedDate: partial?.LastModifiedDate ?? new Date(),
+  CreationDate: partial?.CreationDate ?? new Date(),
 });
 
 export const user = (partial?: Partial<User>): User => ({
