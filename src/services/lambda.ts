@@ -430,7 +430,7 @@ export class LambdaService implements Lambda {
             emailMessage: "",
             emailSubject: "",
           },
-        };
+        } as CustomMessageTriggerEvent;
       }
 
       case "CustomEmailSender_SignUp":

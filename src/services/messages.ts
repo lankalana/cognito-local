@@ -107,7 +107,7 @@ export class MessagesService implements Messages {
       return {
         __code: code,
         ...message,
-      };
+      } as Message;
     }
 
     // TODO: What should the default message be?
