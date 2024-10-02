@@ -7,17 +7,13 @@ describe(
       const client = Cognito();
 
       // create the user pool
-      const up = await client
-        .createUserPool({
-          PoolName: "newPool",
-        })
-        .promise();
+      const up = await client.createUserPool({
+        PoolName: "newPool",
+      });
 
-      const listResponse = await client
-        .listUserPools({
-          MaxResults: 1,
-        })
-        .promise();
+      const listResponse = await client.listUserPools({
+        MaxResults: 1,
+      });
 
       expect(listResponse.UserPools).toEqual([
         expect.objectContaining({
@@ -25,17 +21,13 @@ describe(
         }),
       ]);
 
-      await client
-        .deleteUserPool({
-          UserPoolId: up.UserPool?.Id!,
-        })
-        .promise();
+      await client.deleteUserPool({
+        UserPoolId: up.UserPool?.Id,
+      });
 
-      const listResponseAfter = await client
-        .listUserPools({ MaxResults: 1 })
-        .promise();
+      const listResponseAfter = await client.listUserPools({ MaxResults: 1 });
 
       expect(listResponseAfter.UserPools).toHaveLength(0);
     });
-  })
+  }),
 );

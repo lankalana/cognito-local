@@ -1,5 +1,4 @@
 import { ClockFake } from "../../src/__tests__/clockFake";
-import { UUID } from "../../src/__tests__/patterns";
 import { UserNotFoundError } from "../../src/errors";
 import { withCognitoSdk } from "./setup";
 
@@ -17,23 +16,20 @@ describe(
         const client = Cognito();
 
         // create the user
-        const createUserResult = await client
-          .adminCreateUser({
-            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-            Username: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        const createUserResult = await client.adminCreateUser({
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+          Username: "abc",
+          UserPoolId: "test",
+        });
 
         // verify they exist
-        const beforeUserResult = await client
-          .adminGetUser({
-            Username: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        const beforeUserResult = await client.adminGetUser({
+          Username: "abc",
+          UserPoolId: "test",
+        });
 
         expect(beforeUserResult).toEqual({
+          $metadata: beforeUserResult.$metadata,
           Enabled: true,
           UserAttributes: createUserResult.User?.Attributes,
           UserCreateDate: createUserResult.User?.UserCreateDate,
@@ -43,21 +39,17 @@ describe(
         });
 
         // delete the user
-        await client
-          .adminDeleteUser({
-            Username: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        await client.adminDeleteUser({
+          Username: "abc",
+          UserPoolId: "test",
+        });
 
         // verify they don't exist anymore
         await expect(
-          client
-            .adminGetUser({
-              Username: "abc",
-              UserPoolId: "test",
-            })
-            .promise()
+          client.adminGetUser({
+            Username: "abc",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(new UserNotFoundError("User does not exist."));
       });
 
@@ -65,26 +57,23 @@ describe(
         const client = Cognito();
 
         // create the user
-        const createUserResult = await client
-          .adminCreateUser({
-            UserAttributes: [
-              { Name: "email", Value: "example@example.com" },
-              { Name: "phone_number", Value: "0400000000" },
-            ],
-            Username: "example@example.com",
-            UserPoolId: "test",
-          })
-          .promise();
+        const createUserResult = await client.adminCreateUser({
+          UserAttributes: [
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
+          ],
+          Username: "example@example.com",
+          UserPoolId: "test",
+        });
 
         // verify they exist
-        const beforeUserResult = await client
-          .adminGetUser({
-            Username: "example@example.com",
-            UserPoolId: "test",
-          })
-          .promise();
+        const beforeUserResult = await client.adminGetUser({
+          Username: "example@example.com",
+          UserPoolId: "test",
+        });
 
         expect(beforeUserResult).toEqual({
+          $metadata: beforeUserResult.$metadata,
           Enabled: true,
           UserAttributes: createUserResult.User?.Attributes,
           UserCreateDate: createUserResult.User?.UserCreateDate,
@@ -94,26 +83,22 @@ describe(
         });
 
         // delete the user
-        await client
-          .adminDeleteUser({
-            Username: "example@example.com",
-            UserPoolId: "test",
-          })
-          .promise();
+        await client.adminDeleteUser({
+          Username: "example@example.com",
+          UserPoolId: "test",
+        });
 
         // verify they don't exist anymore
         await expect(
-          client
-            .adminGetUser({
-              Username: "example@example.com",
-              UserPoolId: "test",
-            })
-            .promise()
+          client.adminGetUser({
+            Username: "example@example.com",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(new UserNotFoundError("User does not exist."));
       });
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

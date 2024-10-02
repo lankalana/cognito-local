@@ -11,15 +11,14 @@ import {
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
 } from "aws-lambda";
-import type { Lambda as LambdaClient } from "aws-sdk";
-import { InvocationResponse } from "aws-sdk/clients/lambda";
-import { version as awsSdkVersion } from "aws-sdk/package.json";
+import { version as awsSdkVersion } from "@aws-sdk/client-lambda/package.json";
 import {
   InvalidLambdaResponseError,
   UnexpectedLambdaExceptionError,
   UserLambdaValidationError,
 } from "../errors";
 import { Context } from "./context";
+import { InvocationResponse, InvocationType, Lambda as LambdaClient } from "@aws-sdk/client-lambda";
 
 type CognitoUserPoolEvent =
   | CreateAuthChallengeTriggerEvent
@@ -35,7 +34,7 @@ type CognitoUserPoolEvent =
   | VerifyAuthChallengeResponseTriggerEvent;
 
 interface EventCommonParameters {
-  clientId: string;
+  clientId: string | undefined;
   userAttributes: Record<string, string>;
   username: string;
   userPoolId: string;
@@ -43,7 +42,7 @@ interface EventCommonParameters {
 
 interface CustomEmailSenderEvent
   extends Omit<EventCommonParameters, "clientId"> {
-  clientId: string | null;
+  clientId: string | undefined;
   code: string;
   clientMetadata: Record<string, string> | undefined;
   triggerSource:
@@ -55,8 +54,8 @@ interface CustomEmailSenderEvent
     | "CustomEmailSender_VerifyUserAttribute";
 }
 
-interface CustomMessageEvent extends Omit<EventCommonParameters, "clientId"> {
-  clientId: string | null;
+export interface CustomMessageEvent extends Omit<EventCommonParameters, "clientId"> {
+  clientId: string | undefined;
   clientMetadata: Record<string, string> | undefined;
   codeParameter: string;
   triggerSource:
@@ -203,6 +202,7 @@ export interface Lambda {
 export class LambdaService implements Lambda {
   private readonly config: FunctionConfig;
   private readonly lambdaClient: LambdaClient;
+  private readonly decoder = new TextDecoder();
 
   public constructor(config: FunctionConfig, lambdaClient: LambdaClient) {
     this.config = config;
@@ -213,7 +213,7 @@ export class LambdaService implements Lambda {
     return !!this.config[lambda];
   }
 
-  public async invoke(
+  public async invoke<T>(
     ctx: Context,
     trigger: keyof FunctionConfig,
     event:
@@ -224,7 +224,7 @@ export class LambdaService implements Lambda {
       | PreSignUpEvent
       | PreTokenGenerationEvent
       | UserMigrationEvent
-  ) {
+  ): Promise<T> {
     const functionName = this.config[trigger];
     if (!functionName) {
       throw new Error(`${trigger} trigger not configured`);
@@ -244,10 +244,9 @@ export class LambdaService implements Lambda {
       result = await this.lambdaClient
         .invoke({
           FunctionName: functionName,
-          InvocationType: "RequestResponse",
+          InvocationType: InvocationType.RequestResponse,
           Payload: JSON.stringify(lambdaEvent),
-        })
-        .promise();
+        });
     } catch (ex) {
       ctx.logger.error(ex);
       throw new UnexpectedLambdaExceptionError();
@@ -258,7 +257,7 @@ export class LambdaService implements Lambda {
     );
     if (!result.FunctionError) {
       try {
-        const parsedPayload = JSON.parse(result.Payload as string);
+        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as { response: T };
 
         return parsedPayload.response;
       } catch (err) {
@@ -269,7 +268,7 @@ export class LambdaService implements Lambda {
       ctx.logger.error({ result }, result.FunctionError);
 
       if (result.FunctionError === "Unhandled" && result.Payload) {
-        const parsedPayload = JSON.parse(result.Payload as string);
+        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as { errorMessage: string };
 
         if (parsedPayload.errorMessage) {
           throw new UserLambdaValidationError(

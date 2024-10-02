@@ -14,78 +14,60 @@ describe(
       it("lists groups", async () => {
         const client = Cognito();
 
-        await client
-          .createGroup({
+        await client.createGroup({
+          GroupName: "abc",
+          UserPoolId: "test1",
+        });
+        await client.createGroup({
+          GroupName: "def",
+          UserPoolId: "test1",
+        });
+        await client.createGroup({
+          GroupName: "ghi",
+          UserPoolId: "test2",
+        });
+
+        const result1 = await client.listGroups({
+          UserPoolId: "test1",
+        });
+
+        expect(result1?.Groups).toEqual([
+          {
+            CreationDate: roundedDate,
             GroupName: "abc",
+            LastModifiedDate: roundedDate,
             UserPoolId: "test1",
-          })
-          .promise();
-        await client
-          .createGroup({
+          },
+          {
+            CreationDate: roundedDate,
             GroupName: "def",
+            LastModifiedDate: roundedDate,
             UserPoolId: "test1",
-          })
-          .promise();
-        await client
-          .createGroup({
+          },
+        ]);
+
+        const result2 = await client.listGroups({
+          UserPoolId: "test2",
+        });
+
+        expect(result2?.Groups).toEqual([
+          {
+            CreationDate: roundedDate,
             GroupName: "ghi",
+            LastModifiedDate: roundedDate,
             UserPoolId: "test2",
-          })
-          .promise();
-
-        const result1 = await client
-          .listGroups({
-            UserPoolId: "test1",
-          })
-          .promise();
-
-        expect(result1).toEqual({
-          Groups: [
-            {
-              CreationDate: roundedDate,
-              GroupName: "abc",
-              LastModifiedDate: roundedDate,
-              UserPoolId: "test1",
-            },
-            {
-              CreationDate: roundedDate,
-              GroupName: "def",
-              LastModifiedDate: roundedDate,
-              UserPoolId: "test1",
-            },
-          ],
-        });
-
-        const result2 = await client
-          .listGroups({
-            UserPoolId: "test2",
-          })
-          .promise();
-
-        expect(result2).toEqual({
-          Groups: [
-            {
-              CreationDate: roundedDate,
-              GroupName: "ghi",
-              LastModifiedDate: roundedDate,
-              UserPoolId: "test2",
-            },
-          ],
-        });
+          },
+        ]);
       });
 
       it("returns an empty collection when there are no groups", async () => {
         const client = Cognito();
 
-        const result = await client
-          .listGroups({
-            UserPoolId: "test1",
-          })
-          .promise();
-
-        expect(result).toEqual({
-          Groups: [],
+        const result = await client.listGroups({
+          UserPoolId: "test1",
         });
+
+        expect(result?.Groups).toEqual([]);
       });
 
       // TODO: getUserPool lazily creates a pool right now, so we can't handle invalid user pools
@@ -93,6 +75,6 @@ describe(
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

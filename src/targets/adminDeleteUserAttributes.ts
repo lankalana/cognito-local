@@ -1,8 +1,8 @@
 import {
   AdminDeleteUserAttributesRequest,
   AdminDeleteUserAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { NotAuthorizedError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
 import { Services } from "../services";
 import { attributesRemove } from "../services/userPoolService";
 import { Target } from "./Target";
@@ -20,6 +20,10 @@ export const AdminDeleteUserAttributes =
     cognito,
   }: AdminDeleteUserAttributesServices): AdminDeleteUserAttributesTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.UserAttributeNames) throw new MissingParameterError("UserAttributeNames");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {

@@ -14,7 +14,7 @@ import {
   User,
 } from "./userPoolService";
 
-type ValidityUnit = "seconds" | "minutes" | "hours" | "days" | string;
+type ValidityUnit = string;
 
 export interface TokenConfig {
   IssuerDomain?: string;

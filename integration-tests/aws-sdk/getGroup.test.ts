@@ -21,15 +21,13 @@ describe(
             Precedence: 1,
             RoleArn: "arn",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         const getGroupResponse = await client
           .getGroup({
             GroupName: "abc",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         expect(getGroupResponse.Group).toEqual({
           CreationDate: roundedDate,

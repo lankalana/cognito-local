@@ -1,10 +1,10 @@
 import {
   GetUserAttributeVerificationCodeRequest,
   GetUserAttributeVerificationCodeResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import { Messages, Services, UserPoolService } from "../services";
-import { InvalidParameterError, UserNotFoundError } from "../errors";
+import { InvalidParameterError, MissingParameterError, UserNotFoundError } from "../errors";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
 import { Token } from "../services/tokenGenerator";
 import { User } from "../services/userPoolService";
@@ -59,6 +59,8 @@ export const GetUserAttributeVerificationCode =
     messages,
   }: GetUserAttributeVerificationCodeServices): GetUserAttributeVerificationCodeTarget =>
   async (ctx, req) => {
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");

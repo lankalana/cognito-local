@@ -107,3 +107,17 @@ export class InvalidParameterError extends CognitoError {
     super("InvalidParameterException", message);
   }
 }
+
+export class MissingParameterError extends CognitoError {
+  public constructor(paramName: string) {
+    if (paramName)
+      super("MissingParameterError", `Missing required parameter ${paramName}`);
+    else
+      super("MissingParameterError", "Missing required parameters");
+  }
+
+  static throwIfMissing<T extends object>(obj: T, paramName: keyof typeof obj) {
+    if (!obj[paramName])
+      throw new MissingParameterError("CustomAttributes");
+  }
+}

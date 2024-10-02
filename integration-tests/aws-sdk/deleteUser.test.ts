@@ -12,8 +12,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       // create a user
       await client
@@ -23,8 +22,7 @@ describe(
           UserAttributes: [{ Name: "email", Value: "example@example.com" }],
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       await client
         .adminSetUserPassword({
@@ -32,8 +30,7 @@ describe(
           Permanent: true,
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       // attempt to login
       const initAuthResponse = await client
@@ -44,15 +41,13 @@ describe(
             USERNAME: "abc",
             PASSWORD: "newPassword",
           },
-        })
-        .promise();
+        });
 
       // delete the user with their token
       await client
         .deleteUser({
           AccessToken: initAuthResponse.AuthenticationResult?.AccessToken!,
-        })
-        .promise();
+        });
 
       // verify they don't exist anymore
       await expect(
@@ -61,7 +56,6 @@ describe(
             Username: "abc",
             UserPoolId: "test",
           })
-          .promise()
       ).rejects.toEqual(new UserNotFoundError("User does not exist."));
     });
   })

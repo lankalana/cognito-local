@@ -15,32 +15,27 @@ describe(
         const client = Cognito();
 
         // create the user
-        const createUserResult = await client
-          .adminCreateUser({
-            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-            Username: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        const createUserResult = await client.adminCreateUser({
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+          Username: "abc",
+          UserPoolId: "test",
+        });
 
-        await client
-          .adminSetUserPassword({
-            Username: "abc",
-            UserPoolId: "test",
-            Password: "newPassword",
-            Permanent: true,
-          })
-          .promise();
+        await client.adminSetUserPassword({
+          Username: "abc",
+          UserPoolId: "test",
+          Password: "newPassword",
+          Permanent: true,
+        });
 
         // verify they exist
-        const result = await client
-          .adminGetUser({
-            Username: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        const result = await client.adminGetUser({
+          Username: "abc",
+          UserPoolId: "test",
+        });
 
         expect(result).toEqual({
+          $metadata: result.$metadata,
           Enabled: true,
           UserAttributes: createUserResult.User?.Attributes,
           UserCreateDate: createUserResult.User?.UserCreateDate,
@@ -52,6 +47,6 @@ describe(
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

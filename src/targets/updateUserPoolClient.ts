@@ -1,9 +1,9 @@
 import {
   UpdateUserPoolClientRequest,
   UpdateUserPoolClientResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
-import { ResourceNotFoundError } from "../errors";
+import { MissingParameterError, ResourceNotFoundError } from "../errors";
 import { AppClient } from "../services/appClient";
 import { appClientToResponseObject } from "./responses";
 import { Target } from "./Target";
@@ -21,6 +21,9 @@ export const UpdateUserPoolClient =
     cognito,
   }: UpdateUserPoolClientServices): UpdateUserPoolClientTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const appClient = await cognito.getAppClient(ctx, req.ClientId);
     if (!appClient || appClient.UserPoolId !== req.UserPoolId) {

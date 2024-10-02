@@ -1,5 +1,4 @@
 import supertest from "supertest";
-import { MockLogger } from "../src/__tests__/mockLogger";
 import {
   CodeMismatchError,
   CognitoError,
@@ -9,12 +8,14 @@ import {
   UsernameExistsError,
 } from "../src/errors";
 import { createServer } from "../src";
+import { sink } from "pino-test";
+import pino from "pino";
 
 describe("HTTP server", () => {
   describe("/", () => {
     it("errors with missing x-azm-target header", async () => {
       const router = jest.fn();
-      const server = createServer(router, MockLogger as any);
+      const server = createServer(router, pino(sink()));
 
       const response = await supertest(server.application).post("/");
 
@@ -24,7 +25,7 @@ describe("HTTP server", () => {
 
     it("errors with an poorly formatted x-azm-target header", async () => {
       const router = jest.fn();
-      const server = createServer(router, MockLogger as any);
+      const server = createServer(router, pino(sink()));
 
       const response = await supertest(server.application)
         .post("/")
@@ -42,8 +43,8 @@ describe("HTTP server", () => {
           ok: true,
         });
         const router = (target: string) =>
-          target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, MockLogger as any);
+          target === "valid" ? route : () => Promise.reject(new Error(""));
+        const server = createServer(router, pino(sink()));
 
         const response = await supertest(server.application)
           .post("/")
@@ -60,8 +61,8 @@ describe("HTTP server", () => {
           .fn()
           .mockRejectedValue(new UnsupportedError("integration test"));
         const router = (target: string) =>
-          target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, MockLogger as any);
+          target === "valid" ? route : () => Promise.reject(new Error(""));
+        const server = createServer(router, pino(sink()));
 
         const response = await supertest(server.application)
           .post("/")
@@ -86,8 +87,8 @@ describe("HTTP server", () => {
         async ({ error, code, message }) => {
           const route = jest.fn().mockRejectedValue(error);
           const router = (target: string) =>
-            target === "valid" ? route : () => Promise.reject();
-          const server = createServer(router, MockLogger as any);
+            target === "valid" ? route : () => Promise.reject(new Error(""));
+          const server = createServer(router, pino(sink()));
 
           const response = await supertest(server.application)
             .post("/")
@@ -98,17 +99,17 @@ describe("HTTP server", () => {
             __type: `${code}`,
             message,
           });
-        }
+        },
       );
     });
   });
 
   describe("jwks endpoint", () => {
     it("responds with our public key", async () => {
-      const server = createServer(jest.fn(), MockLogger as any);
+      const server = createServer(jest.fn(), pino(sink()));
 
       const response = await supertest(server.application).get(
-        "/any-user-pool/.well-known/jwks.json"
+        "/any-user-pool/.well-known/jwks.json",
       );
 
       expect(response.status).toEqual(200);
@@ -129,10 +130,10 @@ describe("HTTP server", () => {
 
   describe("OpenId Configuration Endpoint", () => {
     it("responds with open id configuration", async () => {
-      const server = createServer(jest.fn(), MockLogger as any);
+      const server = createServer(jest.fn(), pino(sink()));
 
       const response = await supertest(server.application).get(
-        "/any-user-pool/.well-known/openid-configuration"
+        "/any-user-pool/.well-known/openid-configuration",
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({

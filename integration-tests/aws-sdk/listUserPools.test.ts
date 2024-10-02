@@ -9,24 +9,20 @@ describe(
       await client
         .createUserPool({
           PoolName: "test-1",
-        })
-        .promise();
+        });
       await client
         .createUserPool({
           PoolName: "test-2",
-        })
-        .promise();
+        });
       await client
         .createUserPool({
           PoolName: "test-3",
-        })
-        .promise();
+        });
 
       const result = await client
         .listUserPools({
           MaxResults: 10,
-        })
-        .promise();
+        });
 
       expect(result.UserPools).toEqual(
         expect.arrayContaining([

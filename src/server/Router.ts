@@ -5,7 +5,7 @@ import { Targets } from "../targets/targets";
 import { Context } from "../services/context";
 
 // eslint-disable-next-line
-export type Route = (ctx: Context, req: any) => Promise<any>;
+export type Route = (ctx: Context, req: any) => Promise<unknown>;
 export type Router = (target: string) => Route;
 
 export const Router =
@@ -31,6 +31,7 @@ export const Router =
           ...ctx,
           logger: targetLogger,
         },
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         req
       );
       targetLogger.debug("end");

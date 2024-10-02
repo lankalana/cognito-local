@@ -11,15 +11,13 @@ describe(
           GroupName: "abc",
           UserPoolId: "test",
           Description: "original description",
-        })
-        .promise();
+        });
 
       const getGroupResponse = await client
         .getGroup({
           GroupName: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       expect(getGroupResponse.Group).toMatchObject({
         GroupName: "abc",
@@ -31,15 +29,13 @@ describe(
           GroupName: "abc",
           UserPoolId: "test",
           Description: "new description",
-        })
-        .promise();
+        });
 
       const getGroupResponseAfterUpdate = await client
         .getGroup({
           GroupName: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       expect(getGroupResponseAfterUpdate.Group).toMatchObject({
         GroupName: "abc",

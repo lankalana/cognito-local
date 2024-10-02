@@ -1,9 +1,9 @@
 import {
   UpdateIdentityProviderRequest,
   UpdateIdentityProviderResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
-import { IdentityProviderNotFoundError } from "../errors";
+import { IdentityProviderNotFoundError, MissingParameterError } from "../errors";
 import { identityProviderToResponseObject } from "./responses";
 import { Target } from "./Target";
 
@@ -20,6 +20,9 @@ export const UpdateIdentityProvider =
     cognito,
   }: UpdateIdentityProviderServices): UpdateIdentityProviderTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ProviderName) throw new MissingParameterError("ProviderName");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const identityProvider = await userPool.getIdentityProviderByProviderName(
       ctx,

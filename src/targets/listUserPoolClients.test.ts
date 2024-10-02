@@ -7,6 +7,7 @@ import {
   ListUserPoolClients,
   ListUserPoolClientsTarget,
 } from "./listUserPoolClients";
+import { appClientToResponseListObject } from "./responses";
 
 describe("ListUserPoolClients target", () => {
   let mockCognitoService: jest.Mocked<CognitoService>;
@@ -33,6 +34,9 @@ describe("ListUserPoolClients target", () => {
     });
 
     expect(output).toBeDefined();
-    expect(output.UserPoolClients).toEqual([appClient1, appClient2]);
+    expect(output.UserPoolClients).toEqual([
+      appClientToResponseListObject(appClient1),
+      appClientToResponseListObject(appClient2),
+    ]);
   });
 });

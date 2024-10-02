@@ -2,11 +2,12 @@ import {
   DeliveryMediumType,
   InitiateAuthRequest,
   InitiateAuthResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { v4 } from "uuid";
 import {
   InvalidParameterError,
   InvalidPasswordError,
+  MissingParameterError,
   NotAuthorizedError,
   PasswordResetRequiredError,
   UnsupportedError,
@@ -40,6 +41,8 @@ const verifyMfaChallenge = async (
   userPool: UserPoolService,
   services: InitiateAuthServices
 ): Promise<InitiateAuthResponse> => {
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
+
   if (!user.MFAOptions?.length) {
     throw new NotAuthorizedError();
   }
@@ -139,6 +142,8 @@ const userPasswordAuthFlow = async (
   userPoolClient: AppClient,
   services: InitiateAuthServices
 ): Promise<InitiateAuthResponse> => {
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
+
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
       "Missing required parameter authParameters"
@@ -274,6 +279,8 @@ const refreshTokenAuthFlow = async (
 export const InitiateAuth =
   (services: InitiateAuthServices): InitiateAuthTarget =>
   async (ctx, req) => {
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+  
     const userPool = await services.cognito.getUserPoolForClientId(
       ctx,
       req.ClientId

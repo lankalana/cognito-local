@@ -1,3 +1,4 @@
+import { IdentityProviderTypeType } from "@aws-sdk/client-cognito-identity-provider";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
@@ -26,7 +27,7 @@ describe("CreateIdentityProvider target", () => {
     await createIdentityProvider(TestContext, {
       UserPoolId: "test",
       ProviderName: "theProviderName",
-      ProviderType: "theProviderType",
+      ProviderType: IdentityProviderTypeType.OIDC,
       ProviderDetails: {
         detailKey: "detailValue",
       },
@@ -41,7 +42,7 @@ describe("CreateIdentityProvider target", () => {
       {
         UserPoolId: "test",
         ProviderName: "theProviderName",
-        ProviderType: "theProviderType",
+        ProviderType: IdentityProviderTypeType.OIDC,
         ProviderDetails: {
           detailKey: "detailValue",
         },
@@ -51,7 +52,7 @@ describe("CreateIdentityProvider target", () => {
         IdpIdentifiers: ["identifier"],
         LastModifiedDate: originalDate,
         CreationDate: originalDate,
-      }
+      },
     );
   });
 });

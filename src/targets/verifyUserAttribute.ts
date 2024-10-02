@@ -1,11 +1,12 @@
 import {
   VerifyUserAttributeRequest,
   VerifyUserAttributeResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import {
   CodeMismatchError,
   InvalidParameterError,
+  MissingParameterError,
   NotAuthorizedError,
 } from "../errors";
 import { Services } from "../services";
@@ -26,6 +27,8 @@ export const VerifyUserAttribute =
     cognito,
   }: VerifyUserAttributeServices): VerifyUserAttributeTarget =>
   async (ctx, req) => {
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");

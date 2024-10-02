@@ -83,7 +83,7 @@ describe("AdminUpdateUserAttributes target", () => {
     ${"an attribute which isn't mutable in the schema"}          | ${"custom:immutable"}      | ${"user.custom:immutable: Attribute cannot be updated. (changing an immutable attribute)"}
     ${"email_verified without an email attribute"}               | ${"email_verified"}        | ${"Email is required to verify/un-verify an email"}
     ${"phone_number_verified without an phone_number attribute"} | ${"phone_number_verified"} | ${"Phone Number is required to verify/un-verify a phone number"}
-  `("req.UserAttributes contains $desc", ({ attribute, expectedError }) => {
+  `("req.UserAttributes contains $desc", ({ attribute, expectedError }: { attribute: string, expectedError: string }) => {
     beforeEach(() => {
       mockUserPoolService.options.SchemaAttributes = [
         {
@@ -157,7 +157,7 @@ describe("AdminUpdateUserAttributes target", () => {
       ${["email"]}
       ${["phone_number"]}
       ${["email", "phone_number"]}
-    `("when $attributes is unverified", ({ attributes }) => {
+    `("when $attributes is unverified", ({ attributes }: { attributes: string[] }) => {
       describe("the verification status was not affected by the update", () => {
         it("does not deliver a OTP code to the user", async () => {
           const user = TDB.user({
@@ -262,7 +262,7 @@ describe("AdminUpdateUserAttributes target", () => {
       ${["email"]}
       ${["phone_number"]}
       ${["email", "phone_number"]}
-    `("when $attributes is unverified", ({ attributes }) => {
+    `("when $attributes is unverified", ({ attributes }: { attributes: string[] }) => {
       describe("the verification status was not affected by the update", () => {
         it("does not deliver a OTP code to the user", async () => {
           const user = TDB.user({

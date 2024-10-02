@@ -1,9 +1,10 @@
 import {
   AdminConfirmSignUpRequest,
   AdminConfirmSignUpResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+  UserStatusType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
-import { NotAuthorizedError } from "../errors";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import { Target } from "./Target";
 
@@ -24,13 +25,16 @@ export const AdminConfirmSignUp =
     triggers,
   }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
       throw new NotAuthorizedError();
     }
 
-    if (user.UserStatus !== "UNCONFIRMED") {
+    if (user.UserStatus !== UserStatusType.UNCONFIRMED) {
       throw new NotAuthorizedError(
         `User cannot be confirmed. Current status is ${user.UserStatus}`
       );
@@ -39,7 +43,7 @@ export const AdminConfirmSignUp =
     const updatedUser = {
       ...user,
       UserLastModifiedDate: clock.get(),
-      UserStatus: "CONFIRMED",
+      UserStatus: UserStatusType.CONFIRMED,
     };
 
     await userPool.saveUser(ctx, updatedUser);

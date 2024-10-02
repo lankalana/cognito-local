@@ -1,11 +1,9 @@
-import * as AWS from "aws-sdk";
 import fs from "fs";
 import http from "http";
-import type { Logger } from "pino";
+import { pino, type Logger } from "pino";
 import { promisify } from "util";
 import { createServer } from "../../src";
 import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
-import { MockLogger } from "../../src/__tests__/mockLogger";
 import { DefaultConfig } from "../../src/server/config";
 import {
   Clock,
@@ -22,6 +20,8 @@ import { JwtTokenGenerator } from "../../src/services/tokenGenerator";
 import { UserPoolServiceFactoryImpl } from "../../src/services/userPoolService";
 import { Router } from "../../src/server/Router";
 import { CryptoService } from "../../src/services/crypto";
+import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
+import { sink } from "pino-test";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const rmdir = promisify(fs.rmdir);
@@ -29,21 +29,21 @@ const rmdir = promisify(fs.rmdir);
 export const withCognitoSdk =
   (
     fn: (
-      cognito: () => AWS.CognitoIdentityServiceProvider,
+      cognito: () => CognitoIdentityProvider,
       services: {
         readonly dataStoreFactory: () => DataStoreFactory;
         readonly messageDelivery: () => FakeMessageDeliveryService;
-      }
+      },
     ) => void,
     {
-      logger = MockLogger as any,
+      logger = pino(sink()) as Logger,
       clock = new DateClock(),
-    }: { logger?: Logger; clock?: Clock } = {}
+    }: { logger?: Logger; clock?: Clock } = {},
   ) =>
   () => {
     let dataDirectory: string;
     let httpServer: http.Server;
-    let cognitoSdk: AWS.CognitoIdentityServiceProvider;
+    let cognitoSdk: CognitoIdentityProvider;
     let dataStoreFactory: DataStoreFactory;
     let fakeMessageDeliveryService: FakeMessageDeliveryService;
 
@@ -53,13 +53,13 @@ export const withCognitoSdk =
 
       dataStoreFactory = new StormDBDataStoreFactory(
         dataDirectory,
-        new NoOpCache()
+        new NoOpCache(),
       );
       const cognitoServiceFactory = new CognitoServiceFactoryImpl(
         dataDirectory,
         clock,
         dataStoreFactory,
-        new UserPoolServiceFactoryImpl(clock, dataStoreFactory)
+        new UserPoolServiceFactoryImpl(clock, dataStoreFactory),
       );
       const cognitoClient = await cognitoServiceFactory.create(ctx, {});
       const triggers = new TriggersService(
@@ -69,7 +69,7 @@ export const withCognitoSdk =
           enabled: jest.fn().mockReturnValue(false),
           invoke: jest.fn(),
         },
-        new CryptoService({ KMSKeyId: "", KMSKeyAlias: "" })
+        new CryptoService({ KMSKeyId: "", KMSKeyAlias: "" }),
       );
 
       fakeMessageDeliveryService = new FakeMessageDeliveryService();
@@ -83,7 +83,7 @@ export const withCognitoSdk =
         tokenGenerator: new JwtTokenGenerator(
           clock,
           triggers,
-          DefaultConfig.TokenConfig
+          DefaultConfig.TokenConfig,
         ),
       });
       const server = createServer(router, ctx.logger);
@@ -101,7 +101,7 @@ export const withCognitoSdk =
           ? address
           : `${address.address}:${address.port}`;
 
-      cognitoSdk = new AWS.CognitoIdentityServiceProvider({
+      cognitoSdk = new CognitoIdentityProvider({
         credentials: {
           accessKeyId: "local",
           secretAccessKey: "local",

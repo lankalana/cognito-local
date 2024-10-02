@@ -1,8 +1,8 @@
 import {
   ListUsersInGroupRequest,
   ListUsersInGroupResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError, UserNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from "../errors";
 import { Services } from "../services";
 import { userToResponseObject } from "./responses";
 import { Target } from "./Target";
@@ -15,6 +15,9 @@ export type ListUsersInGroupTarget = Target<
 export const ListUsersInGroup =
   ({ cognito }: Pick<Services, "cognito">): ListUsersInGroupTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const group = await userPool.getGroupByGroupName(ctx, req.GroupName);
     if (!group) {

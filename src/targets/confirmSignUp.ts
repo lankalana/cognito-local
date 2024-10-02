@@ -1,10 +1,12 @@
 import {
   ConfirmSignUpRequest,
   ConfirmSignUpResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+  UserStatusType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import {
   CodeMismatchError,
   ExpiredCodeError,
+  MissingParameterError,
   NotAuthorizedError,
 } from "../errors";
 import { Services } from "../services";
@@ -23,6 +25,9 @@ export const ConfirmSignUp =
     triggers,
   }: Pick<Services, "cognito" | "clock" | "triggers">): ConfirmSignUpTarget =>
   async (ctx, req) => {
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
@@ -39,7 +44,7 @@ export const ConfirmSignUp =
 
     const updatedUser = {
       ...user,
-      UserStatus: "CONFIRMED",
+      UserStatus: UserStatusType.CONFIRMED,
       ConfirmationCode: undefined,
       UserLastModifiedDate: clock.get(),
     };

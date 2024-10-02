@@ -1,15 +1,19 @@
-import { AdminAddUserToGroupRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import { AdminAddUserToGroupRequest } from "@aws-sdk/client-cognito-identity-provider";
+import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from "../errors";
 import { Services } from "../services";
 import { Target } from "./Target";
 
-export type AdminAddUserToGroupTarget = Target<AdminAddUserToGroupRequest, {}>;
+export type AdminAddUserToGroupTarget = Target<AdminAddUserToGroupRequest, object>;
 
 type AdminAddUserToGroupServices = Pick<Services, "cognito">;
 
 export const AdminAddUserToGroup =
   ({ cognito }: AdminAddUserToGroupServices): AdminAddUserToGroupTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
+    if (!req.Username) throw new MissingParameterError("Username");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const group = await userPool.getGroupByGroupName(ctx, req.GroupName);

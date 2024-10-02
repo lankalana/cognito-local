@@ -5,7 +5,7 @@ import { CognitoService, DateClock, UserPoolService } from "../src/services";
 import { CognitoServiceFactoryImpl } from "../src/services/cognitoService";
 import { NoOpCache } from "../src/services/dataStore/cache";
 import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
-import { UserPoolServiceFactoryImpl } from "../src/services/userPoolService";
+import { User, UserPoolServiceFactoryImpl } from "../src/services/userPoolService";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const readFile = promisify(fs.readFile);
@@ -67,7 +67,7 @@ describe("User Pool Service", () => {
 
         const file = JSON.parse(
           await readFile(dataDirectory + "/local.json", "utf-8")
-        );
+        ) as { Users: User[] };
 
         expect(file.Users).toEqual({
           [username]: {
@@ -107,7 +107,7 @@ describe("User Pool Service", () => {
 
         let file = JSON.parse(
           await readFile(dataDirectory + "/local.json", "utf-8")
-        );
+        ) as { Users: User[] };
 
         expect(file.Users).toEqual({
           [username]: {
@@ -142,7 +142,7 @@ describe("User Pool Service", () => {
 
         file = JSON.parse(
           await readFile(dataDirectory + "/local.json", "utf-8")
-        );
+        ) as { Users: User[] };
 
         expect(file.Users).toEqual({
           [username]: {
@@ -241,7 +241,7 @@ describe("User Pool Service", () => {
   });
 
   describe("storeRefreshToken", () => {
-    const user = {
+    const user: User = {
       Username: "User",
       Password: "hunter2",
       UserStatus: "UNCONFIRMED",

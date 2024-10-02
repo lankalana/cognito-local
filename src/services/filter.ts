@@ -7,7 +7,7 @@ const FilterExpression = new RegExp(
 type Matcher<T> = (obj: T, filterType: "=" | "^=", value: string) => boolean;
 type FieldLookup<T> = (obj: T) => string | boolean | undefined;
 
-function compare<T>(
+function compare(
   fieldValue: string | undefined,
   type: "=" | "^=",
   value: string

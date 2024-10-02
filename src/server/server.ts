@@ -90,9 +90,12 @@ export const createServer = (
       key,
       value
     ) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (this[key] instanceof Date) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return Math.floor(this[key].getTime() / 1000);
       }
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return value;
     };
 

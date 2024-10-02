@@ -5,8 +5,10 @@ module.exports = {
     "<rootDir>/setupTests.ts",
     "jest-extended/all"
   ],
+  preset: 'ts-jest',
   transform: {
-    "^.+\\.ts$": "esbuild-jest",
+    "^.+\\.ts$": "ts-jest",
+    "^.+\\.js$": "babel-jest",
   },
   testMatch: ["**/*.test.ts"],
 };

@@ -1,8 +1,8 @@
 import {
   DescribeUserPoolRequest,
   DescribeUserPoolResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { ResourceNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, ResourceNotFoundError } from "../errors";
 import { Services } from "../services";
 import { userPoolToResponseObject } from "./responses";
 import { Target } from "./Target";
@@ -15,6 +15,8 @@ export type DescribeUserPoolTarget = Target<
 export const DescribeUserPool =
   ({ cognito }: Pick<Services, "cognito">): DescribeUserPoolTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     if (!userPool) {
       throw new ResourceNotFoundError();

@@ -15,28 +15,24 @@ describe(
       it("creates a user pool with only the required parameters", async () => {
         const client = Cognito();
 
-        const result = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const result = await client.createUserPool({
+          PoolName: "test",
+        });
 
-        expect(result).toEqual({
-          UserPool: {
-            ...USER_POOL_AWS_DEFAULTS,
-            Arn: expect.stringMatching(
-              /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/
-            ),
-            CreationDate: roundedDate,
-            Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-            LastModifiedDate: roundedDate,
-            Name: "test",
-          },
+        expect(result?.UserPool).toEqual({
+          ...USER_POOL_AWS_DEFAULTS,
+          Arn: expect.stringMatching(
+            /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
+          ),
+          CreationDate: roundedDate,
+          Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+          LastModifiedDate: roundedDate,
+          Name: "test",
         });
       });
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

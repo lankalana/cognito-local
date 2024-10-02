@@ -11,16 +11,14 @@ describe(
         .createUserPool({
           PoolName: "test",
           AutoVerifiedAttributes: ["email"],
-        })
-        .promise();
+        });
       const userPoolId = pool.UserPool?.Id as string;
 
       const upc = await client
         .createUserPoolClient({
           UserPoolId: userPoolId,
           ClientName: "test",
-        })
-        .promise();
+        });
 
       await client
         .adminCreateUser({
@@ -32,8 +30,7 @@ describe(
           UserPoolId: userPoolId,
           TemporaryPassword: "def",
           DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+        });
 
       await client
         .adminSetUserPassword({
@@ -41,8 +38,7 @@ describe(
           Username: "abc",
           Password: "def",
           Permanent: true,
-        })
-        .promise();
+        });
 
       // login as the user
       const initiateAuthResponse = await client
@@ -53,15 +49,13 @@ describe(
             PASSWORD: "def",
           },
           ClientId: upc.UserPoolClient?.ClientId as string,
-        })
-        .promise();
+        });
 
       let user = await client
         .adminGetUser({
           UserPoolId: userPoolId,
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },
@@ -74,15 +68,13 @@ describe(
           AccessToken: initiateAuthResponse.AuthenticationResult
             ?.AccessToken as string,
           UserAttributeNames: ["custom:example"],
-        })
-        .promise();
+        });
 
       user = await client
         .adminGetUser({
           UserPoolId: userPoolId,
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },

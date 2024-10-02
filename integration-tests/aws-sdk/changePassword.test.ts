@@ -11,8 +11,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       // create a user
       await client
@@ -22,8 +21,7 @@ describe(
           UserAttributes: [{ Name: "email", Value: "example@example.com" }],
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       await client
         .adminSetUserPassword({
@@ -31,8 +29,7 @@ describe(
           Permanent: true,
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       // login
       const initAuthResponse = await client
@@ -43,8 +40,7 @@ describe(
             USERNAME: "abc",
             PASSWORD: "firstPassword",
           },
-        })
-        .promise();
+        });
 
       // delete the user with their token
       await client
@@ -52,8 +48,7 @@ describe(
           AccessToken: initAuthResponse.AuthenticationResult?.AccessToken!,
           PreviousPassword: "firstPassword",
           ProposedPassword: "secondPassword",
-        })
-        .promise();
+        });
 
       // (fail to) login with the old password
       await expect(
@@ -66,7 +61,6 @@ describe(
               PASSWORD: "firstPassword",
             },
           })
-          .promise()
       ).rejects.toBeDefined();
 
       // login with the new password
@@ -78,8 +72,7 @@ describe(
             USERNAME: "abc",
             PASSWORD: "secondPassword",
           },
-        })
-        .promise();
+        });
 
       expect(initAuthResponse2nd).toBeDefined();
     });

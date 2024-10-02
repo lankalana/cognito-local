@@ -1,4 +1,3 @@
-import boxen from "boxen";
 import { Context } from "../context";
 import { Message } from "../messages";
 import { User } from "../userPoolService";
@@ -9,7 +8,7 @@ export class ConsoleMessageSender implements MessageSender {
     ctx: Context,
     user: User,
     destination: string,
-    message: Message
+    message: Message,
   ): Promise<void> {
     return this.sendToConsole(ctx, user, destination, message);
   }
@@ -18,7 +17,7 @@ export class ConsoleMessageSender implements MessageSender {
     ctx: Context,
     user: User,
     destination: string,
-    message: Message
+    message: Message,
   ): Promise<void> {
     return this.sendToConsole(ctx, user, destination, message);
   }
@@ -27,7 +26,7 @@ export class ConsoleMessageSender implements MessageSender {
     ctx: Context,
     user: User,
     destination: string,
-    { __code, ...message }: Message
+    { __code, ...message }: Message,
   ): Promise<void> {
     const fields = {
       Username: user.Username,
@@ -38,22 +37,18 @@ export class ConsoleMessageSender implements MessageSender {
       "SMS Message": message.smsMessage,
     };
     const definedFields = Object.entries(fields).filter(
-      (kv): kv is [string, string] => !!kv[1]
+      (kv): kv is [string, string] => !!kv[1],
     );
 
     const longestDefinedFieldName = Math.max(
-      ...definedFields.map(([k]) => k.length)
+      ...definedFields.map(([k]) => k.length),
     );
     const formattedFields = definedFields.map(
-      ([k, v]) => `${(k + ":").padEnd(longestDefinedFieldName + 1)} ${v}`
+      ([k, v]) => `${(k + ":").padEnd(longestDefinedFieldName + 1)} ${v}`,
     );
 
     ctx.logger.info(
-      boxen(`Confirmation Code Delivery\n\n${formattedFields.join("\n")}`, {
-        borderStyle: "round" as any,
-        borderColor: "yellow",
-        padding: 1,
-      })
+      `Confirmation Code Delivery\n\n${formattedFields.join("\n")}`,
     );
 
     return Promise.resolve();

@@ -3,7 +3,7 @@ import { Targets } from "./targets";
 
 export type TargetName = keyof typeof Targets;
 
-export type Target<Req extends {}, Res extends {}> = (
+export type Target<Req extends object, Res extends object> = (
   ctx: Context,
   req: Req
 ) => Promise<Res>;

@@ -14,8 +14,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       await expect(
         client
@@ -28,7 +27,6 @@ describe(
               PASSWORD: "def",
             },
           })
-          .promise()
       ).rejects.toMatchObject({
         message: "User not authorized",
       });
@@ -41,8 +39,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       await client
         .signUp({
@@ -50,8 +47,7 @@ describe(
           Password: "def",
           UserAttributes: [{ Name: "email", Value: "example@example.com" }],
           Username: "abc",
-        })
-        .promise();
+        });
 
       await expect(
         client
@@ -64,7 +60,6 @@ describe(
               PASSWORD: "def",
             },
           })
-          .promise()
       ).rejects.toEqual(new UserNotConfirmedException());
     });
 
@@ -75,8 +70,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       const createUserResponse = await client
         .adminCreateUser({
@@ -88,8 +82,7 @@ describe(
           ],
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
       const userSub = attributeValue(
         "sub",
         createUserResponse.User?.Attributes
@@ -104,8 +97,7 @@ describe(
             USERNAME: "abc",
             PASSWORD: "def",
           },
-        })
-        .promise();
+        });
 
       expect(
         jwt.decode(response.AuthenticationResult?.AccessToken as string)
@@ -159,8 +151,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       const createUserResponse = await client
         .adminCreateUser({
@@ -172,8 +163,7 @@ describe(
           ],
           Username: "abc",
           UserPoolId: "test",
-        })
-        .promise();
+        });
       const userSub = attributeValue(
         "sub",
         createUserResponse.User?.Attributes
@@ -188,8 +178,7 @@ describe(
             USERNAME: "abc",
             PASSWORD: "def",
           },
-        })
-        .promise();
+        });
 
       const refreshTokenLoginResponse = await client
         .adminInitiateAuth({
@@ -200,8 +189,7 @@ describe(
             REFRESH_TOKEN: initialLoginResponse.AuthenticationResult
               ?.RefreshToken as string,
           },
-        })
-        .promise();
+        });
 
       expect(
         jwt.decode(

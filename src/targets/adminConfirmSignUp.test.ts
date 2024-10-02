@@ -1,3 +1,4 @@
+import { UserStatusType } from "@aws-sdk/client-cognito-identity-provider";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockTriggers } from "../__tests__/mockTriggers";
@@ -41,18 +42,17 @@ describe("AdminConfirmSignUp target", () => {
         },
         Username: "invalid user",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
   it.each([
-    "CONFIRMED",
-    "ARCHIVED",
-    "COMPROMISED",
-    "UNKNOWN",
-    "RESET_REQUIRED",
-    "FORCE_CHANGE_PASSWORD",
-    "something else",
+    UserStatusType.CONFIRMED,
+    UserStatusType.ARCHIVED,
+    UserStatusType.COMPROMISED,
+    UserStatusType.UNKNOWN,
+    UserStatusType.RESET_REQUIRED,
+    UserStatusType.FORCE_CHANGE_PASSWORD,
   ])("throws if the user has status %s", async (status) => {
     const user = TDB.user({
       UserStatus: status,
@@ -67,11 +67,11 @@ describe("AdminConfirmSignUp target", () => {
         },
         Username: user.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(
       new NotAuthorizedError(
-        `User cannot be confirmed. Current status is ${status}`
-      )
+        `User cannot be confirmed. Current status is ${status}`,
+      ),
     );
   });
 
@@ -100,7 +100,7 @@ describe("AdminConfirmSignUp target", () => {
   describe("when PostConfirmation trigger is enabled", () => {
     it("invokes the trigger", async () => {
       mockTriggers.enabled.mockImplementation(
-        (trigger) => trigger === "PostConfirmation"
+        (trigger) => trigger === "PostConfirmation",
       );
 
       const user = TDB.user({
@@ -125,7 +125,7 @@ describe("AdminConfirmSignUp target", () => {
         source: "PostConfirmation_ConfirmSignUp",
         userAttributes: attributesAppend(
           user.Attributes,
-          attribute("cognito:user_status", "CONFIRMED")
+          attribute("cognito:user_status", "CONFIRMED"),
         ),
         userPoolId: "test",
         username: user.Username,

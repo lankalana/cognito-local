@@ -13,16 +13,14 @@ describe(
         .createUserPool({
           PoolName: "test",
           AutoVerifiedAttributes: ["email"],
-        })
-        .promise();
+        });
       const userPoolId = pool.UserPool?.Id as string;
 
       const upc = await client
         .createUserPoolClient({
           UserPoolId: userPoolId,
           ClientName: "test",
-        })
-        .promise();
+        });
 
       await client
         .adminCreateUser({
@@ -31,8 +29,7 @@ describe(
           UserPoolId: userPoolId,
           TemporaryPassword: "def",
           DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+        });
 
       await client
         .adminSetUserPassword({
@@ -40,16 +37,14 @@ describe(
           UserPoolId: userPoolId,
           Password: "def",
           Permanent: true,
-        })
-        .promise();
+        });
 
       await client
         .adminUpdateUserAttributes({
           UserPoolId: userPoolId,
           Username: "abc",
           UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
-        })
-        .promise();
+        });
 
       // get the user's code -- this is very nasty
       const ds = await dataStoreFactory().create(TestContext, userPoolId, {});
@@ -64,8 +59,7 @@ describe(
             PASSWORD: "def",
           },
           ClientId: upc.UserPoolClient?.ClientId as string,
-        })
-        .promise();
+        });
 
       await client
         .verifyUserAttribute({
@@ -73,15 +67,13 @@ describe(
           AccessToken: initiateAuthResponse.AuthenticationResult
             ?.AccessToken as string,
           Code: storedUser.AttributeVerificationCode as string,
-        })
-        .promise();
+        });
 
       const user = await client
         .adminGetUser({
           UserPoolId: userPoolId,
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },

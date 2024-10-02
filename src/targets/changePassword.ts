@@ -1,12 +1,13 @@
 import {
   ChangePasswordRequest,
   ChangePasswordResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import { Services } from "../services";
 import {
   InvalidParameterError,
   InvalidPasswordError,
+  MissingParameterError,
   NotAuthorizedError,
 } from "../errors";
 import { Token } from "../services/tokenGenerator";
@@ -22,6 +23,9 @@ type ChangePasswordServices = Pick<Services, "cognito" | "clock">;
 export const ChangePassword =
   ({ cognito, clock }: ChangePasswordServices): ChangePasswordTarget =>
   async (ctx, req) => {
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+    if (!req.ProposedPassword) throw new MissingParameterError("ProposedPassword");
+    
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");

@@ -1,9 +1,9 @@
 import {
   GetUserRequest,
   GetUserResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { InvalidParameterError, UserNotFoundError } from "../errors";
+import { InvalidParameterError, MissingParameterError, UserNotFoundError } from "../errors";
 import { Services } from "../services";
 import { Token } from "../services/tokenGenerator";
 import { Target } from "./Target";
@@ -13,6 +13,8 @@ export type GetUserTarget = Target<GetUserRequest, GetUserResponse>;
 export const GetUser =
   ({ cognito }: Pick<Services, "cognito">): GetUserTarget =>
   async (ctx, req) => {
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");
