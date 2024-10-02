@@ -29,7 +29,7 @@ jobs:
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
-            type=sha  
+            type=edge  
       - name: build and push docker image
         uses: docker/build-push-action@v6
         with:
