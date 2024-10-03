@@ -1,5 +1,8 @@
 import { DeleteIdentityProviderRequest } from "@aws-sdk/client-cognito-identity-provider";
-import { IdentityProviderNotFoundError, MissingParameterError } from "../errors";
+import {
+  IdentityProviderNotFoundError,
+  MissingParameterError,
+} from "../errors";
 import { Services } from "../services";
 import { Target } from "./Target";
 
@@ -15,11 +18,11 @@ export const DeleteIdentityProvider =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ProviderName) throw new MissingParameterError("ProviderName");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const group = await userPool.getIdentityProviderByProviderName(
       ctx,
-      req.ProviderName
+      req.ProviderName,
     );
     if (!group) {
       throw new IdentityProviderNotFoundError();

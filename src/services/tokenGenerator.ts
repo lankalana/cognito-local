@@ -65,22 +65,22 @@ type RawToken = Record<
 
 const applyTokenOverrides = (
   token: RawToken,
-  overrides: TokenOverrides
+  overrides: TokenOverrides,
 ): RawToken => {
   // TODO: support group overrides
 
   const claimsToSuppress = (overrides?.claimsToSuppress ?? []).filter(
-    (claim) => !RESERVED_CLAIMS.includes(claim)
+    (claim) => !RESERVED_CLAIMS.includes(claim),
   );
 
   const claimsToOverride = Object.entries(
-    overrides?.claimsToAddOrOverride ?? []
+    overrides?.claimsToAddOrOverride ?? [],
   ).filter(([claim]) => !RESERVED_CLAIMS.includes(claim));
 
   return Object.fromEntries(
     [...Object.entries(token), ...claimsToOverride].filter(
-      ([claim]) => !claimsToSuppress.includes(claim)
-    )
+      ([claim]) => !claimsToSuppress.includes(claim),
+    ),
   );
 };
 
@@ -102,14 +102,14 @@ export interface TokenGenerator {
       | "Authentication"
       | "HostedAuth"
       | "NewPasswordChallenge"
-      | "RefreshTokens"
+      | "RefreshTokens",
   ): Promise<Tokens>;
 }
 
 const formatExpiration = (
   duration: number | undefined,
   unit: ValidityUnit,
-  fallback: string
+  fallback: string,
 ): string => (duration ? `${duration}${unit}` : fallback);
 
 export class JwtTokenGenerator implements TokenGenerator {
@@ -120,7 +120,7 @@ export class JwtTokenGenerator implements TokenGenerator {
   public constructor(
     clock: Clock,
     triggers: Triggers,
-    tokenConfig: TokenConfig
+    tokenConfig: TokenConfig,
   ) {
     this.clock = clock;
     this.triggers = triggers;
@@ -138,7 +138,7 @@ export class JwtTokenGenerator implements TokenGenerator {
       | "Authentication"
       | "HostedAuth"
       | "NewPasswordChallenge"
-      | "RefreshTokens"
+      | "RefreshTokens",
   ): Promise<Tokens> {
     const eventId = uuid.v4();
     const authTime = Math.floor(this.clock.get().getTime() / 1000);
@@ -160,7 +160,7 @@ export class JwtTokenGenerator implements TokenGenerator {
       auth_time: authTime,
       email: attributeValue("email", user.Attributes),
       email_verified: Boolean(
-        attributeValue("email_verified", user.Attributes) ?? false
+        attributeValue("email_verified", user.Attributes) ?? false,
       ),
       event_id: eventId,
       iat: authTime,
@@ -203,7 +203,7 @@ export class JwtTokenGenerator implements TokenGenerator {
         expiresIn: formatExpiration(
           userPoolClient.AccessTokenValidity,
           userPoolClient.TokenValidityUnits?.AccessToken ?? "hours",
-          "24h"
+          "24h",
         ),
         keyid: "CognitoLocal",
       }),
@@ -213,7 +213,7 @@ export class JwtTokenGenerator implements TokenGenerator {
         expiresIn: formatExpiration(
           userPoolClient.IdTokenValidity,
           userPoolClient.TokenValidityUnits?.IdToken ?? "hours",
-          "24h"
+          "24h",
         ),
         audience: userPoolClient.ClientId,
         keyid: "CognitoLocal",
@@ -234,9 +234,9 @@ export class JwtTokenGenerator implements TokenGenerator {
           expiresIn: formatExpiration(
             userPoolClient.RefreshTokenValidity,
             userPoolClient.TokenValidityUnits?.RefreshToken ?? "days",
-            "7d"
+            "7d",
           ),
-        }
+        },
       ),
     };
   }

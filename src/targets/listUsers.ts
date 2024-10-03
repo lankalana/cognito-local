@@ -13,7 +13,7 @@ export const ListUsers =
   ({ cognito }: Pick<Services, "cognito">): ListUsersTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const users = await userPool.listUsers(ctx, req.Filter);
 

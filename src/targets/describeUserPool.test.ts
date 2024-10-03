@@ -19,7 +19,7 @@ describe("DescribeUserPool target", () => {
   it("returns an existing user pool", async () => {
     const existingUserPool = TDB.userPool();
     mockCognitoService.getUserPool.mockResolvedValue(
-      newMockUserPoolService(existingUserPool)
+      newMockUserPoolService(existingUserPool),
     );
 
     const result = await describeUserPool(TestContext, {

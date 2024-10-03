@@ -17,7 +17,7 @@ export const GetUserPoolMfaConfig =
   ({ cognito }: GetUserPoolMfaConfigServices): GetUserPoolMfaConfigTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     return {

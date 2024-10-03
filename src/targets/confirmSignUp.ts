@@ -27,7 +27,7 @@ export const ConfirmSignUp =
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");
-    
+
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
@@ -63,7 +63,7 @@ export const ConfirmSignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute("cognito:user_status", updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

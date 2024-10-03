@@ -48,7 +48,7 @@ describe("UpdateUserPoolClient target", () => {
 
     expect(mockCognitoService.getAppClient).toHaveBeenCalledWith(
       TestContext,
-      existingAppClient.ClientId
+      existingAppClient.ClientId,
     );
 
     expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
@@ -63,7 +63,7 @@ describe("UpdateUserPoolClient target", () => {
           IdToken: "minutes",
           RefreshToken: "days",
         },
-      }
+      },
     );
 
     expect(result.UserPoolClient).toEqual({
@@ -86,7 +86,7 @@ describe("UpdateUserPoolClient target", () => {
       updateUserPoolClient(TestContext, {
         ClientId: "clientId",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 });

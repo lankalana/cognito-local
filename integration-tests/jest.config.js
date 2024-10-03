@@ -1,7 +1,7 @@
 module.exports = {
   roots: ["."],
   transform: {
-    "^.+\\.ts$": "esbuild-jest",
+    "^.+\\.ts$": "ts-jest",
   },
   testMatch: ["**/*.test.ts"],
 };

@@ -23,7 +23,7 @@ export interface Server {
 export const createServer = (
   router: Router,
   logger: Logger,
-  options: Partial<ServerOptions> = {}
+  options: Partial<ServerOptions> = {},
 ): Server => {
   const pino = Pino({
     logger,
@@ -41,12 +41,12 @@ export const createServer = (
   app.use(
     cors({
       origin: "*",
-    })
+    }),
   );
   app.use(
     bodyParser.json({
       type: "application/x-amz-json-1.1",
-    })
+    }),
   );
 
   app.get("/:userPoolId/.well-known/jwks.json", (req, res) => {
@@ -88,7 +88,7 @@ export const createServer = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const replacer: (this: any, key: string, value: any) => any = function (
       key,
-      value
+      value,
     ) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (this[key] instanceof Date) {
@@ -134,7 +134,7 @@ export const createServer = (
           res.status(500).json(ex);
           return;
         }
-      }
+      },
     );
   });
 
@@ -153,7 +153,7 @@ export const createServer = (
         const httpServer = app.listen(
           actualOptions.port,
           actualOptions.hostname,
-          () => resolve(httpServer)
+          () => resolve(httpServer),
         );
         httpServer.on("error", reject);
       });

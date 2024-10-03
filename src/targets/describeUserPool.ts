@@ -16,7 +16,7 @@ export const DescribeUserPool =
   ({ cognito }: Pick<Services, "cognito">): DescribeUserPoolTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     if (!userPool) {
       throw new ResourceNotFoundError();

@@ -22,7 +22,8 @@ export const AddCustomAttributes =
   }: AddCustomAttributesServices): AddCustomAttributesTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    if (!req.CustomAttributes) throw new MissingParameterError("CustomAttributes");
+    if (!req.CustomAttributes)
+      throw new MissingParameterError("CustomAttributes");
 
     assertParameterLength("CustomAttributes", 1, 25, req.CustomAttributes);
 
@@ -37,7 +38,7 @@ export const AddCustomAttributes =
 
           if (userPool.options.SchemaAttributes?.find((x) => x.Name === name)) {
             throw new InvalidParameterError(
-              `${name}: Existing attribute already has name ${name}.`
+              `${name}: Existing attribute already has name ${name}.`,
             );
           }
 

@@ -7,37 +7,33 @@ describe(
       const client = Cognito();
 
       // create the user pool client
-      const up = await client
-        .createUserPool({
-          PoolName: "pool",
-          MfaConfiguration: "OFF",
-        });
+      const up = await client.createUserPool({
+        PoolName: "pool",
+        MfaConfiguration: "OFF",
+      });
 
-      const describeResponse = await client
-        .describeUserPool({
-          UserPoolId: up.UserPool?.Id!,
-        });
+      const describeResponse = await client.describeUserPool({
+        UserPoolId: up.UserPool?.Id,
+      });
 
       expect(describeResponse.UserPool).toMatchObject({
         Name: "pool",
         MfaConfiguration: "OFF",
       });
 
-      await client
-        .updateUserPool({
-          UserPoolId: up.UserPool?.Id!,
-          MfaConfiguration: "OPTIONAL",
-        });
+      await client.updateUserPool({
+        UserPoolId: up.UserPool?.Id,
+        MfaConfiguration: "OPTIONAL",
+      });
 
-      const describeResponseAfterUpdate = await client
-        .describeUserPool({
-          UserPoolId: up.UserPool?.Id!,
-        });
+      const describeResponseAfterUpdate = await client.describeUserPool({
+        UserPoolId: up.UserPool?.Id,
+      });
 
       expect(describeResponseAfterUpdate.UserPool).toMatchObject({
         Name: "pool",
         MfaConfiguration: "OPTIONAL",
       });
     });
-  })
+  }),
 );

@@ -33,14 +33,14 @@ describe("CreateUserPool target", () => {
       TestContext,
       {
         Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
         ),
         CreationDate: originalDate,
         Id: expect.stringMatching(/^local_[\w\d]{8}$/),
         LastModifiedDate: originalDate,
         Name: "test-pool",
         SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
-      }
+      },
     );
 
     expect(result).toEqual({
@@ -66,7 +66,7 @@ describe("CreateUserPool target", () => {
       TestContext,
       {
         Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
         ),
         CreationDate: originalDate,
         Id: expect.stringMatching(/^local_[\w\d]{8}$/),
@@ -83,7 +83,7 @@ describe("CreateUserPool target", () => {
             StringAttributeConstraints: {},
           },
         ],
-      }
+      },
     );
 
     expect(result).toEqual({
@@ -110,7 +110,7 @@ describe("CreateUserPool target", () => {
       TestContext,
       {
         Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
         ),
         CreationDate: originalDate,
         Id: expect.stringMatching(/^local_[\w\d]{8}$/),
@@ -329,7 +329,7 @@ describe("CreateUserPool target", () => {
             },
           },
         ],
-      }
+      },
     );
 
     expect(result).toEqual({

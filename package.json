@@ -22,10 +22,6 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2",
-    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
-    "@babel/preset-typescript": "^7.24.7",
-    "@eslint/eslintrc": "^3.1.0",
     "@eslint/js": "^9.11.1",
     "@jest/globals": "^29.7.0",
     "@types/aws-lambda": "^8.10.145",
@@ -40,9 +36,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.8.0",
     "@typescript-eslint/parser": "^8.8.0",
-    "babel-jest": "^29.7.0",
     "esbuild": "^0.24.0",
-    "esbuild-jest": "^0.5.0",
     "eslint": "^9.11.1",
     "eslint-config-prettier": "^9.1.0",
     "husky": "^9.1.6",
@@ -92,7 +86,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix --cache",
-      "tsc --target es2020 --moduleResolution node --esModuleInterop --resolveJsonModule --noEmit ./setupTests.ts",
+      "tsc --target es2020 --moduleResolution node --esModuleInterop --resolveJsonModule",
       "prettier --write"
     ],
     "README.md": "markdown-toc -i --bullets=- --maxdepth=3"

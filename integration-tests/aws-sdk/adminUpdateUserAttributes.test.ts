@@ -7,21 +7,19 @@ describe(
     it("updates a user's attributes", async () => {
       const client = Cognito();
 
-      await client
-        .adminCreateUser({
-          UserAttributes: [
-            { Name: "email", Value: "example@example.com" },
-            { Name: "phone_number", Value: "0400000000" },
-          ],
-          Username: "abc",
-          UserPoolId: "test",
-        });
+      await client.adminCreateUser({
+        UserAttributes: [
+          { Name: "email", Value: "example@example.com" },
+          { Name: "phone_number", Value: "0400000000" },
+        ],
+        Username: "abc",
+        UserPoolId: "test",
+      });
 
-      let user = await client
-        .adminGetUser({
-          UserPoolId: "test",
-          Username: "abc",
-        });
+      let user = await client.adminGetUser({
+        UserPoolId: "test",
+        Username: "abc",
+      });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },
@@ -29,18 +27,16 @@ describe(
         { Name: "phone_number", Value: "0400000000" },
       ]);
 
-      await client
-        .adminUpdateUserAttributes({
-          UserPoolId: "test",
-          Username: "abc",
-          UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
-        });
+      await client.adminUpdateUserAttributes({
+        UserPoolId: "test",
+        Username: "abc",
+        UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
+      });
 
-      user = await client
-        .adminGetUser({
-          UserPoolId: "test",
-          Username: "abc",
-        });
+      user = await client.adminGetUser({
+        UserPoolId: "test",
+        Username: "abc",
+      });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },
@@ -49,5 +45,5 @@ describe(
         { Name: "email_verified", Value: "false" },
       ]);
     });
-  })
+  }),
 );

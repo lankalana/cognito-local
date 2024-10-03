@@ -3,6 +3,7 @@
 import { createDefaultServer } from "../server";
 import Pino from "pino";
 import PinoPretty from "pino-pretty";
+import process from "node:process";
 
 const logger = Pino(
   {
@@ -13,9 +14,8 @@ const logger = Pino(
     ignore: "pid,name,hostname",
     singleLine: true,
     messageFormat: (log, messageKey) =>
-       
-      `${log["reqId"] as string ?? "NONE"} ${log["target"] as string ?? "NONE"} ${log[messageKey] as string}`,
-  })
+      `${(log["reqId"] as string) ?? "NONE"} ${(log["target"] as string) ?? "NONE"} ${log[messageKey] as string}`,
+  }),
 );
 
 createDefaultServer(logger)
@@ -40,3 +40,6 @@ createDefaultServer(logger)
     logger.error(err);
     process.exit(1);
   });
+
+process.on("SIGTERM", () => process.exit(0));
+process.on("SIGINT", () => process.exit(0));

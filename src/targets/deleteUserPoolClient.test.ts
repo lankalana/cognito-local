@@ -37,7 +37,7 @@ describe("DeleteUserPoolClient target", () => {
 
     expect(mockUserPoolService.deleteAppClient).toHaveBeenCalledWith(
       TestContext,
-      existingAppClient
+      existingAppClient,
     );
   });
 
@@ -48,7 +48,7 @@ describe("DeleteUserPoolClient target", () => {
       deleteUserPoolClient(TestContext, {
         ClientId: "clientId",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 
@@ -64,7 +64,7 @@ describe("DeleteUserPoolClient target", () => {
       deleteUserPoolClient(TestContext, {
         ClientId: "clientId",
         UserPoolId: "pool-two",
-      })
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 });

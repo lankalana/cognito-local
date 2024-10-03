@@ -35,7 +35,7 @@ describe("AdminInitiateAuth target", () => {
       TestContext,
       expect.objectContaining({
         RefreshTokens: [],
-      })
+      }),
     );
   });
 });

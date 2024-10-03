@@ -22,7 +22,7 @@ export class FakeMessageDeliveryService implements MessageDelivery {
     ctx: Context,
     user: User,
     deliveryDetails: DeliveryDetails,
-    message: Message
+    message: Message,
   ): Promise<void> {
     this.messages.push({
       deliveryDetails,

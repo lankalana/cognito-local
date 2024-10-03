@@ -42,7 +42,7 @@ describe("UpdateGroup target", () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
@@ -84,7 +84,7 @@ describe("UpdateGroup target", () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
@@ -111,7 +111,7 @@ describe("UpdateGroup target", () => {
       updateGroup(TestContext, {
         GroupName: "group",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

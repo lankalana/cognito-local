@@ -63,7 +63,7 @@ describe("AdminInitiateAuth target", () => {
     expect(mockUserPoolService.storeRefreshToken).toHaveBeenCalledWith(
       TestContext,
       response.AuthenticationResult?.RefreshToken,
-      existingUser
+      existingUser,
     );
 
     expect(response.AuthenticationResult?.AccessToken).toEqual("access");
@@ -78,7 +78,7 @@ describe("AdminInitiateAuth target", () => {
       {
         client: "metadata",
       },
-      "Authentication"
+      "Authentication",
     );
   });
 
@@ -110,7 +110,7 @@ describe("AdminInitiateAuth target", () => {
 
     expect(mockUserPoolService.getUserByRefreshToken).toHaveBeenCalledWith(
       TestContext,
-      "refresh token"
+      "refresh token",
     );
     expect(mockUserPoolService.storeRefreshToken).not.toHaveBeenCalled();
 
@@ -128,7 +128,7 @@ describe("AdminInitiateAuth target", () => {
       {
         client: "metadata",
       },
-      "RefreshTokens"
+      "RefreshTokens",
     );
   });
 });

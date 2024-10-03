@@ -53,7 +53,7 @@ describe("DescribeUserPoolClient target", () => {
       describeUserPoolClient(TestContext, {
         ClientId: "abc",
         UserPoolId: "userPoolId",
-      })
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 });

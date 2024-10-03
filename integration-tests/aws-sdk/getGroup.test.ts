@@ -14,20 +14,18 @@ describe(
       it("get a group", async () => {
         const client = Cognito();
 
-        await client
-          .createGroup({
-            Description: "Description",
-            GroupName: "abc",
-            Precedence: 1,
-            RoleArn: "arn",
-            UserPoolId: "test",
-          });
+        await client.createGroup({
+          Description: "Description",
+          GroupName: "abc",
+          Precedence: 1,
+          RoleArn: "arn",
+          UserPoolId: "test",
+        });
 
-        const getGroupResponse = await client
-          .getGroup({
-            GroupName: "abc",
-            UserPoolId: "test",
-          });
+        const getGroupResponse = await client.getGroup({
+          GroupName: "abc",
+          UserPoolId: "test",
+        });
 
         expect(getGroupResponse.Group).toEqual({
           CreationDate: roundedDate,
@@ -42,6 +40,6 @@ describe(
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

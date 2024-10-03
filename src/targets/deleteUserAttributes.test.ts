@@ -33,7 +33,7 @@ const validToken = jwt.sign(
     issuer: `http://localhost:9229/test`,
     expiresIn: "24h",
     keyid: "CognitoLocal",
-  }
+  },
 );
 
 describe("DeleteUserAttributes target", () => {
@@ -55,7 +55,7 @@ describe("DeleteUserAttributes target", () => {
       deleteUserAttributes(TestContext, {
         AccessToken: validToken,
         UserAttributeNames: ["custom:example"],
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
@@ -64,7 +64,7 @@ describe("DeleteUserAttributes target", () => {
       deleteUserAttributes(TestContext, {
         AccessToken: "invalid token",
         UserAttributeNames: ["custom:example"],
-      })
+      }),
     ).rejects.toEqual(new InvalidParameterError());
   });
 

@@ -8,35 +8,31 @@ describe(
       const client = Cognito();
 
       // create the user pool client
-      const up = await client
-        .createUserPool({
-          PoolName: "pool",
-        });
+      const up = await client.createUserPool({
+        PoolName: "pool",
+      });
 
-      const describeResponse = await client
-        .describeUserPool({
-          UserPoolId: up.UserPool?.Id!,
-        });
+      const describeResponse = await client.describeUserPool({
+        UserPoolId: up.UserPool?.Id,
+      });
 
       expect(describeResponse.UserPool).toMatchObject({
         SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
       });
 
-      await client
-        .addCustomAttributes({
-          UserPoolId: up.UserPool?.Id!,
-          CustomAttributes: [
-            {
-              AttributeDataType: "String",
-              Name: "test",
-            },
-          ],
-        });
+      await client.addCustomAttributes({
+        UserPoolId: up.UserPool?.Id,
+        CustomAttributes: [
+          {
+            AttributeDataType: "String",
+            Name: "test",
+          },
+        ],
+      });
 
-      const describeResponseAfterUpdate = await client
-        .describeUserPool({
-          UserPoolId: up.UserPool?.Id!,
-        });
+      const describeResponseAfterUpdate = await client.describeUserPool({
+        UserPoolId: up.UserPool?.Id,
+      });
 
       expect(describeResponseAfterUpdate.UserPool).toMatchObject({
         SchemaAttributes: [
@@ -52,5 +48,5 @@ describe(
         ],
       });
     });
-  })
+  }),
 );

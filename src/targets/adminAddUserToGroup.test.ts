@@ -45,7 +45,7 @@ describe("AdminAddUserToGroup target", () => {
     expect(mockUserPoolService.addUserToGroup).toHaveBeenCalledWith(
       TestContext,
       existingGroup,
-      existingUser
+      existingUser,
     );
   });
 
@@ -60,7 +60,7 @@ describe("AdminAddUserToGroup target", () => {
         GroupName: "group",
         Username: existingUser.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 
@@ -75,7 +75,7 @@ describe("AdminAddUserToGroup target", () => {
         GroupName: existingGroup.GroupName,
         Username: "user",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

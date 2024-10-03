@@ -53,9 +53,9 @@ describe("InitiateAuth target", () => {
         initiateAuth(TestContext, {
           ClientId: userPoolClient.ClientId,
           AuthFlow: "USER_PASSWORD_AUTH",
-        })
+        }),
       ).rejects.toEqual(
-        new InvalidParameterError("Missing required parameter authParameters")
+        new InvalidParameterError("Missing required parameter authParameters"),
       );
     });
 
@@ -72,7 +72,7 @@ describe("InitiateAuth target", () => {
             USERNAME: user.Username,
             PASSWORD: "bad-password",
           },
-        })
+        }),
       ).rejects.toBeInstanceOf(InvalidPasswordError);
     });
 
@@ -91,7 +91,7 @@ describe("InitiateAuth target", () => {
             USERNAME: user.Username,
             PASSWORD: "bad-password",
           },
-        })
+        }),
       ).rejects.toBeInstanceOf(PasswordResetRequiredError);
     });
 
@@ -150,7 +150,7 @@ describe("InitiateAuth target", () => {
                 USERNAME: "username",
                 PASSWORD: "password",
               },
-            })
+            }),
           ).rejects.toBeInstanceOf(NotAuthorizedError);
         });
       });
@@ -207,7 +207,7 @@ describe("InitiateAuth target", () => {
                 AttributeName: "phone_number",
                 DeliveryMedium: "SMS",
                 Destination: "0411000111",
-              }
+              },
             );
 
             // also saves the code on the user for comparison later
@@ -216,14 +216,14 @@ describe("InitiateAuth target", () => {
               {
                 ...user,
                 MFACode: "123456",
-              }
+              },
             );
           });
 
           describe("when Post Authentication trigger is enabled", () => {
             it("does not invoke the trigger", async () => {
               mockTriggers.enabled.mockImplementation(
-                (trigger) => trigger === "PostAuthentication"
+                (trigger) => trigger === "PostAuthentication",
               );
 
               await initiateAuth(TestContext, {
@@ -256,7 +256,7 @@ describe("InitiateAuth target", () => {
                   USERNAME: user.Username,
                   PASSWORD: user.Password,
                 },
-              })
+              }),
             ).rejects.toBeInstanceOf(NotAuthorizedError);
           });
         });
@@ -317,7 +317,7 @@ describe("InitiateAuth target", () => {
                 AttributeName: "phone_number",
                 DeliveryMedium: "SMS",
                 Destination: "0411000111",
-              }
+              },
             );
 
             // also saves the code on the user for comparison later
@@ -326,14 +326,14 @@ describe("InitiateAuth target", () => {
               {
                 ...user,
                 MFACode: "123456",
-              }
+              },
             );
           });
 
           describe("when Post Authentication trigger is enabled", () => {
             it("does not invoke the trigger", async () => {
               mockTriggers.enabled.mockImplementation(
-                (trigger) => trigger === "PostAuthentication"
+                (trigger) => trigger === "PostAuthentication",
               );
 
               await initiateAuth(TestContext, {
@@ -384,7 +384,7 @@ describe("InitiateAuth target", () => {
             expect(output.AuthenticationResult?.AccessToken).toEqual("access");
             expect(output.AuthenticationResult?.IdToken).toEqual("id");
             expect(output.AuthenticationResult?.RefreshToken).toEqual(
-              "refresh"
+              "refresh",
             );
 
             expect(mockTokenGenerator.generate).toHaveBeenCalledWith(
@@ -393,7 +393,7 @@ describe("InitiateAuth target", () => {
               [],
               userPoolClient,
               undefined,
-              "Authentication"
+              "Authentication",
             );
           });
         });
@@ -439,7 +439,7 @@ describe("InitiateAuth target", () => {
             [],
             userPoolClient,
             undefined,
-            "Authentication"
+            "Authentication",
           );
         });
 
@@ -452,7 +452,7 @@ describe("InitiateAuth target", () => {
             });
 
             mockTriggers.enabled.mockImplementation(
-              (trigger) => trigger === "PostAuthentication"
+              (trigger) => trigger === "PostAuthentication",
             );
 
             await initiateAuth(TestContext, {
@@ -472,11 +472,11 @@ describe("InitiateAuth target", () => {
                 userAttributes: user.Attributes,
                 username: user.Username,
                 userPoolId: userPoolClient.UserPoolId,
-              }
+              },
             );
 
             expect(
-              mockTriggers.postAuthentication as jest.Mock
+              mockTriggers.postAuthentication as jest.Mock,
             ).toHaveBeenCalledBefore(mockTokenGenerator.generate as jest.Mock);
           });
         });
@@ -516,7 +516,7 @@ describe("InitiateAuth target", () => {
       describe("when Post Authentication trigger is enabled", () => {
         it("does not invoke the trigger", async () => {
           mockTriggers.enabled.mockImplementation(
-            (trigger) => trigger === "PostAuthentication"
+            (trigger) => trigger === "PostAuthentication",
           );
 
           await initiateAuth(TestContext, {
@@ -572,7 +572,7 @@ describe("InitiateAuth target", () => {
         [],
         userPoolClient,
         undefined,
-        "RefreshTokens"
+        "RefreshTokens",
       );
     });
   });

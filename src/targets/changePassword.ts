@@ -24,8 +24,9 @@ export const ChangePassword =
   ({ cognito, clock }: ChangePasswordServices): ChangePasswordTarget =>
   async (ctx, req) => {
     if (!req.AccessToken) throw new MissingParameterError("AccessToken");
-    if (!req.ProposedPassword) throw new MissingParameterError("ProposedPassword");
-    
+    if (!req.ProposedPassword)
+      throw new MissingParameterError("ProposedPassword");
+
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");
@@ -34,7 +35,7 @@ export const ChangePassword =
 
     const userPool = await cognito.getUserPoolForClientId(
       ctx,
-      decodedToken.client_id
+      decodedToken.client_id,
     );
     const user = await userPool.getUserByUsername(ctx, decodedToken.username);
     if (!user) {

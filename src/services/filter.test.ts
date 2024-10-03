@@ -6,18 +6,18 @@ describe("FilterConfig", () => {
     "throws if an invalid filter is used: %s",
     (input) => {
       expect(() => new FilterConfig({}).parse(input)).toThrowError(
-        new InvalidParameterError("Error while parsing filter")
+        new InvalidParameterError("Error while parsing filter"),
       );
-    }
+    },
   );
 
   it("throws if an unsupported attributeName is used", () => {
     expect(() =>
       new FilterConfig<{ FirstName: string }>({
         first_name: FilterConfig.caseSensitive((x) => x.FirstName),
-      }).parse('invalid = "value"')
+      }).parse('invalid = "value"'),
     ).toThrowError(
-      new InvalidParameterError("Invalid search attribute: invalid")
+      new InvalidParameterError("Invalid search attribute: invalid"),
     );
   });
 
@@ -43,7 +43,7 @@ describe("FilterConfig", () => {
           }).parse(`first_name = "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
 
       it.each`
@@ -66,7 +66,7 @@ describe("FilterConfig", () => {
           }).parse(`status = "${input}"`);
 
           expect(expr({ Enabled: value })).toBe(result);
-        }
+        },
       );
     });
 
@@ -85,7 +85,7 @@ describe("FilterConfig", () => {
           }).parse(`first_name = "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
   });
@@ -109,7 +109,7 @@ describe("FilterConfig", () => {
           }).parse(`first_name ^= "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
 
@@ -131,7 +131,7 @@ describe("FilterConfig", () => {
           }).parse(`first_name ^= "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
   });

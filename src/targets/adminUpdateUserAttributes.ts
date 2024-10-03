@@ -2,7 +2,11 @@ import {
   AdminUpdateUserAttributesRequest,
   AdminUpdateUserAttributesResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  NotAuthorizedError,
+} from "../errors";
 import { Messages, Services, UserPoolService } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
@@ -22,16 +26,16 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: AdminUpdateUserAttributesRequest,
-  code: string
+  code: string,
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user
+    user,
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes"
+      "User has no attribute matching desired auto verified attributes",
     );
   }
 
@@ -43,7 +47,7 @@ const sendAttributeVerificationCode = async (
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 };
 
@@ -84,8 +88,8 @@ export const AdminUpdateUserAttributes =
         // fail.
         userPool.options.SchemaAttributes ??
           USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-          []
-      )
+          [],
+      ),
     );
 
     const updatedUser = {
@@ -115,7 +119,7 @@ export const AdminUpdateUserAttributes =
         user,
         messages,
         req,
-        code
+        code,
       );
     }
 

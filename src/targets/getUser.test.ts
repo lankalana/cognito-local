@@ -44,7 +44,7 @@ describe("GetUser target", () => {
           issuer: `http://localhost:9229/test`,
           expiresIn: "24h",
           keyid: "CognitoLocal",
-        }
+        },
       ),
     });
 
@@ -59,7 +59,7 @@ describe("GetUser target", () => {
     await expect(
       getUser(TestContext, {
         AccessToken: "blah",
-      })
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -85,9 +85,9 @@ describe("GetUser target", () => {
             issuer: `http://localhost:9229/test`,
             expiresIn: "24h",
             keyid: "CognitoLocal",
-          }
+          },
         ),
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

@@ -1,8 +1,7 @@
 name: Validate
 
 on:
-  push:
-    branches: [master]
+  workflow_call:
   pull_request:
 
 jobs:
@@ -46,7 +45,7 @@ jobs:
           node-version: 20
           cache: yarn
       - run: yarn install
-      - run: scripts/smoke-test
+      - run: scripts/local-smoke-test.sh
 
   integration_test:
     runs-on: ubuntu-latest

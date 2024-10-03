@@ -30,7 +30,7 @@ describe("GetGroup target", () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(result.Group).toEqual({
@@ -50,7 +50,7 @@ describe("GetGroup target", () => {
       getGroup(TestContext, {
         GroupName: "group",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

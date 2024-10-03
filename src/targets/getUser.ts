@@ -3,7 +3,11 @@ import {
   GetUserResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { InvalidParameterError, MissingParameterError, UserNotFoundError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import { Services } from "../services";
 import { Token } from "../services/tokenGenerator";
 import { Target } from "./Target";
@@ -23,7 +27,7 @@ export const GetUser =
 
     const userPool = await cognito.getUserPoolForClientId(
       ctx,
-      decodedToken.client_id
+      decodedToken.client_id,
     );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {

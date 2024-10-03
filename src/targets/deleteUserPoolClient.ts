@@ -15,7 +15,7 @@ export const DeleteUserPoolClient =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ClientId) throw new MissingParameterError("ClientId");
-    
+
     // TODO: from the docs "Calling this action requires developer credentials.", can we enforce this?
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);

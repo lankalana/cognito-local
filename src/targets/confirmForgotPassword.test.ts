@@ -42,7 +42,7 @@ describe("ConfirmForgotPassword target", () => {
         Username: "janice",
         ConfirmationCode: "123456",
         Password: "newPassword",
-      })
+      }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
@@ -60,7 +60,7 @@ describe("ConfirmForgotPassword target", () => {
         Username: "janice",
         ConfirmationCode: "123456",
         Password: "newPassword",
-      })
+      }),
     ).rejects.toBeInstanceOf(CodeMismatchError);
   });
 
@@ -123,11 +123,11 @@ describe("ConfirmForgotPassword target", () => {
             source: "PostConfirmation_ConfirmForgotPassword",
             userAttributes: attributesAppend(
               user.Attributes,
-              attribute("cognito:user_status", "CONFIRMED")
+              attribute("cognito:user_status", "CONFIRMED"),
             ),
             userPoolId: "test",
             username: user.Username,
-          }
+          },
         );
       });
     });

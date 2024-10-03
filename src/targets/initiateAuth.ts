@@ -39,7 +39,7 @@ const verifyMfaChallenge = async (
   user: User,
   req: InitiateAuthRequest,
   userPool: UserPoolService,
-  services: InitiateAuthServices
+  services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
   if (!req.ClientId) throw new MissingParameterError("ClientId");
 
@@ -48,7 +48,7 @@ const verifyMfaChallenge = async (
   }
   const smsMfaOption = user.MFAOptions?.find(
     (x): x is MFAOption & { DeliveryMedium: DeliveryMediumType } =>
-      x.DeliveryMedium === "SMS"
+      x.DeliveryMedium === "SMS",
   );
   if (!smsMfaOption) {
     throw new UnsupportedError("MFA challenge without SMS");
@@ -56,7 +56,7 @@ const verifyMfaChallenge = async (
 
   const deliveryDestination = attributeValue(
     smsMfaOption.AttributeName,
-    user.Attributes
+    user.Attributes,
   );
   if (!deliveryDestination) {
     throw new UnsupportedError(`SMS_MFA without ${smsMfaOption.AttributeName}`);
@@ -75,7 +75,7 @@ const verifyMfaChallenge = async (
       DeliveryMedium: smsMfaOption.DeliveryMedium,
       AttributeName: smsMfaOption.AttributeName,
       Destination: deliveryDestination,
-    }
+    },
   );
 
   await userPool.saveUser(ctx, {
@@ -99,7 +99,7 @@ const verifyPasswordChallenge = async (
   req: InitiateAuthRequest,
   userPool: UserPoolService,
   userPoolClient: AppClient,
-  services: InitiateAuthServices
+  services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
   const userGroups = await userPool.listUserGroupMembership(ctx, user);
 
@@ -113,7 +113,7 @@ const verifyPasswordChallenge = async (
     //
     // source: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
     undefined,
-    "Authentication"
+    "Authentication",
   );
 
   await userPool.storeRefreshToken(ctx, tokens.RefreshToken, user);
@@ -140,13 +140,13 @@ const userPasswordAuthFlow = async (
   req: InitiateAuthRequest,
   userPool: UserPoolService,
   userPoolClient: AppClient,
-  services: InitiateAuthServices
+  services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
   if (!req.ClientId) throw new MissingParameterError("ClientId");
 
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
-      "Missing required parameter authParameters"
+      "Missing required parameter authParameters",
     );
   }
 
@@ -217,7 +217,7 @@ const userPasswordAuthFlow = async (
     req,
     userPool,
     userPoolClient,
-    services
+    services,
   );
 };
 
@@ -226,11 +226,11 @@ const refreshTokenAuthFlow = async (
   req: InitiateAuthRequest,
   userPool: UserPoolService,
   userPoolClient: AppClient,
-  services: InitiateAuthServices
+  services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
-      "Missing required parameter authParameters"
+      "Missing required parameter authParameters",
     );
   }
 
@@ -240,7 +240,7 @@ const refreshTokenAuthFlow = async (
 
   const user = await userPool.getUserByRefreshToken(
     ctx,
-    req.AuthParameters.REFRESH_TOKEN
+    req.AuthParameters.REFRESH_TOKEN,
   );
   if (!user) {
     throw new NotAuthorizedError();
@@ -258,7 +258,7 @@ const refreshTokenAuthFlow = async (
     //
     // source: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-pre-token-generation.html
     undefined,
-    "RefreshTokens"
+    "RefreshTokens",
   );
 
   return {
@@ -280,14 +280,14 @@ export const InitiateAuth =
   (services: InitiateAuthServices): InitiateAuthTarget =>
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
-  
+
     const userPool = await services.cognito.getUserPoolForClientId(
       ctx,
-      req.ClientId
+      req.ClientId,
     );
     const userPoolClient = await services.cognito.getAppClient(
       ctx,
-      req.ClientId
+      req.ClientId,
     );
     if (!userPoolClient) {
       throw new NotAuthorizedError();

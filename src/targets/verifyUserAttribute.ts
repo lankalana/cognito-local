@@ -37,7 +37,7 @@ export const VerifyUserAttribute =
 
     const userPool = await cognito.getUserPoolForClientId(
       ctx,
-      decodedToken.client_id
+      decodedToken.client_id,
     );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
@@ -53,7 +53,7 @@ export const VerifyUserAttribute =
         ...user,
         Attributes: attributesAppend(
           user.Attributes,
-          attribute("email_verified", "true")
+          attribute("email_verified", "true"),
         ),
         UserLastModifiedDate: clock.get(),
       });
@@ -62,7 +62,7 @@ export const VerifyUserAttribute =
         ...user,
         Attributes: attributesAppend(
           user.Attributes,
-          attribute("phone_number_verified", "true")
+          attribute("phone_number_verified", "true"),
         ),
         UserLastModifiedDate: clock.get(),
       });

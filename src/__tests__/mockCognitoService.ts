@@ -3,7 +3,7 @@ import { CognitoServiceFactory } from "../services/cognitoService";
 import { newMockUserPoolService } from "./mockUserPoolService";
 
 export const newMockCognitoService = (
-  userPoolClient: UserPoolService = newMockUserPoolService()
+  userPoolClient: UserPoolService = newMockUserPoolService(),
 ): jest.Mocked<CognitoService> => ({
   createUserPool: jest.fn(),
   deleteUserPool: jest.fn(),
@@ -15,7 +15,7 @@ export const newMockCognitoService = (
 });
 
 export const newMockCognitoServiceFactory = (
-  cognitoService: jest.Mocked<CognitoService> = newMockCognitoService()
+  cognitoService: jest.Mocked<CognitoService> = newMockCognitoService(),
 ): jest.Mocked<CognitoServiceFactory> => ({
   create: jest.fn().mockResolvedValue(cognitoService),
 });

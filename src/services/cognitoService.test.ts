@@ -20,7 +20,7 @@ describe("CognitoServiceFactory", () => {
       "data-directory",
       new ClockFake(new Date()),
       mockDataStoreFactory,
-      newMockUserPoolServiceFactory()
+      newMockUserPoolServiceFactory(),
     );
 
     await factory.create(TestContext, {});
@@ -30,7 +30,7 @@ describe("CognitoServiceFactory", () => {
       "clients",
       {
         Clients: {},
-      }
+      },
     );
   });
 });
@@ -57,7 +57,7 @@ describe("Cognito Service", () => {
         clientsDataStore,
         new ClockFake(new Date()),
         { UsernameAttributes: [] },
-        mockUserPoolServiceFactory
+        mockUserPoolServiceFactory,
       );
 
       const userPool = await cognitoClient.getUserPool(TestContext, "testing");
@@ -65,7 +65,7 @@ describe("Cognito Service", () => {
       expect(mockUserPoolServiceFactory.create).toHaveBeenCalledWith(
         TestContext,
         clientsDataStore,
-        { ...USER_POOL_AWS_DEFAULTS, Id: "testing", UsernameAttributes: [] }
+        { ...USER_POOL_AWS_DEFAULTS, Id: "testing", UsernameAttributes: [] },
       );
       expect(userPool).toEqual(mockUserPool);
     });
@@ -83,11 +83,11 @@ describe("Cognito Service", () => {
         clientsDataStore,
         new ClockFake(new Date()),
         { UsernameAttributes: [] },
-        mockUserPoolServiceFactory
+        mockUserPoolServiceFactory,
       );
 
       await expect(
-        cognitoClient.getUserPoolForClientId(TestContext, "testing")
+        cognitoClient.getUserPoolForClientId(TestContext, "testing"),
       ).rejects.toBeInstanceOf(ResourceNotFoundError);
 
       expect(mockUserPoolServiceFactory.create).not.toHaveBeenCalled();
@@ -106,12 +106,12 @@ describe("Cognito Service", () => {
         clientsDataStore,
         new ClockFake(new Date()),
         { UsernameAttributes: [] },
-        mockUserPoolServiceFactory
+        mockUserPoolServiceFactory,
       );
 
       const userPool = await cognitoClient.getUserPoolForClientId(
         TestContext,
-        "testing"
+        "testing",
       );
 
       expect(clientsDataStore.get).toHaveBeenCalledWith(TestContext, [
@@ -121,7 +121,7 @@ describe("Cognito Service", () => {
       expect(mockUserPoolServiceFactory.create).toHaveBeenCalledWith(
         TestContext,
         clientsDataStore,
-        { ...USER_POOL_AWS_DEFAULTS, Id: "userPoolId", UsernameAttributes: [] }
+        { ...USER_POOL_AWS_DEFAULTS, Id: "userPoolId", UsernameAttributes: [] },
       );
       expect(userPool).toEqual(mockUserPool);
     });

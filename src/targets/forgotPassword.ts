@@ -2,7 +2,11 @@ import {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, UnsupportedError, UserNotFoundError } from "../errors";
+import {
+  MissingParameterError,
+  UnsupportedError,
+  UserNotFoundError,
+} from "../errors";
 import { Services } from "../services";
 import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
 import { attributeValue } from "../services/userPoolService";
@@ -57,7 +61,7 @@ export const ForgotPassword =
       user,
       code,
       req.ClientMetadata,
-      deliveryDetails
+      deliveryDetails,
     );
 
     await userPool.saveUser(ctx, {

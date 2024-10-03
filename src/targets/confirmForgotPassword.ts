@@ -3,7 +3,11 @@ import {
   ConfirmForgotPasswordResponse,
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { CodeMismatchError, MissingParameterError, UserNotFoundError } from "../errors";
+import {
+  CodeMismatchError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import { Target } from "./Target";
@@ -28,7 +32,7 @@ export const ConfirmForgotPassword =
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");
     if (!req.Password) throw new MissingParameterError("Password");
-    
+
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
@@ -61,7 +65,7 @@ export const ConfirmForgotPassword =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute("cognito:user_status", updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

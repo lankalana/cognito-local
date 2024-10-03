@@ -38,7 +38,7 @@ describe("ConfirmSignUp target", () => {
         Username: "janice",
         ConfirmationCode: "123456",
         ForceAliasCreation: false,
-      })
+      }),
     ).rejects.toBeInstanceOf(NotAuthorizedError);
   });
 
@@ -55,7 +55,7 @@ describe("ConfirmSignUp target", () => {
         ClientId: "clientId",
         Username: user.Username,
         ConfirmationCode: "123456",
-      })
+      }),
     ).rejects.toBeInstanceOf(CodeMismatchError);
   });
 
@@ -116,11 +116,11 @@ describe("ConfirmSignUp target", () => {
             source: "PostConfirmation_ConfirmSignUp",
             userAttributes: attributesAppend(
               user.Attributes,
-              attribute("cognito:user_status", "CONFIRMED")
+              attribute("cognito:user_status", "CONFIRMED"),
             ),
             userPoolId: "test",
             username: user.Username,
-          }
+          },
         );
       });
     });

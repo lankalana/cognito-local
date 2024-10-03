@@ -31,7 +31,7 @@ const validToken = jwt.sign(
     issuer: `http://localhost:9229/test`,
     expiresIn: "24h",
     keyid: "CognitoLocal",
-  }
+  },
 );
 
 describe("GetUserAttributeVerificationCode target", () => {
@@ -57,7 +57,7 @@ describe("GetUserAttributeVerificationCode target", () => {
       getUserAttributeVerificationCode(TestContext, {
         AccessToken: "blah",
         AttributeName: "email",
-      })
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -68,7 +68,7 @@ describe("GetUserAttributeVerificationCode target", () => {
       getUserAttributeVerificationCode(TestContext, {
         AccessToken: validToken,
         AttributeName: "email",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 
@@ -86,11 +86,11 @@ describe("GetUserAttributeVerificationCode target", () => {
         },
         AccessToken: validToken,
         AttributeName: "email",
-      })
+      }),
     ).rejects.toEqual(
       new InvalidParameterError(
-        "User has no attribute matching desired auto verified attributes"
-      )
+        "User has no attribute matching desired auto verified attributes",
+      ),
     );
   });
 
@@ -121,14 +121,14 @@ describe("GetUserAttributeVerificationCode target", () => {
         AttributeName: "email",
         DeliveryMedium: "EMAIL",
         Destination: attributeValue("email", user.Attributes),
-      }
+      },
     );
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
       TestContext,
       expect.objectContaining({
         AttributeVerificationCode: "123456",
-      })
+      }),
     );
   });
 });

@@ -27,7 +27,7 @@ export const AdminConfirmSignUp =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.Username) throw new MissingParameterError("Username");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
@@ -36,7 +36,7 @@ export const AdminConfirmSignUp =
 
     if (user.UserStatus !== UserStatusType.UNCONFIRMED) {
       throw new NotAuthorizedError(
-        `User cannot be confirmed. Current status is ${user.UserStatus}`
+        `User cannot be confirmed. Current status is ${user.UserStatus}`,
       );
     }
 
@@ -60,7 +60,7 @@ export const AdminConfirmSignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute("cognito:user_status", updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }
