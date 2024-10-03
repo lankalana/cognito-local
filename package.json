@@ -86,7 +86,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix --cache",
-      "tsc --target es2020 --moduleResolution node --esModuleInterop --resolveJsonModule --noEmit ./setupTests.ts",
+      "tsc --target es2020 --moduleResolution node --esModuleInterop --resolveJsonModule",
       "prettier --write"
     ],
     "README.md": "markdown-toc -i --bullets=- --maxdepth=3"
