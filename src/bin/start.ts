@@ -3,6 +3,7 @@
 import { createDefaultServer } from "../server";
 import Pino from "pino";
 import PinoPretty from "pino-pretty";
+import process from "node:process";
 
 const logger = Pino(
   {
@@ -39,3 +40,6 @@ createDefaultServer(logger)
     logger.error(err);
     process.exit(1);
   });
+
+process.on("SIGTERM", () => process.exit(0));
+process.on("SIGINT", () => process.exit(0));

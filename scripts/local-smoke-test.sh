@@ -7,30 +7,27 @@
 # We run this in CI to prove the actual server can start. This catches some edge-cases where
 # everything else passes, but something in the compile produced invalid JavaScript.
 
-while
-  PORT=$(shuf -n 1 -i 49152-65535)
-  netstat -atun | grep -q "$PORT"
-do
-  continue
-done
+PORT=$(scripts/get-free-port.sh)
+
+echo Using port $PORT
 
 PORT=$PORT yarn start &
-PID=$!
+YARN_PID=$!
 
-trap "kill $PID" SIGINT
+trap "kill $YARN_PID" SIGINT
 
-PORT=$PORT timeout --foreground -s TERM 30 bash -c \
-'while [[ ${STATUS_RECEIVED} != 200 ]];\
-  do STATUS_RECEIVED=$(curl -s -o /dev/null -L -w ''%{http_code}'' http://localhost:$PORT/health) && \
-  echo "received status: $STATUS_RECEIVED" && \
-  sleep 1;\
-done;
-echo success with status: $STATUS_RECEIVED'
-CURL_EXIT_CODE=$?
+PORT=$PORT scripts/smoke-test.sh
+EXIT_CODE=$?
 
+kill $YARN_PID
+
+PID=$(lsof -i tcp:$PORT | awk 'NR!=1 {print $2}')
 kill $PID
 
-if [[ $CURL_EXIT_CODE -ne 0 ]]; then
+if [[ $EXIT_CODE -ne 0 ]]; then
   echo Failed to start in time >&2
   exit 1
+else
+  echo Test success
+  exit 0
 fi
