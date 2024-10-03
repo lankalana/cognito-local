@@ -39,7 +39,7 @@ export default [
       "@typescript-eslint/camelcase": "off",
     },
 
-    ignores: ["eslint.config.mjs", ".babelrc.js", "jest.config.js"],
+    ignores: ["eslint.config.mjs", ".babelrc.js", "**/jest.config.js"],
   },
   {
     files: ["**/*.test.ts"],
