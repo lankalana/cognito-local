@@ -1,17 +1,19 @@
-import { DeleteUserRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { DeleteUserRequest } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
 import { Services } from "../services";
 import { Token } from "../services/tokenGenerator";
 import { Target } from "./Target";
 
-export type DeleteUserTarget = Target<DeleteUserRequest, {}>;
+export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 
 type DeleteUserServices = Pick<Services, "cognito">;
 
 export const DeleteUser =
   ({ cognito }: DeleteUserServices): DeleteUserTarget =>
   async (ctx, req) => {
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+    
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
       ctx.logger.info("Unable to decode token");

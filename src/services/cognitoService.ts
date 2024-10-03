@@ -312,6 +312,7 @@ export class CognitoServiceImpl implements CognitoService {
     const service = await this.userPoolServiceFactory.create(
       ctx,
       this.clients,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       mergeWith(
         {},
         USER_POOL_AWS_DEFAULTS,

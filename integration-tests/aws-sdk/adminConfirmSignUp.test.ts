@@ -10,8 +10,7 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       await client
         .signUp({
@@ -19,15 +18,13 @@ describe(
           Username: "abc",
           ClientId: upc.UserPoolClient?.ClientId!,
           Password: "def",
-        })
-        .promise();
+        });
 
       let user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserStatus).toEqual("UNCONFIRMED");
 
@@ -35,15 +32,13 @@ describe(
         .adminConfirmSignUp({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserStatus).toEqual("CONFIRMED");
     });

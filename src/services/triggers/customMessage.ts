@@ -1,5 +1,5 @@
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { CustomMessageTriggerResponse, Lambda } from "../lambda";
+import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
+import { CustomMessageEvent, CustomMessageTriggerResponse, Lambda } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
 import { Trigger } from "./trigger";
 
@@ -20,7 +20,7 @@ export type CustomMessageTrigger = Trigger<
     clientId: string | null;
     username: string;
     code: string;
-    userAttributes: AttributeListType;
+    userAttributes: AttributeType[];
 
     /**
      * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the
@@ -71,7 +71,7 @@ export const CustomMessage =
         username,
         usernameParameter: AWS_USERNAME_PARAMETER,
         userPoolId,
-      });
+      } as CustomMessageEvent);
 
       return {
         emailMessage:

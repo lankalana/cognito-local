@@ -11,14 +11,12 @@ describe(
       const up = await client
         .createUserPool({
           PoolName: "pool",
-        })
-        .promise();
+        });
 
       const describeResponse = await client
         .describeUserPool({
           UserPoolId: up.UserPool?.Id!,
-        })
-        .promise();
+        });
 
       expect(describeResponse.UserPool).toMatchObject({
         SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
@@ -33,14 +31,12 @@ describe(
               Name: "test",
             },
           ],
-        })
-        .promise();
+        });
 
       const describeResponseAfterUpdate = await client
         .describeUserPool({
           UserPoolId: up.UserPool?.Id!,
-        })
-        .promise();
+        });
 
       expect(describeResponseAfterUpdate.UserPool).toMatchObject({
         SchemaAttributes: [

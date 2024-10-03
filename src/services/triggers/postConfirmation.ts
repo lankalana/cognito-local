@@ -1,4 +1,4 @@
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import { Lambda } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
 import { Trigger } from "./trigger";
@@ -18,7 +18,7 @@ export type PostConfirmationTrigger = Trigger<
      * source: https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-post-confirmation.html#cognito-user-pools-lambda-trigger-syntax-post-confirmation
      */
     clientMetadata?: Record<string, string>;
-    userAttributes: AttributeListType;
+    userAttributes: AttributeType[];
     username: string;
     userPoolId: string;
   },

@@ -1,8 +1,7 @@
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import { Lambda, PreSignUpTriggerResponse } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
 import { Trigger } from "./trigger";
-import { UserLambdaValidationError } from "../../errors";
 
 export type PreSignUpTrigger = Trigger<
   {
@@ -11,7 +10,7 @@ export type PreSignUpTrigger = Trigger<
       | "PreSignUp_AdminCreateUser"
       | "PreSignUp_ExternalProvider"
       | "PreSignUp_SignUp";
-    userAttributes: AttributeListType;
+    userAttributes: AttributeType[];
     username: string;
     userPoolId: string;
 

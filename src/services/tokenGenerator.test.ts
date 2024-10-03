@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockTriggers } from "../__tests__/mockTriggers";
 import { UUID } from "../__tests__/patterns";
@@ -254,13 +254,13 @@ describe("JwtTokenGenerator", () => {
           "RefreshTokens"
         );
 
-        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + ONE_DAY
         );
-        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + ONE_DAY
         );
-        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS
         );
       });
@@ -290,13 +290,13 @@ describe("JwtTokenGenerator", () => {
           "RefreshTokens"
         );
 
-        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + ONE_DAY
         );
-        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + ONE_DAY
         );
-        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS
         );
       });
@@ -322,13 +322,13 @@ describe("JwtTokenGenerator", () => {
           "RefreshTokens"
         );
 
-        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 10 * ONE_HOUR
         );
-        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 20 * ONE_HOUR
         );
-        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 30 * ONE_DAY
         );
       });
@@ -358,13 +358,13 @@ describe("JwtTokenGenerator", () => {
           "RefreshTokens"
         );
 
-        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 10
         );
-        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 20 * ONE_MINUTE
         );
-        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
           Math.floor(originalDate.getTime() / 1000) + 30 * ONE_HOUR
         );
       });
@@ -396,10 +396,10 @@ describe("JwtTokenGenerator", () => {
       );
 
       expect(
-        (jwt.decode(tokens.AccessToken) as any)["cognito:groups"]
+        (jwt.decode(tokens.AccessToken) as JwtPayload)["cognito:groups"]
       ).toBeUndefined();
       expect(
-        (jwt.decode(tokens.IdToken) as any)["cognito:groups"]
+        (jwt.decode(tokens.IdToken) as JwtPayload)["cognito:groups"]
       ).toBeUndefined();
     });
 
@@ -426,10 +426,10 @@ describe("JwtTokenGenerator", () => {
         "RefreshTokens"
       );
 
-      expect((jwt.decode(tokens.AccessToken) as any)["cognito:groups"]).toEqual(
+      expect((jwt.decode(tokens.AccessToken) as JwtPayload)["cognito:groups"]).toEqual(
         ["group1", "group2"]
       );
-      expect((jwt.decode(tokens.IdToken) as any)["cognito:groups"]).toEqual([
+      expect((jwt.decode(tokens.IdToken) as JwtPayload)["cognito:groups"]).toEqual([
         "group1",
         "group2",
       ]);

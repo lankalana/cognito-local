@@ -11,15 +11,13 @@ describe(
         .createUserPoolClient({
           UserPoolId: "test",
           ClientName: "test",
-        })
-        .promise();
+        });
 
       const describeResponse = await client
         .describeUserPoolClient({
           ClientId: upc.UserPoolClient?.ClientId!,
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       expect(describeResponse.UserPoolClient).toMatchObject({
         ClientName: "test",
@@ -30,15 +28,13 @@ describe(
           ClientId: upc.UserPoolClient?.ClientId!,
           UserPoolId: "test",
           ClientName: "new client name",
-        })
-        .promise();
+        });
 
       const describeResponseAfterUpdate = await client
         .describeUserPoolClient({
           ClientId: upc.UserPoolClient?.ClientId!,
           UserPoolId: "test",
-        })
-        .promise();
+        });
 
       expect(describeResponseAfterUpdate.UserPoolClient).toMatchObject({
         ClientName: "new client name",

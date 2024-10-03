@@ -15,22 +15,19 @@ describe(
           Username: "abc",
           UserPoolId: "test",
           DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+        });
 
       await client
         .adminDisableUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       let user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.Enabled).toEqual(false);
 
@@ -38,15 +35,13 @@ describe(
         .adminEnableUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.Enabled).toEqual(true);
     });

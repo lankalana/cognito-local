@@ -11,14 +11,12 @@ describe(
         .createUserPool({
           PoolName: "pool",
           MfaConfiguration: "OFF",
-        })
-        .promise();
+        });
 
       const describeResponse = await client
         .describeUserPool({
           UserPoolId: up.UserPool?.Id!,
-        })
-        .promise();
+        });
 
       expect(describeResponse.UserPool).toMatchObject({
         Name: "pool",
@@ -29,14 +27,12 @@ describe(
         .updateUserPool({
           UserPoolId: up.UserPool?.Id!,
           MfaConfiguration: "OPTIONAL",
-        })
-        .promise();
+        });
 
       const describeResponseAfterUpdate = await client
         .describeUserPool({
           UserPoolId: up.UserPool?.Id!,
-        })
-        .promise();
+        });
 
       expect(describeResponseAfterUpdate.UserPool).toMatchObject({
         Name: "pool",

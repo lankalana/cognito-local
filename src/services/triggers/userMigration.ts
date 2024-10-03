@@ -1,4 +1,4 @@
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
 import { NotAuthorizedError, ResourceNotFoundError } from "../../errors";
 import { Clock } from "../clock";
@@ -17,7 +17,7 @@ export type UserMigrationTrigger = Trigger<
     clientId: string;
     username: string;
     password: string;
-    userAttributes: AttributeListType;
+    userAttributes: AttributeType[];
 
     /**
      * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the
@@ -81,7 +81,7 @@ export const UserMigration =
         userPoolId,
         validationData,
       });
-    } catch (ex) {
+    } catch {
       throw new NotAuthorizedError();
     }
 

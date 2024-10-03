@@ -1,5 +1,5 @@
 import { ClockFake } from "../__tests__/clockFake";
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { AttributeType, UsernameAttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import {
   newMockDataStore,
   newMockDataStoreFactory,
@@ -17,6 +17,7 @@ import {
   UserPoolServiceImpl,
   Group,
   UserPoolServiceFactoryImpl,
+  UserPool,
 } from "./userPoolService";
 import * as TDB from "../__tests__/testDataBuilder";
 
@@ -366,11 +367,19 @@ describe("User Pool Service", () => {
       ${["email", "phone_number"]} | ${true}       | ${true}
     `(
       "$username_attributes username attributes",
-      ({ username_attributes, find_by_email, find_by_phone_number }) => {
+      ({
+        username_attributes,
+        find_by_email,
+        find_by_phone_number,
+      }: {
+        username_attributes: UsernameAttributeType[];
+        find_by_email: boolean;
+        find_by_phone_number: boolean;
+      }) => {
         let userPool: UserPoolService;
 
         beforeEach(() => {
-          const options = {
+          const options: UserPool = {
             Id: "local",
             UsernameAttributes: username_attributes,
           };
@@ -518,7 +527,7 @@ describe("User Pool Service", () => {
   });
 
   describe("attributes", () => {
-    const attributes: AttributeListType = [
+    const attributes: AttributeType[] = [
       { Name: "sub", Value: "uuid" },
       { Name: "email", Value: "example@example.com" },
     ];

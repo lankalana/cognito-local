@@ -5,6 +5,8 @@ import { UserPool } from "../services/userPoolService";
 import { TokenConfig } from "../services/tokenGenerator";
 import mergeWith from "lodash.mergewith";
 import { KMSConfig } from "../services/crypto";
+import { KMSClientConfig } from "@aws-sdk/client-kms";
+import { LambdaClientConfig } from "@aws-sdk/client-lambda";
 
 export type UserPoolDefaults = Omit<
   UserPool,
@@ -12,10 +14,10 @@ export type UserPoolDefaults = Omit<
 >;
 
 export interface Config {
-  LambdaClient: AWS.Lambda.ClientConfiguration;
+  LambdaClient: LambdaClientConfig;
   TriggerFunctions: FunctionConfig;
   UserPoolDefaults: UserPoolDefaults;
-  KMSConfig?: AWS.KMS.ClientConfiguration & KMSConfig;
+  KMSConfig?: KMSClientConfig & KMSConfig;
   TokenConfig: TokenConfig;
 }
 
@@ -59,6 +61,7 @@ export const loadConfig = async (
     config ?? {},
     function customizer(objValue, srcValue) {
       if (Array.isArray(srcValue)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return srcValue;
       }
     }

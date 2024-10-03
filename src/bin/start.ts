@@ -13,8 +13,9 @@ const logger = Pino(
     ignore: "pid,name,hostname",
     singleLine: true,
     messageFormat: (log, messageKey) =>
-      `${log["reqId"] ?? "NONE"} ${log["target"] ?? "NONE"} ${log[messageKey]}`,
-  }) as any // eslint-disable-line @typescript-eslint/no-explicit-any
+       
+      `${log["reqId"] as string ?? "NONE"} ${log["target"] as string ?? "NONE"} ${log[messageKey] as string}`,
+  })
 );
 
 createDefaultServer(logger)

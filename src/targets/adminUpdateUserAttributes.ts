@@ -1,8 +1,8 @@
 import {
   AdminUpdateUserAttributesRequest,
   AdminUpdateUserAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { InvalidParameterError, NotAuthorizedError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
 import { Messages, Services, UserPoolService } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
@@ -65,6 +65,10 @@ export const AdminUpdateUserAttributes =
     messages,
   }: AdminUpdateUserAttributesServices): AdminUpdateUserAttributesTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {

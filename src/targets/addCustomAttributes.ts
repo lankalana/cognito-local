@@ -1,8 +1,9 @@
 import {
   AddCustomAttributesRequest,
   AddCustomAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { InvalidParameterError } from "../errors";
+  AttributeDataType,
+} from "@aws-sdk/client-cognito-identity-provider";
+import { InvalidParameterError, MissingParameterError } from "../errors";
 import { Services } from "../services";
 import { assertParameterLength } from "./utils/assertions";
 import { Target } from "./Target";
@@ -20,6 +21,9 @@ export const AddCustomAttributes =
     cognito,
   }: AddCustomAttributesServices): AddCustomAttributesTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.CustomAttributes) throw new MissingParameterError("CustomAttributes");
+
     assertParameterLength("CustomAttributes", 1, 25, req.CustomAttributes);
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
@@ -38,7 +42,7 @@ export const AddCustomAttributes =
           }
 
           return {
-            AttributeDataType: "String",
+            AttributeDataType: AttributeDataType.STRING,
             DeveloperOnlyAttribute: false,
             Mutable: true,
             Required: false,

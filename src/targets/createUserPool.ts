@@ -1,8 +1,8 @@
 import {
   CreateUserPoolRequest,
   CreateUserPoolResponse,
-  SchemaAttributesListType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+  SchemaAttributeType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import shortUUID from "short-uuid";
 import { Services } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
@@ -32,9 +32,9 @@ type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
  * @param requestSchema Schema provided by the caller
  */
 const createSchemaAttributes = (
-  defaultAttributes: SchemaAttributesListType,
-  requestSchema: SchemaAttributesListType
-): SchemaAttributesListType => {
+  defaultAttributes: SchemaAttributeType[],
+  requestSchema: SchemaAttributeType[]
+): SchemaAttributeType[] => {
   const overrides = Object.fromEntries(
     requestSchema.map((x) => [x.Name as string, x])
   );

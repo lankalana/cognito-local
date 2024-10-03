@@ -1,16 +1,11 @@
 import {
-  AttributeListType,
   AttributeType,
   IdentityProviderType,
-  IdpIdentifierType,
-  MFAOptionListType,
-  ProviderNameType,
-  SchemaAttributesListType,
-  StringType,
-  UserMFASettingListType,
+  MFAOptionType,
+  SchemaAttributeType,
   UserPoolType,
   UserStatusType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { InvalidParameterError } from "../errors";
 import { AppClient } from "./appClient";
 import { Clock } from "./clock";
@@ -31,37 +26,36 @@ export const attribute = (
 export const attributesIncludeMatch = (
   attributeName: string,
   attributeValue: string,
-  attributes: AttributeListType | undefined
+  attributes: AttributeType[] | undefined
 ) =>
   !!(attributes ?? []).find(
     (x) => x.Name === attributeName && x.Value === attributeValue
   );
 export const attributesInclude = (
   attributeName: string,
-  attributes: AttributeListType | undefined
+  attributes: AttributeType[] | undefined
 ) => !!(attributes ?? []).find((x) => x.Name === attributeName);
 export const attributeValue = (
   attributeName: string | undefined,
-  attributes: AttributeListType | undefined
+  attributes: AttributeType[] | undefined
 ) => (attributes ?? []).find((x) => x.Name === attributeName)?.Value;
 export const attributesToRecord = (
-  attributes: AttributeListType | undefined
+  attributes: AttributeType[] | undefined
 ): Record<string, string> =>
-  (attributes ?? []).reduce(
-    (acc, attr) => ({ ...acc, [attr.Name]: attr.Value }),
-    {}
-  );
+  (attributes ?? [])
+    .filter((attr) => attr.Name)
+    .reduce((acc, attr) => ({ ...acc, [attr.Name!]: attr.Value }), {});
 export const attributesFromRecord = (
   attributes: Record<string, string>
-): AttributeListType =>
+): AttributeType[] =>
   Object.entries(attributes).map(([Name, Value]) => ({ Name, Value }));
 export const attributesAppend = (
-  attributes: AttributeListType | undefined,
-  ...toAppend: AttributeListType
-): AttributeListType => {
+  attributes: AttributeType[] | undefined,
+  ...toAppend: AttributeType[]
+): AttributeType[] => {
   const attributeSet = attributesToRecord(attributes);
-
   for (const attr of toAppend) {
+    if (!attr.Name) continue;
     if (attr.Value) {
       attributeSet[attr.Name] = attr.Value;
     } else {
@@ -73,24 +67,26 @@ export const attributesAppend = (
 };
 
 export const attributesRemove = (
-  attributes: AttributeListType | undefined,
+  attributes: AttributeType[] | undefined,
   ...toRemove: readonly string[]
-): AttributeListType =>
-  attributes?.filter((x) => !toRemove.includes(x.Name)) ?? [];
+): AttributeType[] =>
+  attributes?.filter((x) => x.Name && !toRemove.includes(x.Name)) ?? [];
 
 export const customAttributes = (
-  attributes: AttributeListType | undefined
-): AttributeListType =>
-  (attributes ?? []).filter((attr) => attr.Name.startsWith("custom:"));
+  attributes: AttributeType[] | undefined
+): AttributeType[] =>
+  (attributes ?? []).filter(
+    (attr) => attr.Name && attr.Name.startsWith("custom:")
+  );
 
 export interface User {
-  Attributes: AttributeListType;
+  Attributes: AttributeType[];
   Enabled: boolean;
-  MFAOptions?: MFAOptionListType;
-  PreferredMfaSetting?: StringType;
+  MFAOptions?: MFAOptionType[];
+  PreferredMfaSetting?: string;
   UserCreateDate: Date;
   UserLastModifiedDate: Date;
-  UserMFASettingList?: UserMFASettingListType;
+  UserMFASettingList?: string[];
   Username: string;
   UserStatus: UserStatusType;
 
@@ -136,7 +132,7 @@ export interface Group {
 
 // just use the types from the sdk, but make UserPoolId and ProviderName required
 export type IdentityProvider = IdentityProviderType & {
-  ProviderName: ProviderNameType;
+  ProviderName: string;
 };
 
 // just use the types from the sdk, but make Id required
@@ -159,11 +155,11 @@ export interface UserPoolService {
   getGroupByGroupName(ctx: Context, groupName: string): Promise<Group | null>;
   getIdentityProviderByIdentifier(
     ctx: Context,
-    identifier: IdpIdentifierType
+    identifier: string
   ): Promise<IdentityProvider | null>;
   getIdentityProviderByProviderName(
     ctx: Context,
-    providerName: ProviderNameType
+    providerName: string
   ): Promise<IdentityProvider | null>;
   getUserByUsername(ctx: Context, username: string): Promise<User | null>;
   getUserByRefreshToken(
@@ -172,10 +168,7 @@ export interface UserPoolService {
   ): Promise<User | null>;
   listGroups(ctx: Context): Promise<readonly Group[]>;
   listIdentityProviders(ctx: Context): Promise<readonly IdentityProvider[]>;
-  listUsers(
-    ctx: Context,
-    filter?: string | undefined
-  ): Promise<readonly User[]>;
+  listUsers(ctx: Context, filter?: string): Promise<readonly User[]>;
   listUserGroupMembership(ctx: Context, user: User): Promise<readonly string[]>;
   updateOptions(ctx: Context, userPool: UserPool): Promise<void>;
   removeUserFromGroup(ctx: Context, group: Group, user: User): Promise<void>;
@@ -293,7 +286,7 @@ export class UserPoolServiceImpl implements UserPoolService {
 
   public async getIdentityProviderByIdentifier(
     ctx: Context,
-    identifier: IdpIdentifierType
+    identifier: string
   ): Promise<IdentityProvider | null> {
     ctx.logger.debug(
       { identifier },
@@ -311,7 +304,7 @@ export class UserPoolServiceImpl implements UserPoolService {
 
   public async getIdentityProviderByProviderName(
     ctx: Context,
-    providerName: ProviderNameType
+    providerName: string
   ): Promise<IdentityProvider | null> {
     ctx.logger.debug("UserPoolServiceImpl.getIdentityProviderByProviderName");
     const result = await this.dataStore.get<IdentityProvider>(ctx, [
@@ -390,7 +383,7 @@ export class UserPoolServiceImpl implements UserPoolService {
 
   public async listUsers(
     ctx: Context,
-    filter?: string | undefined
+    filter?: string
   ): Promise<readonly User[]> {
     ctx.logger.debug("UserPoolServiceImpl.listUsers");
 
@@ -628,9 +621,9 @@ export class UserPoolServiceFactoryImpl implements UserPoolServiceFactory {
 }
 
 export const validatePermittedAttributeChanges = (
-  requestAttributes: AttributeListType,
-  schemaAttributes: SchemaAttributesListType
-): AttributeListType => {
+  requestAttributes: AttributeType[],
+  schemaAttributes: SchemaAttributeType[]
+): AttributeType[] => {
   for (const attr of requestAttributes) {
     const attrSchema = schemaAttributes.find((x) => x.Name === attr.Name);
     if (!attrSchema) {
@@ -667,8 +660,8 @@ export const validatePermittedAttributeChanges = (
 };
 
 export const defaultVerifiedAttributesIfModified = (
-  attributes: AttributeListType
-): AttributeListType => {
+  attributes: AttributeType[]
+): AttributeType[] => {
   const attributesToSet = [...attributes];
   if (
     attributesInclude("email", attributes) &&
@@ -686,7 +679,7 @@ export const defaultVerifiedAttributesIfModified = (
 };
 
 export const hasUnverifiedContactAttributes = (
-  userAttributesToSet: AttributeListType
+  userAttributesToSet: AttributeType[]
 ): boolean =>
   attributeValue("email_verified", userAttributesToSet) === "false" ||
   attributeValue("phone_number_verified", userAttributesToSet) === "false";

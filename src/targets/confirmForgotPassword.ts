@@ -1,8 +1,9 @@
 import {
   ConfirmForgotPasswordRequest,
   ConfirmForgotPasswordResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { CodeMismatchError, UserNotFoundError } from "../errors";
+  UserStatusType,
+} from "@aws-sdk/client-cognito-identity-provider";
+import { CodeMismatchError, MissingParameterError, UserNotFoundError } from "../errors";
 import { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import { Target } from "./Target";
@@ -24,6 +25,10 @@ export const ConfirmForgotPassword =
     triggers,
   }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
   async (ctx, req) => {
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.Password) throw new MissingParameterError("Password");
+    
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
@@ -37,7 +42,7 @@ export const ConfirmForgotPassword =
     const updatedUser = {
       ...user,
       UserLastModifiedDate: clock.get(),
-      UserStatus: "CONFIRMED",
+      UserStatus: UserStatusType.CONFIRMED,
       ConfirmationCode: undefined,
       Password: req.Password,
     };

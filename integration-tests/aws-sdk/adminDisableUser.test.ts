@@ -15,22 +15,19 @@ describe(
           Username: "abc",
           UserPoolId: "test",
           DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+        });
 
       await client
         .adminDisableUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       const user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.Enabled).toEqual(false);
     });

@@ -1,10 +1,11 @@
 import {
   UpdateUserPoolRequest,
   UpdateUserPoolResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
 import { UserPool } from "../services/userPoolService";
 import { Target } from "./Target";
+import { MissingParameterError } from "../errors";
 
 export type UpdateUserPoolTarget = Target<
   UpdateUserPoolRequest,
@@ -16,6 +17,8 @@ type UpdateUserPoolServices = Pick<Services, "cognito">;
 export const UpdateUserPool =
   ({ cognito }: UpdateUserPoolServices): UpdateUserPoolTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const updatedUserPool: UserPool = {

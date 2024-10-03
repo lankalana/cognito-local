@@ -1,16 +1,25 @@
 import {
   GroupType,
   IdentityProviderType,
+  UserPoolClientDescription,
   UserPoolClientType,
   UserPoolType,
   UserType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { AppClient } from "../services/appClient";
 import { Group, User, UserPool } from "../services/userPoolService";
 import { IdentityProvider } from "../services/userPoolService";
 
+export const appClientToResponseListObject = (
+  appClient: AppClient,
+): UserPoolClientDescription => ({
+  ClientId: appClient.ClientId,
+  ClientName: appClient.ClientName,
+  UserPoolId: appClient.UserPoolId,
+});
+
 export const appClientToResponseObject = (
-  appClient: AppClient
+  appClient: AppClient,
 ): UserPoolClientType => ({
   AccessTokenValidity: appClient.AccessTokenValidity,
   AllowedOAuthFlows: appClient.AllowedOAuthFlows,

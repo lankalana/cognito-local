@@ -2,9 +2,9 @@ import {
   SignUpRequest,
   SignUpResponse,
   UserStatusType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
-import { InvalidParameterError, UsernameExistsError } from "../errors";
+import { InvalidParameterError, MissingParameterError, UsernameExistsError } from "../errors";
 import { Messages, Services, UserPoolService } from "../services";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
 import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
@@ -73,6 +73,10 @@ export const SignUp =
     config,
   }: SignUpServices): SignUpTarget =>
   async (ctx, req) => {
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.Password) throw new MissingParameterError("Password");
+  
     // TODO: This should behave differently depending on if PreventUserExistenceErrors
     // is enabled on the updatedUser pool. This will be the default after Feb 2020.
     // See: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html

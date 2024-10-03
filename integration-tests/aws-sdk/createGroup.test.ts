@@ -14,51 +14,43 @@ describe(
       it("creates a group with only the required parameters", async () => {
         const client = Cognito();
 
-        const createGroupResult = await client
-          .createGroup({
-            GroupName: "abc",
-            UserPoolId: "test",
-          })
-          .promise();
+        const createGroupResult = await client.createGroup({
+          GroupName: "abc",
+          UserPoolId: "test",
+        });
 
-        expect(createGroupResult).toEqual({
-          Group: {
-            CreationDate: roundedDate,
-            GroupName: "abc",
-            LastModifiedDate: roundedDate,
-            UserPoolId: "test",
-          },
+        expect(createGroupResult?.Group).toEqual({
+          CreationDate: roundedDate,
+          GroupName: "abc",
+          LastModifiedDate: roundedDate,
+          UserPoolId: "test",
         });
       });
 
       it("creates a group with all parameters", async () => {
         const client = Cognito();
 
-        const createGroupResult = await client
-          .createGroup({
-            Description: "Description",
-            GroupName: "abc",
-            Precedence: 1,
-            RoleArn: "arn",
-            UserPoolId: "test",
-          })
-          .promise();
+        const createGroupResult = await client.createGroup({
+          Description: "Description",
+          GroupName: "abc",
+          Precedence: 1,
+          RoleArn: "arn",
+          UserPoolId: "test",
+        });
 
-        expect(createGroupResult).toEqual({
-          Group: {
-            CreationDate: roundedDate,
-            Description: "Description",
-            GroupName: "abc",
-            LastModifiedDate: roundedDate,
-            Precedence: 1,
-            RoleArn: "arn",
-            UserPoolId: "test",
-          },
+        expect(createGroupResult?.Group).toEqual({
+          CreationDate: roundedDate,
+          Description: "Description",
+          GroupName: "abc",
+          LastModifiedDate: roundedDate,
+          Precedence: 1,
+          RoleArn: "arn",
+          UserPoolId: "test",
         });
       });
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

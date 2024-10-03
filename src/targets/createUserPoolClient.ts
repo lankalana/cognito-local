@@ -1,11 +1,12 @@
 import {
   CreateUserPoolClientRequest,
   CreateUserPoolClientResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
 import { AppClient, newId } from "../services/appClient";
 import { appClientToResponseObject } from "./responses";
 import { Target } from "./Target";
+import { MissingParameterError } from "../errors";
 
 export type CreateUserPoolClientTarget = Target<
   CreateUserPoolClientRequest,
@@ -20,6 +21,9 @@ export const CreateUserPoolClient =
     cognito,
   }: CreateUserPoolClientServices): CreateUserPoolClientTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ClientName) throw new MissingParameterError("ClientName");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const appClient: AppClient = {

@@ -1,10 +1,11 @@
 import {
   AdminInitiateAuthRequest,
   AdminInitiateAuthResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import {
   InvalidParameterError,
   InvalidPasswordError,
+  MissingParameterError,
   NotAuthorizedError,
   UnsupportedError,
   UserNotConfirmedException,
@@ -28,6 +29,7 @@ const adminUserPasswordAuthFlow = async (
   services: AdminInitiateAuthServices,
   req: AdminInitiateAuthRequest
 ): Promise<AdminInitiateAuthResponse> => {
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
       "Missing required parameter authParameters"
@@ -109,6 +111,7 @@ const refreshTokenAuthFlow = async (
   services: AdminInitiateAuthServices,
   req: AdminInitiateAuthRequest
 ): Promise<AdminInitiateAuthResponse> => {
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
       "Missing required parameter authParameters"

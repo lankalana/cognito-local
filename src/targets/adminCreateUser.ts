@@ -1,12 +1,13 @@
 import {
   AdminCreateUserRequest,
   AdminCreateUserResponse,
-  DeliveryMediumListType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+  DeliveryMediumType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import shortUUID from "short-uuid";
 import * as uuid from "uuid";
 import {
   InvalidParameterError,
+  MissingParameterError,
   UnsupportedError,
   UsernameExistsError,
 } from "../errors";
@@ -36,7 +37,7 @@ type AdminCreateUserServices = Pick<
 >;
 
 const selectAppropriateDeliveryMethod = (
-  desiredDeliveryMediums: DeliveryMediumListType,
+  desiredDeliveryMediums: DeliveryMediumType[],
   user: User
 ): DeliveryDetails | null => {
   if (desiredDeliveryMediums.includes("SMS")) {
@@ -103,6 +104,9 @@ export const AdminCreateUser =
     config,
   }: AdminCreateUserServices): AdminCreateUserTarget =>
   async (ctx, req) => {
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const existingUser = await userPool.getUserByUsername(ctx, req.Username);
     const supressWelcomeMessage = req.MessageAction === "SUPPRESS";

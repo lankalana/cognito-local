@@ -1,4 +1,4 @@
-import { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import { CryptoService } from "../crypto";
 import { CustomEmailSenderTriggerResponse, Lambda } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
@@ -15,9 +15,9 @@ export type CustomEmailSenderTrigger = Trigger<
       | "CustomEmailSender_VerifyUserAttribute"
       | "CustomEmailSender_AdminCreateUser";
     userPoolId: string;
-    clientId: string | null;
+    clientId: string | undefined;
     username: string;
-    userAttributes: AttributeListType;
+    userAttributes: AttributeType[];
 
     /**
      * One or more key-value pairs that you can provide as custom input to the Lambda function that you specify for the

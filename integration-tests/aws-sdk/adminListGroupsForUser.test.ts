@@ -18,8 +18,7 @@ describe(
           .createGroup({
             GroupName: "group-1",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         await client
           .adminCreateUser({
@@ -28,23 +27,20 @@ describe(
             UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
             Username: "user-1",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         await client
           .adminAddUserToGroup({
             Username: "user-1",
             GroupName: "group-1",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         const result = await client
           .adminListGroupsForUser({
             UserPoolId: "test",
             Username: "user-1",
-          })
-          .promise();
+          });
 
         expect(result.Groups).toEqual([createGroupResponse.Group]);
       });
@@ -56,8 +52,7 @@ describe(
           .createGroup({
             GroupName: "group-2",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         await client
           .adminCreateUser({
@@ -66,15 +61,13 @@ describe(
             UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
             Username: "user-1",
             UserPoolId: "test",
-          })
-          .promise();
+          });
 
         const result = await client
           .adminListGroupsForUser({
             UserPoolId: "test",
             Username: "user-1",
-          })
-          .promise();
+          });
 
         expect(result.Groups).toHaveLength(0);
       });

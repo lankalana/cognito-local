@@ -1,3 +1,4 @@
+import { GroupNotFoundError } from "../../src/errors";
 import { withCognitoSdk } from "./setup";
 
 describe(
@@ -6,39 +7,29 @@ describe(
     it("deletes a group", async () => {
       const client = Cognito();
 
-      await client
-        .createGroup({
-          GroupName: "abc",
-          UserPoolId: "test",
-        })
-        .promise();
+      await client.createGroup({
+        GroupName: "abc",
+        UserPoolId: "test",
+      });
 
-      const getGroupResponse = await client
-        .getGroup({
-          GroupName: "abc",
-          UserPoolId: "test",
-        })
-        .promise();
+      const getGroupResponse = await client.getGroup({
+        GroupName: "abc",
+        UserPoolId: "test",
+      });
 
       expect(getGroupResponse.Group).toBeDefined();
 
-      await client
-        .deleteGroup({
-          GroupName: "abc",
-          UserPoolId: "test",
-        })
-        .promise();
+      await client.deleteGroup({
+        GroupName: "abc",
+        UserPoolId: "test",
+      });
 
       await expect(
-        client
-          .getGroup({
-            GroupName: "abc",
-            UserPoolId: "test",
-          })
-          .promise()
-      ).rejects.toMatchObject({
-        code: "ResourceNotFoundException",
-      });
+        client.getGroup({
+          GroupName: "abc",
+          UserPoolId: "test",
+        }),
+      ).rejects.toMatchObject(new GroupNotFoundError());
     });
-  })
+  }),
 );

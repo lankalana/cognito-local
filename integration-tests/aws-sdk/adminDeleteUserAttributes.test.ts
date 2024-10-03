@@ -16,15 +16,13 @@ describe(
           Username: "abc",
           UserPoolId: "test",
           DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+        });
 
       let user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },
@@ -37,15 +35,13 @@ describe(
           UserPoolId: "test",
           Username: "abc",
           UserAttributeNames: ["custom:example"],
-        })
-        .promise();
+        });
 
       user = await client
         .adminGetUser({
           UserPoolId: "test",
           Username: "abc",
-        })
-        .promise();
+        });
 
       expect(user.UserAttributes).toEqual([
         { Name: "sub", Value: expect.stringMatching(UUID) },
