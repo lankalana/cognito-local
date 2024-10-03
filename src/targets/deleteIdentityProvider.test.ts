@@ -25,7 +25,7 @@ describe("DeleteIdentityProvider target", () => {
     const existingIdentityProvider = TDB.identityProvider();
 
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider
+      existingIdentityProvider,
     );
 
     await deleteIdentityProvider(TestContext, {
@@ -35,7 +35,7 @@ describe("DeleteIdentityProvider target", () => {
 
     expect(mockUserPoolService.deleteIdentityProvider).toHaveBeenCalledWith(
       TestContext,
-      existingIdentityProvider
+      existingIdentityProvider,
     );
   });
 
@@ -46,7 +46,7 @@ describe("DeleteIdentityProvider target", () => {
       deleteIdentityProvider(TestContext, {
         ProviderName: "identityProvider",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new IdentityProviderNotFoundError());
   });
 });

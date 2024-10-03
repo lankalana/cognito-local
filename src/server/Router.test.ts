@@ -10,7 +10,7 @@ describe("Router", () => {
     const route = Router(services)("invalid");
 
     await expect(route(TestContext, null as any)).rejects.toEqual(
-      new UnsupportedError('Unsupported x-amz-target header "invalid"')
+      new UnsupportedError('Unsupported x-amz-target header "invalid"'),
     );
   });
 

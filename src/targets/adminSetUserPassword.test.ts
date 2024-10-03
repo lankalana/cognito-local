@@ -97,7 +97,7 @@ describe("AdminSetUser target", () => {
         Password: "Password",
         Username: "Username",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError("User does not exist"));
   });
 });

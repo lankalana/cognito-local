@@ -34,7 +34,7 @@ describe("ListUsersInGroup target", () => {
           return Promise.resolve(existingUser2);
         }
         return Promise.resolve(null);
-      }
+      },
     );
 
     const result = await listUsersInGroup(TestContext, {
@@ -44,7 +44,7 @@ describe("ListUsersInGroup target", () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(result.Users).toEqual([
@@ -81,7 +81,7 @@ describe("ListUsersInGroup target", () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(result.Users).toHaveLength(0);
@@ -94,7 +94,7 @@ describe("ListUsersInGroup target", () => {
       listUsersInGroup(TestContext, {
         GroupName: "group",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 
@@ -113,14 +113,14 @@ describe("ListUsersInGroup target", () => {
         }
         // don't ever return a value for existingUser2
         return Promise.resolve(null);
-      }
+      },
     );
 
     await expect(
       listUsersInGroup(TestContext, {
         GroupName: existingGroup.GroupName,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

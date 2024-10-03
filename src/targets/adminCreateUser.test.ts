@@ -117,7 +117,7 @@ describe("AdminCreateUser target", () => {
             AttributeName: "email",
             DeliveryMedium: "EMAIL",
             Destination: "example@example.com",
-          }
+          },
         );
       });
 
@@ -131,11 +131,11 @@ describe("AdminCreateUser target", () => {
             UserAttributes: [],
             Username: "user-supplied",
             UserPoolId: "test",
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums"
-          )
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -169,7 +169,7 @@ describe("AdminCreateUser target", () => {
             AttributeName: "phone_number",
             DeliveryMedium: "SMS",
             Destination: "0400000000",
-          }
+          },
         );
       });
 
@@ -181,11 +181,11 @@ describe("AdminCreateUser target", () => {
             UserAttributes: [],
             Username: "user-supplied",
             UserPoolId: "test",
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums"
-          )
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -218,7 +218,7 @@ describe("AdminCreateUser target", () => {
             AttributeName: "phone_number",
             DeliveryMedium: "SMS",
             Destination: "0400000000",
-          }
+          },
         );
       });
 
@@ -232,11 +232,11 @@ describe("AdminCreateUser target", () => {
             UserAttributes: [],
             Username: "user-supplied",
             UserPoolId: "test",
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums"
-          )
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -273,7 +273,7 @@ describe("AdminCreateUser target", () => {
             AttributeName: "phone_number",
             DeliveryMedium: "SMS",
             Destination: "0400000000",
-          }
+          },
         );
       });
 
@@ -303,7 +303,7 @@ describe("AdminCreateUser target", () => {
             AttributeName: "email",
             DeliveryMedium: "EMAIL",
             Destination: "example@example.com",
-          }
+          },
         );
       });
 
@@ -317,11 +317,11 @@ describe("AdminCreateUser target", () => {
             UserAttributes: [],
             Username: "user-supplied",
             UserPoolId: "test",
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums"
-          )
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -374,7 +374,7 @@ describe("AdminCreateUser target", () => {
         UserAttributes: existingUser.Attributes,
         Username: existingUser.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UsernameExistsError());
   });
 

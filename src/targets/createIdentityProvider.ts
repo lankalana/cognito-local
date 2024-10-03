@@ -23,7 +23,7 @@ export const CreateIdentityProvider =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ProviderName) throw new MissingParameterError("ProviderName");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const now = clock.get();
@@ -42,7 +42,7 @@ export const CreateIdentityProvider =
 
     return {
       IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
-        identityProvider
+        identityProvider,
       ),
     };
   };

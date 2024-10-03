@@ -48,7 +48,7 @@ export const DefaultConfig: Config = {
 
 export const loadConfig = async (
   ctx: Context,
-  dataStoreFactory: DataStoreFactory
+  dataStoreFactory: DataStoreFactory,
 ): Promise<Config> => {
   ctx.logger.debug("loadConfig");
   const dataStore = await dataStoreFactory.create(ctx, "config", {});
@@ -64,6 +64,6 @@ export const loadConfig = async (
         // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return srcValue;
       }
-    }
+    },
   );
 };

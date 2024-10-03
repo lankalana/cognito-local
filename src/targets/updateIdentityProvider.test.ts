@@ -31,7 +31,7 @@ describe("UpdateGroup target", () => {
     const existingIdentityProvider = TDB.identityProvider();
 
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider
+      existingIdentityProvider,
     );
 
     const newDate = new Date();
@@ -46,7 +46,7 @@ describe("UpdateGroup target", () => {
     });
 
     expect(
-      mockUserPoolService.getIdentityProviderByProviderName
+      mockUserPoolService.getIdentityProviderByProviderName,
     ).toHaveBeenCalledWith(TestContext, existingIdentityProvider.ProviderName);
 
     expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(
@@ -57,7 +57,7 @@ describe("UpdateGroup target", () => {
         AttributeMapping: { newAttributeKey: "new attribute value" },
         IdpIdentifiers: ["newIdentifier"],
         ProviderDetails: { newProviderDetailKey: "new provider detail" },
-      }
+      },
     );
 
     expect(result.IdentityProvider).toEqual({
@@ -78,7 +78,7 @@ describe("UpdateGroup target", () => {
     });
 
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider
+      existingIdentityProvider,
     );
 
     const newDate = new Date();
@@ -91,7 +91,7 @@ describe("UpdateGroup target", () => {
     });
 
     expect(
-      mockUserPoolService.getIdentityProviderByProviderName
+      mockUserPoolService.getIdentityProviderByProviderName,
     ).toHaveBeenCalledWith(TestContext, existingIdentityProvider.ProviderName);
 
     expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(
@@ -100,7 +100,7 @@ describe("UpdateGroup target", () => {
         ...existingIdentityProvider,
         LastModifiedDate: newDate,
         IdpIdentifiers: ["newIdentifier"],
-      }
+      },
     );
 
     expect(result.IdentityProvider).toEqual({
@@ -117,14 +117,14 @@ describe("UpdateGroup target", () => {
 
   it("throws if the identity provider doesn't exist", async () => {
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      null
+      null,
     );
 
     await expect(
       updateIdentityProvider(TestContext, {
         ProviderName: "identityProvider",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new IdentityProviderNotFoundError());
   });
 });

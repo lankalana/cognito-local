@@ -30,7 +30,7 @@ describe("DeleteGroup target", () => {
 
     expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(
       TestContext,
-      existingGroup
+      existingGroup,
     );
   });
 
@@ -41,7 +41,7 @@ describe("DeleteGroup target", () => {
       deleteGroup(TestContext, {
         GroupName: "group",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

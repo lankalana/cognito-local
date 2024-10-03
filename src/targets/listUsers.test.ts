@@ -62,7 +62,7 @@ describe("ListUsers target", () => {
 
     expect(mockUserPoolService.listUsers).toHaveBeenCalledWith(
       TestContext,
-      'username = "abc"'
+      'username = "abc"',
     );
   });
 

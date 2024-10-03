@@ -4,7 +4,11 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import { Messages, Services, UserPoolService } from "../services";
-import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  NotAuthorizedError,
+} from "../errors";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
 import { Token } from "../services/tokenGenerator";
@@ -24,16 +28,16 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: UpdateUserAttributesRequest,
-  code: string
+  code: string,
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user
+    user,
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes"
+      "User has no attribute matching desired auto verified attributes",
     );
   }
 
@@ -45,7 +49,7 @@ const sendAttributeVerificationCode = async (
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 
   return deliveryDetails;
@@ -80,7 +84,7 @@ export const UpdateUserAttributes =
 
     const userPool = await cognito.getUserPoolForClientId(
       ctx,
-      decodedToken.client_id
+      decodedToken.client_id,
     );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
@@ -96,8 +100,8 @@ export const UpdateUserAttributes =
         // fail.
         userPool.options.SchemaAttributes ??
           USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-          []
-      )
+          [],
+      ),
     );
 
     const updatedUser = {
@@ -127,7 +131,7 @@ export const UpdateUserAttributes =
         user,
         messages,
         req,
-        code
+        code,
       );
 
       return {

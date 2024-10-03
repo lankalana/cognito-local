@@ -31,7 +31,7 @@ describe("AdminDeleteUserAttributes target", () => {
         UserPoolId: "test",
         Username: "abc",
         UserAttributeNames: ["custom:example"],
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 

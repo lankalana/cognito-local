@@ -18,13 +18,13 @@ export const ListIdentityProviders =
   ({ cognito }: ListIdentityProviderservices): ListIdentityProvidersTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const identityProviders = await userPool.listIdentityProviders(ctx);
 
     return {
       Providers: identityProviders.map(
-        identityProviderToResponseObject(req.UserPoolId)
+        identityProviderToResponseObject(req.UserPoolId),
       ),
     };
   };

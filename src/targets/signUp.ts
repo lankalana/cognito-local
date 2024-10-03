@@ -4,7 +4,11 @@ import {
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
-import { InvalidParameterError, MissingParameterError, UsernameExistsError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  UsernameExistsError,
+} from "../errors";
 import { Messages, Services, UserPoolService } from "../services";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
 import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
@@ -32,11 +36,11 @@ const deliverWelcomeMessage = async (
   user: User,
   userPool: UserPoolService,
   messages: Messages,
-  clientMetadata: Record<string, string> | undefined
+  clientMetadata: Record<string, string> | undefined,
 ): Promise<DeliveryDetails | null> => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user
+    user,
   );
   if (!deliveryDetails && !userPool.options.AutoVerifiedAttributes) {
     // From the console: When Cognito's default verification method is not enabled, you must use APIs or Lambda triggers
@@ -45,7 +49,7 @@ const deliverWelcomeMessage = async (
   } else if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes"
+      "User has no attribute matching desired auto verified attributes",
     );
   }
 
@@ -57,7 +61,7 @@ const deliverWelcomeMessage = async (
     user,
     code,
     clientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 
   return deliveryDetails;
@@ -76,7 +80,7 @@ export const SignUp =
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");
     if (!req.Password) throw new MissingParameterError("Password");
-  
+
     // TODO: This should behave differently depending on if PreventUserExistenceErrors
     // is enabled on the updatedUser pool. This will be the default after Feb 2020.
     // See: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pool-managing-errors.html
@@ -87,7 +91,7 @@ export const SignUp =
     }
 
     const attributes = attributesInclude("sub", req.UserAttributes)
-      ? req.UserAttributes ?? []
+      ? (req.UserAttributes ?? [])
       : [{ Name: "sub", Value: uuid.v4() }, ...(req.UserAttributes ?? [])];
     let userStatus: UserStatusType = "UNCONFIRMED";
 
@@ -143,7 +147,7 @@ export const SignUp =
       updatedUser,
       userPool,
       messages,
-      req.ClientMetadata
+      req.ClientMetadata,
     );
 
     await userPool.saveUser(ctx, {
@@ -166,7 +170,7 @@ export const SignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute("cognito:user_status", updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

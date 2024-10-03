@@ -21,7 +21,7 @@ describe("DeleteUserPool target", () => {
     const userPool = TDB.userPool();
 
     mockCognitoService.getUserPool.mockResolvedValue(
-      newMockUserPoolService(userPool)
+      newMockUserPoolService(userPool),
     );
 
     await deleteUserPool(TestContext, {
@@ -30,7 +30,7 @@ describe("DeleteUserPool target", () => {
 
     expect(mockCognitoService.deleteUserPool).toHaveBeenCalledWith(
       TestContext,
-      userPool
+      userPool,
     );
   });
 

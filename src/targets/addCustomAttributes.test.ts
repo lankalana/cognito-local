@@ -62,7 +62,7 @@ describe("AddCustomAttributes target", () => {
           },
         ],
         LastModifiedDate: newDate,
-      }
+      },
     );
   });
 
@@ -100,7 +100,7 @@ describe("AddCustomAttributes target", () => {
           },
         ],
         LastModifiedDate: newDate,
-      }
+      },
     );
   });
 
@@ -130,11 +130,11 @@ describe("AddCustomAttributes target", () => {
             Name: "test",
           },
         ],
-      })
+      }),
     ).rejects.toEqual(
       new InvalidParameterError(
-        "custom:test: Existing attribute already has name custom:test."
-      )
+        "custom:test: Existing attribute already has name custom:test.",
+      ),
     );
 
     expect(mockUserPoolService.updateOptions).not.toHaveBeenCalled();

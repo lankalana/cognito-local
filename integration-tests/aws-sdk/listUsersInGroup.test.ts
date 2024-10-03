@@ -14,33 +14,29 @@ describe(
       it("lists users in a group", async () => {
         const client = Cognito();
 
-        await client
-          .createGroup({
-            GroupName: "group-1",
-            UserPoolId: "test",
-          });
+        await client.createGroup({
+          GroupName: "group-1",
+          UserPoolId: "test",
+        });
 
-        const createUserResponse = await client
-          .adminCreateUser({
-            DesiredDeliveryMediums: ["EMAIL"],
-            TemporaryPassword: "def",
-            UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
-            Username: "user-1",
-            UserPoolId: "test",
-          });
+        const createUserResponse = await client.adminCreateUser({
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "def",
+          UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
+          Username: "user-1",
+          UserPoolId: "test",
+        });
 
-        await client
-          .adminAddUserToGroup({
-            Username: "user-1",
-            GroupName: "group-1",
-            UserPoolId: "test",
-          });
+        await client.adminAddUserToGroup({
+          Username: "user-1",
+          GroupName: "group-1",
+          UserPoolId: "test",
+        });
 
-        const result = await client
-          .listUsersInGroup({
-            UserPoolId: "test",
-            GroupName: "group-1",
-          });
+        const result = await client.listUsersInGroup({
+          UserPoolId: "test",
+          GroupName: "group-1",
+        });
 
         expect(result.Users).toEqual([createUserResponse.User]);
       });
@@ -48,23 +44,21 @@ describe(
       it("lists no users in an empty group", async () => {
         const client = Cognito();
 
-        await client
-          .createGroup({
-            GroupName: "group-2",
-            UserPoolId: "test",
-          });
+        await client.createGroup({
+          GroupName: "group-2",
+          UserPoolId: "test",
+        });
 
-        const result = await client
-          .listUsersInGroup({
-            UserPoolId: "test",
-            GroupName: "group-2",
-          });
+        const result = await client.listUsersInGroup({
+          UserPoolId: "test",
+          GroupName: "group-2",
+        });
 
         expect(result.Users).toHaveLength(0);
       });
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

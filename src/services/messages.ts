@@ -33,7 +33,7 @@ export interface Messages {
     user: User,
     code: string,
     clientMetadata: Record<string, string> | undefined,
-    deliveryDetails: DeliveryDetails
+    deliveryDetails: DeliveryDetails,
   ): Promise<void>;
 }
 
@@ -54,7 +54,7 @@ export class MessagesService implements Messages {
     user: User,
     code: string,
     clientMetadata: Record<string, string> | undefined,
-    deliveryDetails: DeliveryDetails
+    deliveryDetails: DeliveryDetails,
   ): Promise<void> {
     if (
       this.triggers.enabled("CustomEmailSender") &&
@@ -67,7 +67,7 @@ export class MessagesService implements Messages {
         userPoolId,
         user,
         code,
-        clientMetadata
+        clientMetadata,
       );
     }
 
@@ -78,7 +78,7 @@ export class MessagesService implements Messages {
       userPoolId,
       user,
       code,
-      clientMetadata
+      clientMetadata,
     );
 
     await this.messageDelivery.deliver(ctx, user, deliveryDetails, message);
@@ -91,7 +91,7 @@ export class MessagesService implements Messages {
     userPoolId: string,
     user: User,
     code: string,
-    clientMetadata: Record<string, string> | undefined
+    clientMetadata: Record<string, string> | undefined,
   ): Promise<Message> {
     if (this.triggers.enabled("CustomMessage")) {
       const message = await this.triggers.customMessage(ctx, {
@@ -123,7 +123,7 @@ export class MessagesService implements Messages {
     userPoolId: string,
     user: User,
     code: string,
-    clientMetadata: Record<string, string> | undefined
+    clientMetadata: Record<string, string> | undefined,
   ): Promise<void> {
     await this.triggers.customEmailSender(ctx, {
       clientId: clientId ?? AWS_ADMIN_CLIENT_ID,

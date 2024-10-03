@@ -13,9 +13,8 @@ const logger = Pino(
     ignore: "pid,name,hostname",
     singleLine: true,
     messageFormat: (log, messageKey) =>
-       
-      `${log["reqId"] as string ?? "NONE"} ${log["target"] as string ?? "NONE"} ${log[messageKey] as string}`,
-  })
+      `${(log["reqId"] as string) ?? "NONE"} ${(log["target"] as string) ?? "NONE"} ${log[messageKey] as string}`,
+  }),
 );
 
 createDefaultServer(logger)

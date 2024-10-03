@@ -15,7 +15,7 @@ export const ListGroups =
   ({ cognito }: ListGroupServices): ListGroupsTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    
+
     // TODO: Limit support
     // TODO: PaginationToken support
 

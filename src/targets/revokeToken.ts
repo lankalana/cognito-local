@@ -15,14 +15,14 @@ export const RevokeToken =
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Token) throw new MissingParameterError("Token");
-  
+
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
 
     const users = await userPool.listUsers(ctx);
     const user = users.find(
       (user) =>
         Array.isArray(user.RefreshTokens) &&
-        user.RefreshTokens.includes(req.Token!)
+        user.RefreshTokens.includes(req.Token!),
     );
 
     if (!user) {

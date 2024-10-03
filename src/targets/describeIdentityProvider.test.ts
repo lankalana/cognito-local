@@ -25,7 +25,7 @@ describe("DescribeIdentityProvider target", () => {
     const existingGroup = TDB.identityProvider();
 
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingGroup
+      existingGroup,
     );
 
     const result = await describeIdentityProvider(TestContext, {
@@ -34,7 +34,7 @@ describe("DescribeIdentityProvider target", () => {
     });
 
     expect(
-      mockUserPoolService.getIdentityProviderByProviderName
+      mockUserPoolService.getIdentityProviderByProviderName,
     ).toHaveBeenCalledWith(TestContext, existingGroup.ProviderName);
 
     expect(result.IdentityProvider).toEqual({
@@ -51,14 +51,14 @@ describe("DescribeIdentityProvider target", () => {
 
   it("throws if the identity provider doesn't exist", async () => {
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      null
+      null,
     );
 
     await expect(
       describeIdentityProvider(TestContext, {
         ProviderName: "identityProvider",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new IdentityProviderNotFoundError());
   });
 });

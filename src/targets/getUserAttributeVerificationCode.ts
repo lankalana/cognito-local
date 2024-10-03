@@ -4,7 +4,11 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
 import { Messages, Services, UserPoolService } from "../services";
-import { InvalidParameterError, MissingParameterError, UserNotFoundError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
 import { Token } from "../services/tokenGenerator";
 import { User } from "../services/userPoolService";
@@ -17,16 +21,16 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: GetUserAttributeVerificationCodeRequest,
-  code: string
+  code: string,
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user
+    user,
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes"
+      "User has no attribute matching desired auto verified attributes",
     );
   }
 
@@ -38,7 +42,7 @@ const sendAttributeVerificationCode = async (
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 };
 
@@ -69,7 +73,7 @@ export const GetUserAttributeVerificationCode =
 
     const userPool = await cognito.getUserPoolForClientId(
       ctx,
-      decodedToken.client_id
+      decodedToken.client_id,
     );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
@@ -89,7 +93,7 @@ export const GetUserAttributeVerificationCode =
       user,
       messages,
       req,
-      code
+      code,
     );
 
     return {};

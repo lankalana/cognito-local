@@ -39,7 +39,7 @@ describe("AdminRemoveUserFromGroup target", () => {
     expect(mockUserPoolService.removeUserFromGroup).toHaveBeenCalledWith(
       TestContext,
       existingGroup,
-      existingUser
+      existingUser,
     );
   });
 
@@ -54,7 +54,7 @@ describe("AdminRemoveUserFromGroup target", () => {
         GroupName: "group",
         Username: existingUser.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 
@@ -69,7 +69,7 @@ describe("AdminRemoveUserFromGroup target", () => {
         GroupName: existingGroup.GroupName,
         Username: "user",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

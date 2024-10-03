@@ -17,7 +17,7 @@ export const CreateGroup =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.GroupName) throw new MissingParameterError("GroupName");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const now = clock.get();

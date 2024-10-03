@@ -41,7 +41,7 @@ describe("CreateUserPoolClient target", () => {
           IdToken: "minutes",
           RefreshToken: "days",
         },
-      }
+      },
     );
 
     expect(result).toEqual({

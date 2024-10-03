@@ -4,7 +4,10 @@ import {
 } from "@aws-sdk/client-cognito-identity-provider";
 import { Services } from "../services";
 import { Target } from "./Target";
-import { IdentityProviderNotFoundError, MissingParameterError } from "../errors";
+import {
+  IdentityProviderNotFoundError,
+  MissingParameterError,
+} from "../errors";
 
 export type AdminLinkProviderForUserTarget = Target<
   AdminLinkProviderForUserRequest,
@@ -27,7 +30,7 @@ export const AdminLinkProviderForUser =
     }
     const identityProvider = await userPool.getIdentityProviderByProviderName(
       ctx,
-      req.SourceUser.ProviderName
+      req.SourceUser.ProviderName,
     );
     if (!identityProvider) {
       throw new IdentityProviderNotFoundError();

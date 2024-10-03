@@ -43,13 +43,13 @@ describe("DeleteUser target", () => {
           issuer: `http://localhost:9229/test`,
           expiresIn: "24h",
           keyid: "CognitoLocal",
-        }
+        },
       ),
     });
 
     expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
       TestContext,
-      user
+      user,
     );
   });
 
@@ -57,7 +57,7 @@ describe("DeleteUser target", () => {
     await expect(
       deleteUser(TestContext, {
         AccessToken: "blah",
-      })
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -83,9 +83,9 @@ describe("DeleteUser target", () => {
             issuer: `http://localhost:9229/test`,
             expiresIn: "24h",
             keyid: "CognitoLocal",
-          }
+          },
         ),
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 });

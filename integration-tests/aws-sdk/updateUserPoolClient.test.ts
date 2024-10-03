@@ -7,38 +7,34 @@ describe(
       const client = Cognito();
 
       // create the user pool client
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: "test",
-          ClientName: "test",
-        });
+      const upc = await client.createUserPoolClient({
+        UserPoolId: "test",
+        ClientName: "test",
+      });
 
-      const describeResponse = await client
-        .describeUserPoolClient({
-          ClientId: upc.UserPoolClient?.ClientId!,
-          UserPoolId: "test",
-        });
+      const describeResponse = await client.describeUserPoolClient({
+        ClientId: upc.UserPoolClient?.ClientId,
+        UserPoolId: "test",
+      });
 
       expect(describeResponse.UserPoolClient).toMatchObject({
         ClientName: "test",
       });
 
-      await client
-        .updateUserPoolClient({
-          ClientId: upc.UserPoolClient?.ClientId!,
-          UserPoolId: "test",
-          ClientName: "new client name",
-        });
+      await client.updateUserPoolClient({
+        ClientId: upc.UserPoolClient?.ClientId,
+        UserPoolId: "test",
+        ClientName: "new client name",
+      });
 
-      const describeResponseAfterUpdate = await client
-        .describeUserPoolClient({
-          ClientId: upc.UserPoolClient?.ClientId!,
-          UserPoolId: "test",
-        });
+      const describeResponseAfterUpdate = await client.describeUserPoolClient({
+        ClientId: upc.UserPoolClient?.ClientId,
+        UserPoolId: "test",
+      });
 
       expect(describeResponseAfterUpdate.UserPoolClient).toMatchObject({
         ClientName: "new client name",
       });
     });
-  })
+  }),
 );

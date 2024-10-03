@@ -36,7 +36,7 @@ describe("ForgotPassword target", () => {
       forgotPassword(TestContext, {
         ClientId: "clientId",
         Username: "0000-0000",
-      })
+      }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
@@ -63,7 +63,7 @@ describe("ForgotPassword target", () => {
         AttributeName: "email",
         DeliveryMedium: "EMAIL",
         Destination: attributeValue("email", user.Attributes),
-      }
+      },
     );
 
     expect(result).toEqual({

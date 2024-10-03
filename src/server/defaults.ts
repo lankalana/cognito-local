@@ -20,7 +20,7 @@ import { CryptoService } from "../services/crypto";
 import { Lambda } from "@aws-sdk/client-lambda";
 
 export const createDefaultServer = async (
-  logger: pino.Logger
+  logger: pino.Logger,
 ): Promise<Server> => {
   const configDirectory = ".cognito";
   const dataDirectory = `${configDirectory}/db`;
@@ -31,7 +31,7 @@ export const createDefaultServer = async (
   const config = await loadConfig(
     ctx,
     // the config gets a separate factory because it's stored in a different directory
-    new StormDBDataStoreFactory(configDirectory, new InMemoryCache())
+    new StormDBDataStoreFactory(configDirectory, new InMemoryCache()),
   );
 
   logger.debug({ config }, "Loaded config");
@@ -40,27 +40,24 @@ export const createDefaultServer = async (
 
   const dataStoreFactory = new StormDBDataStoreFactory(
     dataDirectory,
-    new InMemoryCache()
+    new InMemoryCache(),
   );
 
   const cognitoServiceFactory = new CognitoServiceFactoryImpl(
     dataDirectory,
     clock,
     dataStoreFactory,
-    new UserPoolServiceFactoryImpl(clock, dataStoreFactory)
+    new UserPoolServiceFactoryImpl(clock, dataStoreFactory),
   );
   const cognitoClient = await cognitoServiceFactory.create(
     ctx,
-    config.UserPoolDefaults
+    config.UserPoolDefaults,
   );
   const triggers = new TriggersService(
     clock,
     cognitoClient,
-    new LambdaService(
-      config.TriggerFunctions,
-      new Lambda(config.LambdaClient)
-    ),
-    new CryptoService(config.KMSConfig)
+    new LambdaService(config.TriggerFunctions, new Lambda(config.LambdaClient)),
+    new CryptoService(config.KMSConfig),
   );
 
   return createServer(
@@ -70,19 +67,19 @@ export const createDefaultServer = async (
       config,
       messages: new MessagesService(
         triggers,
-        new MessageDeliveryService(new ConsoleMessageSender())
+        new MessageDeliveryService(new ConsoleMessageSender()),
       ),
       otp,
       tokenGenerator: new JwtTokenGenerator(
         clock,
         triggers,
-        config.TokenConfig
+        config.TokenConfig,
       ),
       triggers,
     }),
     logger,
     {
       development: !!process.env.COGNITO_LOCAL_DEVMODE,
-    }
+    },
   );
 };

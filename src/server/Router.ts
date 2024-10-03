@@ -14,7 +14,7 @@ export const Router =
     if (!isSupportedTarget(target)) {
       return () =>
         Promise.reject(
-          new UnsupportedError(`Unsupported x-amz-target header "${target}"`)
+          new UnsupportedError(`Unsupported x-amz-target header "${target}"`),
         );
     }
 
@@ -32,7 +32,7 @@ export const Router =
           logger: targetLogger,
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        req
+        req,
       );
       targetLogger.debug("end");
       return res;

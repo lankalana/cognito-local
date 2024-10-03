@@ -46,7 +46,7 @@ describe("AdminGetUser target", () => {
       adminGetUser(TestContext, {
         Username: existingUser.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError("User does not exist."));
   });
 });

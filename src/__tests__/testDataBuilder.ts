@@ -48,7 +48,7 @@ export const group = (partial?: Partial<Group>): Group => ({
 });
 
 export const identityProvider = (
-  partial?: Partial<IdentityProvider>
+  partial?: Partial<IdentityProvider>,
 ): IdentityProvider => ({
   ProviderName: partial?.ProviderName ?? id("IdentityProvider"),
   ProviderType: partial?.ProviderType ?? undefined,

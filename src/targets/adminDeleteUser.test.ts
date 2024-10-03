@@ -29,7 +29,7 @@ describe("AdminDeleteUser target", () => {
 
     expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
       TestContext,
-      existingUser
+      existingUser,
     );
   });
 
@@ -42,7 +42,7 @@ describe("AdminDeleteUser target", () => {
       adminDeleteUser(TestContext, {
         Username: existingUser.Username,
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError("User does not exist"));
   });
 });

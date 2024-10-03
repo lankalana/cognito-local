@@ -49,7 +49,7 @@ describe("AdminEnableUser target", () => {
       adminEnableUser(TestContext, {
         Username: "user",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

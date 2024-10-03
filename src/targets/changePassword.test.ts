@@ -34,7 +34,7 @@ describe("ChangePassword target", () => {
         AccessToken: "blah",
         PreviousPassword: "abc",
         ProposedPassword: "def",
-      })
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
 
     expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
@@ -62,11 +62,11 @@ describe("ChangePassword target", () => {
             issuer: `http://localhost:9229/test`,
             expiresIn: "24h",
             keyid: "CognitoLocal",
-          }
+          },
         ),
         PreviousPassword: "abc",
         ProposedPassword: "def",
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
 
     expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
@@ -98,11 +98,11 @@ describe("ChangePassword target", () => {
             issuer: `http://localhost:9229/test`,
             expiresIn: "24h",
             keyid: "CognitoLocal",
-          }
+          },
         ),
         PreviousPassword: "abc",
         ProposedPassword: "def",
-      })
+      }),
     ).rejects.toEqual(new InvalidPasswordError());
 
     expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
@@ -133,7 +133,7 @@ describe("ChangePassword target", () => {
           issuer: `http://localhost:9229/test`,
           expiresIn: "24h",
           keyid: "CognitoLocal",
-        }
+        },
       ),
       PreviousPassword: "previous-password",
       ProposedPassword: "new-password",

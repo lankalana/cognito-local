@@ -23,7 +23,7 @@ export const CreateUserPoolClient =
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ClientName) throw new MissingParameterError("ClientName");
-    
+
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
     const appClient: AppClient = {

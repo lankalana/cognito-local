@@ -82,7 +82,7 @@ describe("AdminListGroupsForUser target", () => {
       adminListGroupsForUser(TestContext, {
         Username: "user",
         UserPoolId: "test",
-      })
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });
