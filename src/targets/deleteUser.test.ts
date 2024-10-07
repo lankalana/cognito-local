@@ -1,15 +1,16 @@
-import jwt from "jsonwebtoken";
-import * as uuid from "uuid";
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { InvalidParameterError, NotAuthorizedError } from "../errors.js";
-import PrivateKey from "../keys/cognitoLocal.private.json" with { type: "json" };
-import { UserPoolService } from "../services/index.js";
-import { DeleteUser, DeleteUserTarget } from "./deleteUser.js";
+import jwt from 'jsonwebtoken';
+import * as uuid from 'uuid';
 
-describe("DeleteUser target", () => {
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { InvalidParameterError, NotAuthorizedError } from '../errors.js';
+import PrivateKey from '../keys/cognitoLocal.private.json' with { type: 'json' };
+import { UserPoolService } from '../services/index.js';
+import { DeleteUser, DeleteUserTarget } from './deleteUser.js';
+
+describe('DeleteUser target', () => {
   let deleteUser: DeleteUserTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -20,7 +21,7 @@ describe("DeleteUser target", () => {
     });
   });
 
-  it("parses token get user by sub", async () => {
+  it('parses token get user by sub', async () => {
     const user = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -28,36 +29,33 @@ describe("DeleteUser target", () => {
     await deleteUser(TestContext, {
       AccessToken: jwt.sign(
         {
-          sub: "0000-0000",
-          event_id: "0",
-          token_use: "access",
-          scope: "aws.cognito.signin.user.admin",
+          sub: '0000-0000',
+          event_id: '0',
+          token_use: 'access',
+          scope: 'aws.cognito.signin.user.admin',
           auth_time: new Date(),
           jti: uuid.v4(),
-          client_id: "test",
-          username: "0000-0000",
+          client_id: 'test',
+          username: '0000-0000',
         },
         PrivateKey.pem,
         {
-          algorithm: "RS256",
+          algorithm: 'RS256',
           issuer: `http://localhost:9229/test`,
-          expiresIn: "24h",
-          keyid: "CognitoLocal",
-        },
+          expiresIn: '24h',
+          keyid: 'CognitoLocal',
+        }
       ),
     });
 
-    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
-      TestContext,
-      user,
-    );
+    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(TestContext, user);
   });
 
   it("throws if token isn't valid", async () => {
     await expect(
       deleteUser(TestContext, {
-        AccessToken: "blah",
-      }),
+        AccessToken: 'blah',
+      })
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -68,24 +66,24 @@ describe("DeleteUser target", () => {
       deleteUser(TestContext, {
         AccessToken: jwt.sign(
           {
-            sub: "0000-0000",
-            event_id: "0",
-            token_use: "access",
-            scope: "aws.cognito.signin.user.admin",
+            sub: '0000-0000',
+            event_id: '0',
+            token_use: 'access',
+            scope: 'aws.cognito.signin.user.admin',
             auth_time: new Date(),
             jti: uuid.v4(),
-            client_id: "test",
-            username: "0000-0000",
+            client_id: 'test',
+            username: '0000-0000',
           },
           PrivateKey.pem,
           {
-            algorithm: "RS256",
+            algorithm: 'RS256',
             issuer: `http://localhost:9229/test`,
-            expiresIn: "24h",
-            keyid: "CognitoLocal",
-          },
+            expiresIn: '24h',
+            keyid: 'CognitoLocal',
+          }
         ),
-      }),
+      })
     ).rejects.toEqual(new NotAuthorizedError());
   });
 });

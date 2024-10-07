@@ -1,40 +1,40 @@
-import { withCognitoSdk } from "./setup.js";
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.respondToAuthChallenge",
+  'CognitoIdentityServiceProvider.respondToAuthChallenge',
   withCognitoSdk((Cognito) => {
-    it("handles NEW_PASSWORD_REQUIRED challenge", async () => {
+    it('handles NEW_PASSWORD_REQUIRED challenge', async () => {
       const client = Cognito();
 
       const upc = await client.createUserPoolClient({
-        UserPoolId: "test",
-        ClientName: "test",
+        UserPoolId: 'test',
+        ClientName: 'test',
       });
 
       await client.adminCreateUser({
-        DesiredDeliveryMediums: ["EMAIL"],
-        TemporaryPassword: "def",
-        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
-        Username: "abc",
-        UserPoolId: "test",
+        DesiredDeliveryMediums: ['EMAIL'],
+        TemporaryPassword: 'def',
+        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+        Username: 'abc',
+        UserPoolId: 'test',
       });
 
       const initiateAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: "USER_PASSWORD_AUTH",
+        AuthFlow: 'USER_PASSWORD_AUTH',
         AuthParameters: {
-          USERNAME: "abc",
-          PASSWORD: "def",
+          USERNAME: 'abc',
+          PASSWORD: 'def',
         },
       });
 
       const response = await client.respondToAuthChallenge({
-        ChallengeName: "NEW_PASSWORD_REQUIRED",
+        ChallengeName: 'NEW_PASSWORD_REQUIRED',
         ClientId: upc.UserPoolClient?.ClientId,
         Session: initiateAuthResponse.Session,
         ChallengeResponses: {
-          USERNAME: "abc",
-          NEW_PASSWORD: "new_password",
+          USERNAME: 'abc',
+          NEW_PASSWORD: 'new_password',
         },
       });
 
@@ -48,5 +48,5 @@ describe(
         ChallengeParameters: {},
       });
     });
-  }),
+  })
 );

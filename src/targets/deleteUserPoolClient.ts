@@ -1,20 +1,18 @@
-import { DeleteUserPoolClientRequest } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, ResourceNotFoundError } from "../errors.js";
-import { Services } from "../services/index.js";
-import { Target } from "./Target.js";
+import { DeleteUserPoolClientRequest } from '@aws-sdk/client-cognito-identity-provider';
 
-export type DeleteUserPoolClientTarget = Target<
-  DeleteUserPoolClientRequest,
-  object
->;
+import { MissingParameterError, ResourceNotFoundError } from '../errors.js';
+import { Services } from '../services/index.js';
+import { Target } from './Target.js';
 
-type DeleteUserPoolClientServices = Pick<Services, "cognito">;
+export type DeleteUserPoolClientTarget = Target<DeleteUserPoolClientRequest, object>;
+
+type DeleteUserPoolClientServices = Pick<Services, 'cognito'>;
 
 export const DeleteUserPoolClient =
   ({ cognito }: DeleteUserPoolClientServices): DeleteUserPoolClientTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.ClientId) throw new MissingParameterError('ClientId');
 
     // TODO: from the docs "Calling this action requires developer credentials.", can we enforce this?
 

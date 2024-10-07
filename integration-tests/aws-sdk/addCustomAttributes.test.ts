@@ -1,15 +1,15 @@
-import { USER_POOL_AWS_DEFAULTS } from "../../src/services/cognitoService.js";
-import { withCognitoSdk } from "./setup.js";
+import { USER_POOL_AWS_DEFAULTS } from '../../src/services/cognitoService.js';
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.addCustomAttributes",
+  'CognitoIdentityServiceProvider.addCustomAttributes',
   withCognitoSdk((Cognito) => {
-    it("updates a user pool", async () => {
+    it('updates a user pool', async () => {
       const client = Cognito();
 
       // create the user pool client
       const up = await client.createUserPool({
-        PoolName: "pool",
+        PoolName: 'pool',
       });
 
       const describeResponse = await client.describeUserPool({
@@ -24,8 +24,8 @@ describe(
         UserPoolId: up.UserPool?.Id,
         CustomAttributes: [
           {
-            AttributeDataType: "String",
-            Name: "test",
+            AttributeDataType: 'String',
+            Name: 'test',
           },
         ],
       });
@@ -38,15 +38,15 @@ describe(
         SchemaAttributes: [
           ...(USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []),
           {
-            AttributeDataType: "String",
+            AttributeDataType: 'String',
             DeveloperOnlyAttribute: false,
             Mutable: true,
-            Name: "custom:test",
+            Name: 'custom:test',
             Required: false,
             StringAttributeConstraints: {},
           },
         ],
       });
     });
-  }),
+  })
 );

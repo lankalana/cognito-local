@@ -1,14 +1,11 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import { UserPoolService } from "../services/index.js";
-import {
-  ListIdentityProviders,
-  ListIdentityProvidersTarget,
-} from "./listIdentityProviders.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { UserPoolService } from '../services/index.js';
+import { ListIdentityProviders, ListIdentityProvidersTarget } from './listIdentityProviders.js';
 
-describe("ListIdentityProviders target", () => {
+describe('ListIdentityProviders target', () => {
   let listIdentityProviders: ListIdentityProvidersTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -19,7 +16,7 @@ describe("ListIdentityProviders target", () => {
     });
   });
 
-  it("lists groups", async () => {
+  it('lists groups', async () => {
     const identityProvider1 = TDB.identityProvider();
     const identityProvider2 = TDB.identityProvider();
 
@@ -29,7 +26,7 @@ describe("ListIdentityProviders target", () => {
     ]);
 
     const output = await listIdentityProviders(TestContext, {
-      UserPoolId: "userPoolId",
+      UserPoolId: 'userPoolId',
     });
 
     expect(output).toBeDefined();
@@ -38,13 +35,13 @@ describe("ListIdentityProviders target", () => {
         CreationDate: identityProvider1.CreationDate,
         ProviderName: identityProvider1.ProviderName,
         LastModifiedDate: identityProvider1.LastModifiedDate,
-        UserPoolId: "userPoolId",
+        UserPoolId: 'userPoolId',
       },
       {
         CreationDate: identityProvider2.CreationDate,
         ProviderName: identityProvider2.ProviderName,
         LastModifiedDate: identityProvider2.LastModifiedDate,
-        UserPoolId: "userPoolId",
+        UserPoolId: 'userPoolId',
       },
     ]);
   });

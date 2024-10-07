@@ -1,42 +1,42 @@
-import { withCognitoSdk } from "./setup.js";
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.updateGroup",
+  'CognitoIdentityServiceProvider.updateGroup',
   withCognitoSdk((Cognito) => {
-    it("updates a group", async () => {
+    it('updates a group', async () => {
       const client = Cognito();
 
       await client.createGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
-        Description: "original description",
+        GroupName: 'abc',
+        UserPoolId: 'test',
+        Description: 'original description',
       });
 
       const getGroupResponse = await client.getGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
+        GroupName: 'abc',
+        UserPoolId: 'test',
       });
 
       expect(getGroupResponse.Group).toMatchObject({
-        GroupName: "abc",
-        Description: "original description",
+        GroupName: 'abc',
+        Description: 'original description',
       });
 
       await client.updateGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
-        Description: "new description",
+        GroupName: 'abc',
+        UserPoolId: 'test',
+        Description: 'new description',
       });
 
       const getGroupResponseAfterUpdate = await client.getGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
+        GroupName: 'abc',
+        UserPoolId: 'test',
       });
 
       expect(getGroupResponseAfterUpdate.Group).toMatchObject({
-        GroupName: "abc",
-        Description: "new description",
+        GroupName: 'abc',
+        Description: 'new description',
       });
     });
-  }),
+  })
 );

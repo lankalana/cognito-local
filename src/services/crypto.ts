@@ -1,10 +1,7 @@
-import {
-  buildClient,
-  CommitmentPolicy,
-  KmsKeyringNode,
-} from "@aws-crypto/client-node";
-import { KMS, KMSClientConfig } from "@aws-sdk/client-kms";
-import { Context } from "./context.js";
+import { buildClient, CommitmentPolicy, KmsKeyringNode } from '@aws-crypto/client-node';
+import { KMS, KMSClientConfig } from '@aws-sdk/client-kms';
+
+import { Context } from './context.js';
 
 export interface KMSConfig {
   KMSKeyId?: string;
@@ -28,7 +25,7 @@ export class CryptoService {
 
     if (!this.config || !this.config.KMSKeyAlias || !this.config.KMSKeyId) {
       throw new Error(
-        "KMSConfig.KMSKeyAlias and KMSConfig.KMSKeyId is required when using a CustomEmailSender trigger.",
+        'KMSConfig.KMSKeyAlias and KMSConfig.KMSKeyId is required when using a CustomEmailSender trigger.'
       );
     }
 
@@ -45,13 +42,13 @@ export class CryptoService {
   }
 
   async encrypt(ctx: Context, plaintext: string): Promise<string> {
-    ctx.logger.debug({ plaintext }, "encrypting code");
+    ctx.logger.debug({ plaintext }, 'encrypting code');
 
     const { result } = await encrypt(this.keyringNode, plaintext);
 
-    const encryptedCode = result.toString("base64");
+    const encryptedCode = result.toString('base64');
 
-    ctx.logger.debug({ encryptedCode }, "code succesfully encrypted");
+    ctx.logger.debug({ encryptedCode }, 'code succesfully encrypted');
 
     return encryptedCode;
   }

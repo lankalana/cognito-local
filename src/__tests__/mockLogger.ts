@@ -1,4 +1,4 @@
-import { LogService } from "../services/LogService.js";
+import { LogService } from '../services/LogService.js';
 
 export const MockLogger = {
   info: jest.fn(),

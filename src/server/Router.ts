@@ -1,8 +1,8 @@
-import { Services } from "../services/index.js";
-import { UnsupportedError } from "../errors.js";
-import { isSupportedTarget } from "../targets/Target.js";
-import { Targets } from "../targets/targets.js";
-import { Context } from "../services/context.js";
+import { UnsupportedError } from '../errors.js';
+import { Context } from '../services/context.js';
+import { Services } from '../services/index.js';
+import { isSupportedTarget } from '../targets/Target.js';
+import { Targets } from '../targets/targets.js';
 
 // eslint-disable-next-line
 export type Route = (ctx: Context, req: any) => Promise<unknown>;
@@ -13,9 +13,7 @@ export const Router =
   (target: string) => {
     if (!isSupportedTarget(target)) {
       return () =>
-        Promise.reject(
-          new UnsupportedError(`Unsupported x-amz-target header "${target}"`),
-        );
+        Promise.reject(new UnsupportedError(`Unsupported x-amz-target header "${target}"`));
     }
 
     const t = Targets[target](services);
@@ -25,16 +23,16 @@ export const Router =
         target,
       });
 
-      targetLogger.debug("start");
+      targetLogger.debug('start');
       const res = await t(
         {
           ...ctx,
           logger: targetLogger,
         },
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        req,
+        req
       );
-      targetLogger.debug("end");
+      targetLogger.debug('end');
       return res;
     };
   };

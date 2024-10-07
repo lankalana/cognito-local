@@ -1,56 +1,44 @@
-import { ClockFake } from "../__tests__/clockFake.js";
-import {
-  AttributeType,
-  UsernameAttributeType,
-} from "@aws-sdk/client-cognito-identity-provider";
-import {
-  newMockDataStore,
-  newMockDataStoreFactory,
-} from "../__tests__/mockDataStore.js";
-import { TestContext } from "../__tests__/testContext.js";
-import { AppClient } from "./appClient.js";
-import { DataStore } from "./dataStore/dataStore.js";
+import { AttributeType, UsernameAttributeType } from '@aws-sdk/client-cognito-identity-provider';
+
+import { ClockFake } from '../__tests__/clockFake.js';
+import { newMockDataStore, newMockDataStoreFactory } from '../__tests__/mockDataStore.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { AppClient } from './appClient.js';
+import { DataStore } from './dataStore/dataStore.js';
 import {
   attributesFromRecord,
   attributesInclude,
   attributesIncludeMatch,
   attributesToRecord,
-  User,
-  UserPoolService,
-  UserPoolServiceImpl,
   Group,
-  UserPoolServiceFactoryImpl,
+  User,
   UserPool,
-} from "./userPoolService.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
+  UserPoolService,
+  UserPoolServiceFactoryImpl,
+  UserPoolServiceImpl,
+} from './userPoolService.js';
 
-describe("UserPoolServiceFactory", () => {
-  it("creates a database", async () => {
+describe('UserPoolServiceFactory', () => {
+  it('creates a database', async () => {
     const mockDataStoreFactory = newMockDataStoreFactory(newMockDataStore());
 
     const clientsDataStore = newMockDataStore();
-    const factory = new UserPoolServiceFactoryImpl(
-      new ClockFake(new Date()),
-      mockDataStoreFactory,
-    );
+    const factory = new UserPoolServiceFactoryImpl(new ClockFake(new Date()), mockDataStoreFactory);
 
     await factory.create(TestContext, clientsDataStore, {
-      Id: "local",
+      Id: 'local',
       UsernameAttributes: [],
     });
 
-    expect(mockDataStoreFactory.create).toHaveBeenCalledWith(
-      TestContext,
-      "local",
-      {
-        Options: { Id: "local", UsernameAttributes: [] },
-        Users: {},
-      },
-    );
+    expect(mockDataStoreFactory.create).toHaveBeenCalledWith(TestContext, 'local', {
+      Options: { Id: 'local', UsernameAttributes: [] },
+      Users: {},
+    });
   });
 });
 
-describe("User Pool Service", () => {
+describe('User Pool Service', () => {
   let mockClientsDataStore: jest.Mocked<DataStore>;
   const currentDate = new Date(2020, 1, 2, 3, 4, 5);
 
@@ -62,174 +50,125 @@ describe("User Pool Service", () => {
     mockClientsDataStore = newMockDataStore();
   });
 
-  describe("saveAppClient", () => {
-    it("saves an app client", async () => {
+  describe('saveAppClient', () => {
+    it('saves an app client', async () => {
       const ds = newMockDataStore();
-      ds.get.mockImplementation((ctx, key, defaults) =>
-        Promise.resolve(defaults),
-      );
+      ds.get.mockImplementation((ctx, key, defaults) => Promise.resolve(defaults));
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       const appClient: AppClient = {
-        ClientId: "clientId",
-        ClientName: "clientName",
+        ClientId: 'clientId',
+        ClientName: 'clientName',
         CreationDate: currentDate,
         LastModifiedDate: currentDate,
         RefreshTokenValidity: 30,
-        UserPoolId: "local",
+        UserPoolId: 'local',
       };
 
       await userPool.saveAppClient(TestContext, appClient);
 
       expect(mockClientsDataStore.set).toHaveBeenCalledWith(
         TestContext,
-        ["Clients", "clientId"],
-        appClient,
+        ['Clients', 'clientId'],
+        appClient
       );
     });
   });
 
-  describe("saveGroup", () => {
+  describe('saveGroup', () => {
     const group = TDB.group();
 
-    it("saves the group", async () => {
+    it('saves the group', async () => {
       const ds = newMockDataStore();
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.saveGroup(TestContext, group);
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", group.GroupName],
-        group,
-      );
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', group.GroupName], group);
     });
   });
 
-  describe("saveUser", () => {
+  describe('saveUser', () => {
     const user = TDB.user();
 
-    it("saves the user", async () => {
+    it('saves the user', async () => {
       const ds = newMockDataStore();
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.saveUser(TestContext, user);
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Users", user.Username],
-        user,
-      );
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Users', user.Username], user);
     });
   });
 
-  describe("deleteAppClient", () => {
+  describe('deleteAppClient', () => {
     const appClient = TDB.appClient();
 
-    it("deletes the user pool client", async () => {
+    it('deletes the user pool client', async () => {
       const clientsDs = newMockDataStore();
 
-      const userPool = new UserPoolServiceImpl(
-        clientsDs,
-        clock,
-        newMockDataStore(),
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(clientsDs, clock, newMockDataStore(), {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.deleteAppClient(TestContext, appClient);
 
-      expect(clientsDs.delete).toHaveBeenCalledWith(TestContext, [
-        "Clients",
-        appClient.ClientId,
-      ]);
+      expect(clientsDs.delete).toHaveBeenCalledWith(TestContext, ['Clients', appClient.ClientId]);
     });
   });
 
-  describe("deleteGroup", () => {
+  describe('deleteGroup', () => {
     const group = TDB.group();
 
-    it("deletes the group", async () => {
+    it('deletes the group', async () => {
       const ds = newMockDataStore();
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.deleteGroup(TestContext, group);
 
-      expect(ds.delete).toHaveBeenCalledWith(TestContext, [
-        "Groups",
-        group.GroupName,
-      ]);
+      expect(ds.delete).toHaveBeenCalledWith(TestContext, ['Groups', group.GroupName]);
     });
   });
 
-  describe("deleteUser", () => {
+  describe('deleteUser', () => {
     const user = TDB.user();
 
-    it("deletes the user", async () => {
+    it('deletes the user', async () => {
       const ds = newMockDataStore();
 
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Groups") {
+        if (key === 'Groups') {
           return Promise.resolve({});
         }
 
         return Promise.resolve(null);
       });
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.deleteUser(TestContext, user);
 
-      expect(ds.delete).toHaveBeenCalledWith(TestContext, [
-        "Users",
-        user.Username,
-      ]);
+      expect(ds.delete).toHaveBeenCalledWith(TestContext, ['Users', user.Username]);
     });
 
     it("removes the user from any groups they're assigned to", async () => {
@@ -248,65 +187,49 @@ describe("User Pool Service", () => {
 
       const ds = newMockDataStore();
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Groups") {
+        if (key === 'Groups') {
           return Promise.resolve(groups);
-        } else if (Array.isArray(key) && key[0] === "Groups") {
+        } else if (Array.isArray(key) && key[0] === 'Groups') {
           return Promise.resolve(groups[key[1]]);
         }
 
         return Promise.resolve(null);
       });
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       const newDate = new Date();
       clock.advanceTo(newDate);
 
       await userPool.deleteUser(TestContext, user);
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", group1.GroupName],
-        {
-          ...group1,
-          LastModifiedDate: newDate,
-          members: [],
-        },
-      );
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", group2.GroupName],
-        {
-          ...group2,
-          LastModifiedDate: newDate,
-          members: [],
-        },
-      );
-      expect(ds.set).not.toHaveBeenCalledWith(TestContext, [
-        "Groups",
-        group3.GroupName,
-      ]);
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', group1.GroupName], {
+        ...group1,
+        LastModifiedDate: newDate,
+        members: [],
+      });
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', group2.GroupName], {
+        ...group2,
+        LastModifiedDate: newDate,
+        members: [],
+      });
+      expect(ds.set).not.toHaveBeenCalledWith(TestContext, ['Groups', group3.GroupName]);
     });
   });
 
-  describe("getGroupsByGroupName", () => {
+  describe('getGroupsByGroupName', () => {
     const group = TDB.group({
-      GroupName: "1",
+      GroupName: '1',
     });
 
     let userPool: UserPoolService;
 
     beforeEach(() => {
       const options = {
-        Id: "local",
+        Id: 'local',
       };
       const groups: Record<string, Group> = {
         [group.GroupName]: group,
@@ -314,62 +237,51 @@ describe("User Pool Service", () => {
 
       const ds = newMockDataStore();
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Groups") {
+        if (key === 'Groups') {
           return Promise.resolve(groups);
-        } else if (key === "Options") {
+        } else if (key === 'Options') {
           return Promise.resolve(options);
-        } else if (Array.isArray(key) && key[0] === "Groups") {
+        } else if (Array.isArray(key) && key[0] === 'Groups') {
           return Promise.resolve(groups[key[1]]);
         }
 
         return Promise.resolve(null);
       });
 
-      userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        options,
-      );
+      userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, options);
     });
 
     it("returns null if group doesn't exist", async () => {
-      const foundGroup = await userPool.getGroupByGroupName(
-        TestContext,
-        "invalid",
-      );
+      const foundGroup = await userPool.getGroupByGroupName(TestContext, 'invalid');
 
       expect(foundGroup).toBeNull();
     });
 
-    it("returns existing group by their group name", async () => {
-      const foundGroup = await userPool.getGroupByGroupName(
-        TestContext,
-        group.GroupName,
-      );
+    it('returns existing group by their group name', async () => {
+      const foundGroup = await userPool.getGroupByGroupName(TestContext, group.GroupName);
 
       expect(foundGroup).toEqual(group);
     });
   });
 
-  describe("getUserByUsername", () => {
+  describe('getUserByUsername', () => {
     const user = TDB.user({
-      Username: "1",
+      Username: '1',
       Attributes: [
-        { Name: "sub", Value: "uuid-1234" },
-        { Name: "email", Value: "example@example.com" },
-        { Name: "phone_number", Value: "0411000111" },
+        { Name: 'sub', Value: 'uuid-1234' },
+        { Name: 'email', Value: 'example@example.com' },
+        { Name: 'phone_number', Value: '0411000111' },
       ],
     });
 
     describe.each`
       username_attributes          | find_by_email | find_by_phone_number
       ${[]}                        | ${false}      | ${false}
-      ${["email"]}                 | ${true}       | ${false}
-      ${["phone_number"]}          | ${false}      | ${true}
-      ${["email", "phone_number"]} | ${true}       | ${true}
+      ${['email']}                 | ${true}       | ${false}
+      ${['phone_number']}          | ${false}      | ${true}
+      ${['email', 'phone_number']} | ${true}       | ${true}
     `(
-      "$username_attributes username attributes",
+      '$username_attributes username attributes',
       ({
         username_attributes,
         find_by_email,
@@ -383,7 +295,7 @@ describe("User Pool Service", () => {
 
         beforeEach(() => {
           const options: UserPool = {
-            Id: "local",
+            Id: 'local',
             UsernameAttributes: username_attributes,
           };
           const users: Record<string, User> = {
@@ -392,105 +304,82 @@ describe("User Pool Service", () => {
 
           const ds = newMockDataStore();
           ds.get.mockImplementation((ctx, key) => {
-            if (key === "Users") {
+            if (key === 'Users') {
               return Promise.resolve(users);
-            } else if (key === "Options") {
+            } else if (key === 'Options') {
               return Promise.resolve(options);
-            } else if (Array.isArray(key) && key[0] === "Users") {
+            } else if (Array.isArray(key) && key[0] === 'Users') {
               return Promise.resolve(users[key[1]]);
             }
 
             return Promise.resolve(null);
           });
 
-          userPool = new UserPoolServiceImpl(
-            mockClientsDataStore,
-            clock,
-            ds,
-            options,
-          );
+          userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, options);
         });
 
         it("returns null if user doesn't exist", async () => {
-          const user = await userPool.getUserByUsername(TestContext, "invalid");
+          const user = await userPool.getUserByUsername(TestContext, 'invalid');
 
           expect(user).toBeNull();
         });
 
-        it("returns existing user by their username", async () => {
-          const foundUser = await userPool.getUserByUsername(
-            TestContext,
-            user.Username,
-          );
+        it('returns existing user by their username', async () => {
+          const foundUser = await userPool.getUserByUsername(TestContext, user.Username);
 
           expect(foundUser).toEqual(user);
         });
 
-        it("returns existing user by their sub", async () => {
-          const foundUser = await userPool.getUserByUsername(
-            TestContext,
-            "uuid-1234",
-          );
+        it('returns existing user by their sub', async () => {
+          const foundUser = await userPool.getUserByUsername(TestContext, 'uuid-1234');
 
           expect(foundUser).toEqual(user);
         });
 
         if (find_by_email) {
-          it("returns existing user by their email", async () => {
-            const foundUser = await userPool.getUserByUsername(
-              TestContext,
-              "example@example.com",
-            );
+          it('returns existing user by their email', async () => {
+            const foundUser = await userPool.getUserByUsername(TestContext, 'example@example.com');
 
             expect(foundUser).toEqual(foundUser);
           });
         } else {
-          it("does not return the user by their email", async () => {
-            const foundUser = await userPool.getUserByUsername(
-              TestContext,
-              "example@example.com",
-            );
+          it('does not return the user by their email', async () => {
+            const foundUser = await userPool.getUserByUsername(TestContext, 'example@example.com');
 
             expect(foundUser).toBeNull();
           });
         }
 
         if (find_by_phone_number) {
-          it("returns existing user by their phone number", async () => {
-            const foundUser = await userPool.getUserByUsername(
-              TestContext,
-              "0411000111",
-            );
+          it('returns existing user by their phone number', async () => {
+            const foundUser = await userPool.getUserByUsername(TestContext, '0411000111');
 
             expect(foundUser).toEqual(user);
           });
         } else {
-          it("does not return the user by their phone number", async () => {
-            const foundUser = await userPool.getUserByUsername(
-              TestContext,
-              "0411000111",
-            );
+          it('does not return the user by their phone number', async () => {
+            const foundUser = await userPool.getUserByUsername(TestContext, '0411000111');
 
             expect(foundUser).toBeNull();
           });
         }
-      },
+      }
     );
   });
 
-  describe("listUsers", () => {
+  describe('listUsers', () => {
     const user1 = TDB.user({
-      Username: "1",
+      Username: '1',
     });
     const user2 = TDB.user({
-      Username: "2",
+      Username: '2',
     });
 
     let userPool: UserPoolService;
 
     beforeEach(() => {
       const options = {
-        Id: "local",
+        Id: 'local',
       };
 
       const users = {
@@ -500,28 +389,28 @@ describe("User Pool Service", () => {
 
       const ds = newMockDataStore();
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Users") {
+        if (key === 'Users') {
           return Promise.resolve(users);
-        } else if (key === "Options") {
+        } else if (key === 'Options') {
           return Promise.resolve(options);
         }
 
         return Promise.resolve(null);
       });
       userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
-        Id: "local",
+        Id: 'local',
         UsernameAttributes: [],
       });
     });
 
-    it("returns existing users", async () => {
+    it('returns existing users', async () => {
       const users = await userPool.listUsers(TestContext);
 
       expect(users).not.toBeNull();
       expect(users).toEqual([user1, user2]);
     });
 
-    it("can filter users", async () => {
+    it('can filter users', async () => {
       const users = await userPool.listUsers(TestContext, 'username = "2"');
 
       expect(users).not.toBeNull();
@@ -529,228 +418,184 @@ describe("User Pool Service", () => {
     });
   });
 
-  describe("attributes", () => {
+  describe('attributes', () => {
     const attributes: AttributeType[] = [
-      { Name: "sub", Value: "uuid" },
-      { Name: "email", Value: "example@example.com" },
+      { Name: 'sub', Value: 'uuid' },
+      { Name: 'email', Value: 'example@example.com' },
     ];
 
-    describe("attributesIncludeMatch", () => {
-      it("returns true if attribute exists in collection with matching name and value", () => {
-        expect(
-          attributesIncludeMatch("email", "example@example.com", attributes),
-        ).toBe(true);
+    describe('attributesIncludeMatch', () => {
+      it('returns true if attribute exists in collection with matching name and value', () => {
+        expect(attributesIncludeMatch('email', 'example@example.com', attributes)).toBe(true);
       });
 
-      it("returns false if attribute exists in collection with matching name but not matching value", () => {
-        expect(attributesIncludeMatch("email", "invalid", attributes)).toBe(
-          false,
-        );
+      it('returns false if attribute exists in collection with matching name but not matching value', () => {
+        expect(attributesIncludeMatch('email', 'invalid', attributes)).toBe(false);
       });
 
-      it("returns false if attribute does not exist in collection", () => {
-        expect(attributesIncludeMatch("invalid", "invalid", attributes)).toBe(
-          false,
-        );
+      it('returns false if attribute does not exist in collection', () => {
+        expect(attributesIncludeMatch('invalid', 'invalid', attributes)).toBe(false);
       });
     });
 
-    describe("attributesInclude", () => {
-      it("returns true if attribute exists in collection with matching name", () => {
-        expect(attributesInclude("email", attributes)).toBe(true);
+    describe('attributesInclude', () => {
+      it('returns true if attribute exists in collection with matching name', () => {
+        expect(attributesInclude('email', attributes)).toBe(true);
       });
 
-      it("returns false if attribute does not exist in collection", () => {
-        expect(attributesInclude("invalid", attributes)).toBe(false);
+      it('returns false if attribute does not exist in collection', () => {
+        expect(attributesInclude('invalid', attributes)).toBe(false);
       });
     });
 
-    describe("attributesToRecord", () => {
-      it("converts the attributes to a record", () => {
+    describe('attributesToRecord', () => {
+      it('converts the attributes to a record', () => {
         expect(attributesToRecord(attributes)).toEqual({
-          sub: "uuid",
-          email: "example@example.com",
+          sub: 'uuid',
+          email: 'example@example.com',
         });
       });
     });
 
-    describe("attributesFromRecord", () => {
-      it("converts the attributes to a record", () => {
+    describe('attributesFromRecord', () => {
+      it('converts the attributes to a record', () => {
         expect(
           attributesFromRecord({
-            sub: "uuid",
-            email: "example@example.com",
-          }),
+            sub: 'uuid',
+            email: 'example@example.com',
+          })
         ).toEqual(attributes);
       });
     });
   });
 
-  describe("saveGroup", () => {
-    it("saves the group", async () => {
+  describe('saveGroup', () => {
+    it('saves the group', async () => {
       const now = new Date();
       const ds = newMockDataStore();
 
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "local",
-          UsernameAttributes: [],
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'local',
+        UsernameAttributes: [],
+      });
 
       await userPool.saveGroup(TestContext, {
         CreationDate: now,
-        Description: "Description",
-        GroupName: "theGroupName",
+        Description: 'Description',
+        GroupName: 'theGroupName',
         LastModifiedDate: now,
         Precedence: 1,
-        RoleArn: "ARN",
+        RoleArn: 'ARN',
       });
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", "theGroupName"],
-        {
-          CreationDate: now,
-          Description: "Description",
-          GroupName: "theGroupName",
-          LastModifiedDate: now,
-          Precedence: 1,
-          RoleArn: "ARN",
-        },
-      );
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', 'theGroupName'], {
+        CreationDate: now,
+        Description: 'Description',
+        GroupName: 'theGroupName',
+        LastModifiedDate: now,
+        Precedence: 1,
+        RoleArn: 'ARN',
+      });
     });
   });
 
-  describe("listGroups", () => {
+  describe('listGroups', () => {
     let userPool: UserPoolService;
 
     beforeEach(() => {
       const options = {
-        Id: "local",
+        Id: 'local',
       };
       const groups: Record<string, Group> = {
         theGroupName: {
           CreationDate: new Date(),
-          Description: "Description",
-          GroupName: "theGroupName",
+          Description: 'Description',
+          GroupName: 'theGroupName',
           LastModifiedDate: new Date(),
           Precedence: 1,
-          RoleArn: "ARN",
+          RoleArn: 'ARN',
         },
       };
 
       const ds = newMockDataStore();
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Groups") {
+        if (key === 'Groups') {
           return Promise.resolve(groups);
-        } else if (key === "Options") {
+        } else if (key === 'Options') {
           return Promise.resolve(options);
         }
 
         return Promise.resolve(null);
       });
-      userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        options,
-      );
+      userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, options);
     });
 
-    it("returns existing groups", async () => {
+    it('returns existing groups', async () => {
       const groups = await userPool.listGroups(TestContext);
 
       expect(groups).not.toBeNull();
       expect(groups).toHaveLength(1);
-      expect(groups[0].GroupName).toEqual("theGroupName");
+      expect(groups[0].GroupName).toEqual('theGroupName');
     });
   });
 
-  describe("updateOptions", () => {
-    it("updates the options in the datastore", async () => {
+  describe('updateOptions', () => {
+    it('updates the options in the datastore', async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
-
-      await userPool.updateOptions(TestContext, {
-        Id: "test",
-        MfaConfiguration: "ON",
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
       });
 
-      expect(ds.set).toHaveBeenCalledWith(TestContext, "Options", {
-        Id: "test",
-        MfaConfiguration: "ON",
+      await userPool.updateOptions(TestContext, {
+        Id: 'test',
+        MfaConfiguration: 'ON',
+      });
+
+      expect(ds.set).toHaveBeenCalledWith(TestContext, 'Options', {
+        Id: 'test',
+        MfaConfiguration: 'ON',
       });
     });
 
-    it("updates the cached options", async () => {
+    it('updates the cached options', async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
-
-      await userPool.updateOptions(TestContext, {
-        Id: "test",
-        MfaConfiguration: "ON",
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
       });
 
-      expect(userPool.options.MfaConfiguration).toEqual("ON");
+      await userPool.updateOptions(TestContext, {
+        Id: 'test',
+        MfaConfiguration: 'ON',
+      });
+
+      expect(userPool.options.MfaConfiguration).toEqual('ON');
     });
   });
 
-  describe("addUserToGroup", () => {
+  describe('addUserToGroup', () => {
     it("updates the group's members", async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
+      });
 
       const user = TDB.user();
       const group = TDB.group();
 
       await userPool.addUserToGroup(TestContext, group, user);
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", group.GroupName],
-        {
-          ...group,
-          LastModifiedDate: clock.get(),
-          members: [user.Username],
-        },
-      );
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', group.GroupName], {
+        ...group,
+        LastModifiedDate: clock.get(),
+        members: [user.Username],
+      });
     });
 
-    it("only adds the user once", async () => {
+    it('only adds the user once', async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
+      });
 
       const user = TDB.user();
       const group = TDB.group({
@@ -763,17 +608,12 @@ describe("User Pool Service", () => {
     });
   });
 
-  describe("removeUserFromGroup", () => {
+  describe('removeUserFromGroup', () => {
     it("updates the group's members", async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
+      });
 
       const user = TDB.user();
       const group = TDB.group({
@@ -782,41 +622,32 @@ describe("User Pool Service", () => {
 
       await userPool.removeUserFromGroup(TestContext, group, user);
 
-      expect(ds.set).toHaveBeenCalledWith(
-        TestContext,
-        ["Groups", group.GroupName],
-        {
-          ...group,
-          LastModifiedDate: clock.get(),
-          members: [],
-        },
-      );
+      expect(ds.set).toHaveBeenCalledWith(TestContext, ['Groups', group.GroupName], {
+        ...group,
+        LastModifiedDate: clock.get(),
+        members: [],
+      });
     });
   });
 
-  describe("listUserGroupMembership", () => {
-    it("returns all the groups that the user is a member", async () => {
+  describe('listUserGroupMembership', () => {
+    it('returns all the groups that the user is a member', async () => {
       const ds = newMockDataStore();
-      const userPool = new UserPoolServiceImpl(
-        mockClientsDataStore,
-        clock,
-        ds,
-        {
-          Id: "test",
-        },
-      );
+      const userPool = new UserPoolServiceImpl(mockClientsDataStore, clock, ds, {
+        Id: 'test',
+      });
 
       const user = TDB.user();
       const group1 = TDB.group({
-        GroupName: "Group1",
+        GroupName: 'Group1',
         members: [user.Username],
       });
       const group2 = TDB.group({
-        GroupName: "Group2",
+        GroupName: 'Group2',
         members: [user.Username],
       });
       const group3 = TDB.group({
-        GroupName: "Group3",
+        GroupName: 'Group3',
         members: [],
       });
       const groups = {
@@ -826,17 +657,14 @@ describe("User Pool Service", () => {
       };
 
       ds.get.mockImplementation((ctx, key) => {
-        if (key === "Groups") {
+        if (key === 'Groups') {
           return Promise.resolve(groups);
         }
 
         return Promise.resolve(null);
       });
 
-      const groupMembership = await userPool.listUserGroupMembership(
-        TestContext,
-        user,
-      );
+      const groupMembership = await userPool.listUserGroupMembership(TestContext, user);
 
       expect(groupMembership).toEqual([group1.GroupName, group2.GroupName]);
     });

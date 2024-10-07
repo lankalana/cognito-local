@@ -1,11 +1,11 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { CognitoService, UserPoolService } from "../services/index.js";
-import { UpdateUserPool, UpdateUserPoolTarget } from "./updateUserPool.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { CognitoService, UserPoolService } from '../services/index.js';
+import { UpdateUserPool, UpdateUserPoolTarget } from './updateUserPool.js';
 
-describe("UpdateUserPool target", () => {
+describe('UpdateUserPool target', () => {
   let updateUserPool: UpdateUserPoolTarget;
   let mockCognitoService: jest.Mocked<CognitoService>;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
@@ -19,9 +19,9 @@ describe("UpdateUserPool target", () => {
     });
   });
 
-  it("updates a user pool", async () => {
+  it('updates a user pool', async () => {
     const existingUserPool = TDB.userPool({
-      Name: "name",
+      Name: 'name',
     });
 
     const userPoolService = newMockUserPoolService(existingUserPool);
@@ -30,12 +30,12 @@ describe("UpdateUserPool target", () => {
 
     await updateUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,
-      MfaConfiguration: "OPTIONAL",
+      MfaConfiguration: 'OPTIONAL',
     });
 
     expect(userPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
       ...existingUserPool,
-      MfaConfiguration: "OPTIONAL",
+      MfaConfiguration: 'OPTIONAL',
     });
   });
 

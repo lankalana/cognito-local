@@ -1,15 +1,15 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { IdentityProviderNotFoundError } from "../errors.js";
-import { UserPoolService } from "../services/index.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { IdentityProviderNotFoundError } from '../errors.js';
+import { UserPoolService } from '../services/index.js';
 import {
   GetIdentityProviderByIdentifier,
   GetIdentityProviderByIdentifierTarget,
-} from "./getIdentityProviderByIdentifier.js";
+} from './getIdentityProviderByIdentifier.js';
 
-describe("GetIdentityProviderByIdentifier target", () => {
+describe('GetIdentityProviderByIdentifier target', () => {
   let getIdentityProviderByIdentifier: GetIdentityProviderByIdentifierTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -21,24 +21,23 @@ describe("GetIdentityProviderByIdentifier target", () => {
     });
   });
 
-  it("gets an identity provider", async () => {
-    const IdpIdentifier = "identifier";
+  it('gets an identity provider', async () => {
+    const IdpIdentifier = 'identifier';
     const existingIdentityProvider = TDB.identityProvider({
       IdpIdentifiers: [IdpIdentifier],
     });
 
-    mockUserPoolService.getIdentityProviderByIdentifier.mockResolvedValue(
-      existingIdentityProvider,
-    );
+    mockUserPoolService.getIdentityProviderByIdentifier.mockResolvedValue(existingIdentityProvider);
 
     const result = await getIdentityProviderByIdentifier(TestContext, {
       IdpIdentifier: IdpIdentifier,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
-    expect(
-      mockUserPoolService.getIdentityProviderByIdentifier,
-    ).toHaveBeenCalledWith(TestContext, IdpIdentifier);
+    expect(mockUserPoolService.getIdentityProviderByIdentifier).toHaveBeenCalledWith(
+      TestContext,
+      IdpIdentifier
+    );
 
     expect(result.IdentityProvider).toEqual({
       ProviderName: existingIdentityProvider.ProviderName,
@@ -48,7 +47,7 @@ describe("GetIdentityProviderByIdentifier target", () => {
       IdpIdentifiers: existingIdentityProvider.IdpIdentifiers,
       LastModifiedDate: existingIdentityProvider.LastModifiedDate,
       CreationDate: existingIdentityProvider.CreationDate,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
   });
 
@@ -57,9 +56,9 @@ describe("GetIdentityProviderByIdentifier target", () => {
 
     await expect(
       getIdentityProviderByIdentifier(TestContext, {
-        IdpIdentifier: "identifier",
-        UserPoolId: "test",
-      }),
+        IdpIdentifier: 'identifier',
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new IdentityProviderNotFoundError());
   });
 });

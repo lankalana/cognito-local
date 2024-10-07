@@ -1,5 +1,5 @@
-import { ClockFake } from "../../src/__tests__/clockFake.js";
-import { withCognitoSdk } from "./setup.js";
+import { ClockFake } from '../../src/__tests__/clockFake.js';
+import { withCognitoSdk } from './setup.js';
 
 const currentDate = new Date();
 const roundedDate = new Date(currentDate.getTime());
@@ -8,23 +8,23 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  "CognitoIdentityServiceProvider.adminGetUser",
+  'CognitoIdentityServiceProvider.adminGetUser',
   withCognitoSdk(
     (Cognito) => {
-      it("gets a user", async () => {
+      it('gets a user', async () => {
         const client = Cognito();
 
         // create the user
         const createUserResult = await client.adminCreateUser({
-          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-          Username: "abc",
-          UserPoolId: "test",
+          UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
+          Username: 'abc',
+          UserPoolId: 'test',
         });
 
         // verify they exist
         const result = await client.adminGetUser({
-          Username: "abc",
-          UserPoolId: "test",
+          Username: 'abc',
+          UserPoolId: 'test',
         });
 
         expect(result).toEqual({
@@ -40,6 +40,6 @@ describe(
     },
     {
       clock,
-    },
-  ),
+    }
+  )
 );

@@ -1,35 +1,35 @@
-import { GroupNotFoundError } from "../../src/errors.js";
-import { withCognitoSdk } from "./setup.js";
+import { GroupNotFoundError } from '../../src/errors.js';
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.deleteGroup",
+  'CognitoIdentityServiceProvider.deleteGroup',
   withCognitoSdk((Cognito) => {
-    it("deletes a group", async () => {
+    it('deletes a group', async () => {
       const client = Cognito();
 
       await client.createGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
+        GroupName: 'abc',
+        UserPoolId: 'test',
       });
 
       const getGroupResponse = await client.getGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
+        GroupName: 'abc',
+        UserPoolId: 'test',
       });
 
       expect(getGroupResponse.Group).toBeDefined();
 
       await client.deleteGroup({
-        GroupName: "abc",
-        UserPoolId: "test",
+        GroupName: 'abc',
+        UserPoolId: 'test',
       });
 
       await expect(
         client.getGroup({
-          GroupName: "abc",
-          UserPoolId: "test",
-        }),
+          GroupName: 'abc',
+          UserPoolId: 'test',
+        })
       ).rejects.toMatchObject(new GroupNotFoundError());
     });
-  }),
+  })
 );

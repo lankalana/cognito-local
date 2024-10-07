@@ -1,4 +1,4 @@
-import { Triggers } from "../services/index.js";
+import { Triggers } from '../services/index.js';
 
 export const newMockTriggers = (): jest.Mocked<Triggers> => ({
   customMessage: jest.fn(),

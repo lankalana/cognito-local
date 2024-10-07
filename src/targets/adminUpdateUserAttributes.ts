@@ -1,24 +1,21 @@
 import {
   AdminUpdateUserAttributesRequest,
   AdminUpdateUserAttributesResponse,
-} from "@aws-sdk/client-cognito-identity-provider";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  NotAuthorizedError,
-} from "../errors.js";
-import { Messages, Services, UserPoolService } from "../services/index.js";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
-import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod.js";
+} from '@aws-sdk/client-cognito-identity-provider';
+
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from '../errors.js';
+import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
+import { Context } from '../services/context.js';
+import { Messages, Services, UserPoolService } from '../services/index.js';
+import { selectAppropriateDeliveryMethod } from '../services/messageDelivery/deliveryMethod.js';
 import {
   attributesAppend,
   defaultVerifiedAttributesIfModified,
   hasUnverifiedContactAttributes,
   User,
   validatePermittedAttributeChanges,
-} from "../services/userPoolService.js";
-import { Target } from "./Target.js";
-import { Context } from "../services/context.js";
+} from '../services/userPoolService.js';
+import { Target } from './Target.js';
 
 const sendAttributeVerificationCode = async (
   ctx: Context,
@@ -26,28 +23,28 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: AdminUpdateUserAttributesRequest,
-  code: string,
+  code: string
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user,
+    user
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes",
+      'User has no attribute matching desired auto verified attributes'
     );
   }
 
   await messages.deliver(
     ctx,
-    "UpdateUserAttribute",
+    'UpdateUserAttribute',
     null,
     userPool.options.Id,
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails,
+    deliveryDetails
   );
 };
 
@@ -56,10 +53,7 @@ export type AdminUpdateUserAttributesTarget = Target<
   AdminUpdateUserAttributesResponse
 >;
 
-type AdminUpdateUserAttributesServices = Pick<
-  Services,
-  "clock" | "cognito" | "otp" | "messages"
->;
+type AdminUpdateUserAttributesServices = Pick<Services, 'clock' | 'cognito' | 'otp' | 'messages'>;
 
 export const AdminUpdateUserAttributes =
   ({
@@ -69,9 +63,9 @@ export const AdminUpdateUserAttributes =
     messages,
   }: AdminUpdateUserAttributesServices): AdminUpdateUserAttributesTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    if (!req.Username) throw new MissingParameterError("Username");
-    if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
+    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserAttributes) throw new MissingParameterError('UserAttributes');
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -86,10 +80,8 @@ export const AdminUpdateUserAttributes =
         // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
         // this case, otherwise checks against the schema for default attributes like email will
         // fail.
-        userPool.options.SchemaAttributes ??
-          USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-          [],
-      ),
+        userPool.options.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []
+      )
     );
 
     const updatedUser = {
@@ -113,14 +105,7 @@ export const AdminUpdateUserAttributes =
         AttributeVerificationCode: code,
       });
 
-      await sendAttributeVerificationCode(
-        ctx,
-        userPool,
-        user,
-        messages,
-        req,
-        code,
-      );
+      await sendAttributeVerificationCode(ctx, userPool, user, messages, req, code);
     }
 
     return {};

@@ -2,26 +2,22 @@ import {
   CreateUserPoolRequest,
   CreateUserPoolResponse,
   SchemaAttributeType,
-} from "@aws-sdk/client-cognito-identity-provider";
-import shortUUID from "short-uuid";
-import { Services } from "../services/index.js";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
-import { userPoolToResponseObject } from "./responses.js";
-import { Target } from "./Target.js";
+} from '@aws-sdk/client-cognito-identity-provider';
+import shortUUID from 'short-uuid';
 
-const REGION = "local";
-const ACCOUNT_ID = "local";
+import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
+import { Services } from '../services/index.js';
+import { userPoolToResponseObject } from './responses.js';
+import { Target } from './Target.js';
 
-const generator = shortUUID(
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-);
+const REGION = 'local';
+const ACCOUNT_ID = 'local';
 
-export type CreateUserPoolTarget = Target<
-  CreateUserPoolRequest,
-  CreateUserPoolResponse
->;
+const generator = shortUUID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
 
-type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
+export type CreateUserPoolTarget = Target<CreateUserPoolRequest, CreateUserPoolResponse>;
+
+type CreateUserPoolServices = Pick<Services, 'clock' | 'cognito'>;
 
 /**
  * createSchemaAttributes combines the default list of User Pool Schema Attributes with the Schema provided by the
@@ -33,11 +29,9 @@ type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
  */
 const createSchemaAttributes = (
   defaultAttributes: SchemaAttributeType[],
-  requestSchema: SchemaAttributeType[],
+  requestSchema: SchemaAttributeType[]
 ): SchemaAttributeType[] => {
-  const overrides = Object.fromEntries(
-    requestSchema.map((x) => [x.Name as string, x]),
-  );
+  const overrides = Object.fromEntries(requestSchema.map((x) => [x.Name as string, x]));
   const defaultAttributeNames = defaultAttributes.map((x) => x.Name);
   const overriddenAttributes = defaultAttributes.map((attr) => {
     if (!attr.Name) {
@@ -53,7 +47,7 @@ const createSchemaAttributes = (
   const customAttributes = requestSchema
     .filter((x) => !defaultAttributeNames.includes(x.Name))
     .map((attr) => {
-      const type = attr.AttributeDataType ?? "String";
+      const type = attr.AttributeDataType ?? 'String';
 
       return {
         Name: `custom:${attr.Name}`,
@@ -62,13 +56,9 @@ const createSchemaAttributes = (
         Mutable: attr.Mutable ?? true,
         Required: attr.Required ?? false,
         StringAttributeConstraints:
-          type === "String"
-            ? (attr.StringAttributeConstraints ?? {})
-            : undefined,
+          type === 'String' ? (attr.StringAttributeConstraints ?? {}) : undefined,
         NumberAttributeConstraints:
-          type === "Number"
-            ? (attr.NumberAttributeConstraints ?? {})
-            : undefined,
+          type === 'Number' ? (attr.NumberAttributeConstraints ?? {}) : undefined,
       };
     });
 
@@ -99,7 +89,7 @@ export const CreateUserPool =
       Policies: req.Policies,
       SchemaAttributes: createSchemaAttributes(
         USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? [],
-        req.Schema ?? [],
+        req.Schema ?? []
       ),
       SmsAuthenticationMessage: req.SmsAuthenticationMessage,
       SmsConfiguration: req.SmsConfiguration,

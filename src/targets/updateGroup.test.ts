@@ -1,15 +1,15 @@
-import { ClockFake } from "../__tests__/clockFake.js";
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { GroupNotFoundError } from "../errors.js";
-import { UserPoolService } from "../services/index.js";
-import { UpdateGroup, UpdateGroupTarget } from "./updateGroup.js";
+import { ClockFake } from '../__tests__/clockFake.js';
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { GroupNotFoundError } from '../errors.js';
+import { UserPoolService } from '../services/index.js';
+import { UpdateGroup, UpdateGroupTarget } from './updateGroup.js';
 
 const originalDate = new Date();
 
-describe("UpdateGroup target", () => {
+describe('UpdateGroup target', () => {
   let updateGroup: UpdateGroupTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
   let clock: ClockFake;
@@ -24,7 +24,7 @@ describe("UpdateGroup target", () => {
     });
   });
 
-  it("updates a group", async () => {
+  it('updates a group', async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
@@ -34,41 +34,41 @@ describe("UpdateGroup target", () => {
 
     const result = await updateGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      RoleArn: "a new arn",
+      RoleArn: 'a new arn',
       Precedence: 10,
-      Description: "a new description",
-      UserPoolId: "test",
+      Description: 'a new description',
+      UserPoolId: 'test',
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName,
+      existingGroup.GroupName
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
       ...existingGroup,
       LastModifiedDate: newDate,
-      RoleArn: "a new arn",
+      RoleArn: 'a new arn',
       Precedence: 10,
-      Description: "a new description",
+      Description: 'a new description',
     });
 
     expect(result.Group).toEqual({
       CreationDate: existingGroup.CreationDate,
-      Description: "a new description",
+      Description: 'a new description',
       GroupName: existingGroup.GroupName,
       LastModifiedDate: newDate,
       Precedence: 10,
-      RoleArn: "a new arn",
-      UserPoolId: "test",
+      RoleArn: 'a new arn',
+      UserPoolId: 'test',
     });
   });
 
-  it("can do partial updates of group attributes", async () => {
+  it('can do partial updates of group attributes', async () => {
     const existingGroup = TDB.group({
-      Description: "old description",
+      Description: 'old description',
       Precedence: 5,
-      RoleArn: "old role arn",
+      RoleArn: 'old role arn',
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
@@ -79,12 +79,12 @@ describe("UpdateGroup target", () => {
     const result = await updateGroup(TestContext, {
       GroupName: existingGroup.GroupName,
       Precedence: 10,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName,
+      existingGroup.GroupName
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
@@ -100,7 +100,7 @@ describe("UpdateGroup target", () => {
       LastModifiedDate: newDate,
       Precedence: 10,
       RoleArn: existingGroup.RoleArn,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
   });
 
@@ -109,9 +109,9 @@ describe("UpdateGroup target", () => {
 
     await expect(
       updateGroup(TestContext, {
-        GroupName: "group",
-        UserPoolId: "test",
-      }),
+        GroupName: 'group',
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

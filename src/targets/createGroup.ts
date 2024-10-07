@@ -1,22 +1,20 @@
-import {
-  CreateGroupRequest,
-  CreateGroupResponse,
-} from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services/index.js";
-import { Group } from "../services/userPoolService.js";
-import { groupToResponseObject } from "./responses.js";
-import { Target } from "./Target.js";
-import { MissingParameterError } from "../errors.js";
+import { CreateGroupRequest, CreateGroupResponse } from '@aws-sdk/client-cognito-identity-provider';
+
+import { MissingParameterError } from '../errors.js';
+import { Services } from '../services/index.js';
+import { Group } from '../services/userPoolService.js';
+import { groupToResponseObject } from './responses.js';
+import { Target } from './Target.js';
 
 export type CreateGroupTarget = Target<CreateGroupRequest, CreateGroupResponse>;
 
-type CreateGroupServices = Pick<Services, "clock" | "cognito">;
+type CreateGroupServices = Pick<Services, 'clock' | 'cognito'>;
 
 export const CreateGroup =
   ({ cognito, clock }: CreateGroupServices): CreateGroupTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    if (!req.GroupName) throw new MissingParameterError("GroupName");
+    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.GroupName) throw new MissingParameterError('GroupName');
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
