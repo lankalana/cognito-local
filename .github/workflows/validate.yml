@@ -4,6 +4,9 @@ on:
   workflow_call:
   pull_request:
 
+env:
+  TEST_TAG: ${{ github.repository }}:test
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -33,20 +36,6 @@ jobs:
       - run: yarn install
       - run: yarn test
 
-  smoke_test:
-    runs-on: ubuntu-latest
-    name: Smoke Test
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: yarn
-      - run: yarn install
-      - run: scripts/local-smoke-test.sh
-
   integration_test:
     runs-on: ubuntu-latest
     name: Integration Test
@@ -60,3 +49,44 @@ jobs:
           cache: yarn
       - run: yarn install
       - run: yarn integration-test
+
+  smoke_test:
+    runs-on: ubuntu-latest
+    name: Smoke test
+    timeout-minutes: 5
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install
+      - run: scripts/local-smoke-test.sh
+
+  docker_test:
+    runs-on: ubuntu-latest
+    name: Smoke test on Docker container
+    timeout-minutes: 5
+    needs: smoke_test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        uses: docker/build-push-action@v6
+        with:
+          load: true
+          tags: ${{ env.TEST_TAG }}
+
+      - name: Get a free port
+        run: echo "PORT=$(scripts/get-free-port.sh)" >> $GITHUB_ENV
+
+      - name: Start the Docker container
+        run: docker run -d --rm --name test-container -p ${{ env.PORT }}:9229 ${{ env.TEST_TAG }}
+
+      - name: Test 
+        run: scripts/smoke-test.sh
+        env:
+          PORT: ${{ env.PORT }}
+
+      - name: Stop the Docker container
+        run: docker stop test-container
