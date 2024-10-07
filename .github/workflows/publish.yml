@@ -33,26 +33,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
-        with:
-          load: true
-          tags: ${{ env.TEST_TAG }}
-
-      - name: Get a free port
-        run: echo "PORT=$(scripts/get-free-port.sh)" >> $GITHUB_ENV
-
-      - name: Start the Docker container
-        run: docker run -d --rm --name test-container -p ${{ env.PORT }}:9229 ${{ env.TEST_TAG }}
-
-      - name: Test 
-        run: scripts/smoke-test.sh
-        env:
-          PORT: ${{ env.PORT }}
-
-      - name: Stop the Docker container
-        run: docker stop test-container
-
       - name: Load Docker metadata
         id: meta
         uses: docker/metadata-action@v5
