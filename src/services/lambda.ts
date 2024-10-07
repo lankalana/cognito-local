@@ -11,7 +11,7 @@ import {
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
 } from "aws-lambda";
-import { version as awsSdkVersion } from "@aws-sdk/client-lambda/package.json" with { type: "json" };
+import { awsSdkVersion } from "../constants.js";
 import {
   InvalidLambdaResponseError,
   UnexpectedLambdaExceptionError,

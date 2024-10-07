@@ -5,7 +5,7 @@ import {
   UserLambdaValidationError,
 } from "../errors.js";
 import { LambdaService } from "./lambda.js";
-import { version } from "@aws-sdk/client-lambda/package.json";
+import { awsSdkVersion } from "../constants.js";
 import "../__tests__/jsonMatching.js";
 
 describe("Lambda function invoker", () => {
@@ -240,7 +240,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
@@ -298,7 +298,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: "UserMigration_Authentication",
@@ -356,7 +356,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
@@ -412,7 +412,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
@@ -470,7 +470,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
@@ -530,7 +530,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
@@ -593,7 +593,7 @@ describe("Lambda function invoker", () => {
           InvocationType: "RequestResponse",
           Payload: expect.jsonMatching({
             version: "0",
-            callerContext: { awsSdkVersion: version, clientId: "clientId" },
+            callerContext: { awsSdkVersion, clientId: "clientId" },
             region: "local",
             userPoolId: "userPoolId",
             triggerSource: source,
