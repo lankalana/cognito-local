@@ -1,4 +1,4 @@
-import { LogService } from "./LogService";
+import { LogService } from "./LogService.js";
 export interface Context {
   readonly logger: LogService;
 }

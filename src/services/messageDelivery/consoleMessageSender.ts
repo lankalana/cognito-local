@@ -1,7 +1,7 @@
-import { Context } from "../context";
-import { Message } from "../messages";
-import { User } from "../userPoolService";
-import { MessageSender } from "./messageSender";
+import { Context } from "../context.js";
+import { Message } from "../messages.js";
+import { User } from "../userPoolService.js";
+import { MessageSender } from "./messageSender.js";
 
 export class ConsoleMessageSender implements MessageSender {
   public sendEmail(

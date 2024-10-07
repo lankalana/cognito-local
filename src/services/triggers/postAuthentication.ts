@@ -1,7 +1,7 @@
 import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
-import { Lambda } from "../lambda";
-import { attributesToRecord } from "../userPoolService";
-import { Trigger } from "./trigger";
+import { Lambda } from "../lambda.js";
+import { attributesToRecord } from "../userPoolService.js";
+import { Trigger } from "./trigger.js";
 
 export type PostAuthenticationTrigger = Trigger<
   {
@@ -30,7 +30,7 @@ export const PostAuthentication =
   ({ lambda }: PostAuthenticationServices): PostAuthenticationTrigger =>
   async (
     ctx,
-    { clientId, clientMetadata, source, userAttributes, username, userPoolId }
+    { clientId, clientMetadata, source, userAttributes, username, userPoolId },
   ) => {
     try {
       await lambda.invoke(ctx, "PostAuthentication", {

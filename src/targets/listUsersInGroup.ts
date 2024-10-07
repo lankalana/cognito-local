@@ -6,10 +6,10 @@ import {
   GroupNotFoundError,
   MissingParameterError,
   UserNotFoundError,
-} from "../errors";
-import { Services } from "../services";
-import { userToResponseObject } from "./responses";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { userToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type ListUsersInGroupTarget = Target<
   ListUsersInGroupRequest,

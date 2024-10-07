@@ -2,10 +2,10 @@ import {
   AdminListGroupsForUserRequest,
   AdminListGroupsForUserResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, UserNotFoundError } from "../errors";
-import { Services } from "../services";
-import { groupToResponseObject } from "./responses";
-import { Target } from "./Target";
+import { MissingParameterError, UserNotFoundError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { groupToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type AdminListGroupsForUserTarget = Target<
   AdminListGroupsForUserRequest,

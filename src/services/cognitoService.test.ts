@@ -1,17 +1,17 @@
-import { ClockFake } from "../__tests__/clockFake";
+import { ClockFake } from "../__tests__/clockFake.js";
 import {
   newMockDataStore,
   newMockDataStoreFactory,
-} from "../__tests__/mockDataStore";
-import { newMockUserPoolServiceFactory } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { ResourceNotFoundError } from "../errors";
+} from "../__tests__/mockDataStore.js";
+import { newMockUserPoolServiceFactory } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { ResourceNotFoundError } from "../errors.js";
 import {
   CognitoServiceFactoryImpl,
   CognitoServiceImpl,
   USER_POOL_AWS_DEFAULTS,
-} from "./cognitoService";
-import { UserPoolService, UserPoolServiceFactory } from "./userPoolService";
+} from "./cognitoService.js";
+import { UserPoolService, UserPoolServiceFactory } from "./userPoolService.js";
 
 describe("CognitoServiceFactory", () => {
   it("creates a database for clients", async () => {

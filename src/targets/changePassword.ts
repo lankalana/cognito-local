@@ -3,15 +3,15 @@ import {
   ChangePasswordResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { Services } from "../services";
+import { Services } from "../services/index.js";
 import {
   InvalidParameterError,
   InvalidPasswordError,
   MissingParameterError,
   NotAuthorizedError,
-} from "../errors";
-import { Token } from "../services/tokenGenerator";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Token } from "../services/tokenGenerator.js";
+import { Target } from "./Target.js";
 
 export type ChangePasswordTarget = Target<
   ChangePasswordRequest,

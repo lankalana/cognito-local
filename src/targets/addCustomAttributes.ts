@@ -3,10 +3,10 @@ import {
   AddCustomAttributesResponse,
   AttributeDataType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { InvalidParameterError, MissingParameterError } from "../errors";
-import { Services } from "../services";
-import { assertParameterLength } from "./utils/assertions";
-import { Target } from "./Target";
+import { InvalidParameterError, MissingParameterError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { assertParameterLength } from "./utils/assertions.js";
+import { Target } from "./Target.js";
 
 export type AddCustomAttributesTarget = Target<
   AddCustomAttributesRequest,

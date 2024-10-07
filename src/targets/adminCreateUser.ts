@@ -10,17 +10,17 @@ import {
   MissingParameterError,
   UnsupportedError,
   UsernameExistsError,
-} from "../errors";
-import { Messages, Services, UserPoolService } from "../services";
-import { Context } from "../services/context";
-import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
+} from "../errors.js";
+import { Messages, Services, UserPoolService } from "../services/index.js";
+import { Context } from "../services/context.js";
+import { DeliveryDetails } from "../services/messageDelivery/messageDelivery.js";
 import {
   attributesInclude,
   attributeValue,
   User,
-} from "../services/userPoolService";
-import { userToResponseObject } from "./responses";
-import { Target } from "./Target";
+} from "../services/userPoolService.js";
+import { userToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 const generator = shortUUID(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!",

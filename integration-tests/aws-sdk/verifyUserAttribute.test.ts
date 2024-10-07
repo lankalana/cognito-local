@@ -1,7 +1,7 @@
-import { UUID } from "../../src/__tests__/patterns";
-import { TestContext } from "../../src/__tests__/testContext";
-import { withCognitoSdk } from "./setup";
-import { User } from "../../src/services/userPoolService";
+import { UUID } from "../../src/__tests__/patterns.js";
+import { TestContext } from "../../src/__tests__/testContext.js";
+import { withCognitoSdk } from "./setup.js";
+import { User } from "../../src/services/userPoolService.js";
 
 describe(
   "CognitoIdentityServiceProvider.verifyUserAttribute",

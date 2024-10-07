@@ -2,13 +2,13 @@ import {
   UpdateIdentityProviderRequest,
   UpdateIdentityProviderResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
+import { Services } from "../services/index.js";
 import {
   IdentityProviderNotFoundError,
   MissingParameterError,
-} from "../errors";
-import { identityProviderToResponseObject } from "./responses";
-import { Target } from "./Target";
+} from "../errors.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type UpdateIdentityProviderTarget = Target<
   UpdateIdentityProviderRequest,

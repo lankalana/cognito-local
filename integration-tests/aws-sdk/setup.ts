@@ -1,30 +1,26 @@
-import fs from "fs";
 import http from "http";
 import { pino, type Logger } from "pino";
-import { promisify } from "util";
-import { createServer } from "../../src";
-import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
-import { DefaultConfig } from "../../src/server/config";
+import { createServer } from "../../src/index.js";
+import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService.js";
+import { DefaultConfig } from "../../src/server/config.js";
 import {
   Clock,
   DateClock,
   MessagesService,
   TriggersService,
-} from "../../src/services";
-import { CognitoServiceFactoryImpl } from "../../src/services/cognitoService";
-import { NoOpCache } from "../../src/services/dataStore/cache";
-import { DataStoreFactory } from "../../src/services/dataStore/factory";
-import { StormDBDataStoreFactory } from "../../src/services/dataStore/stormDb";
-import { otp } from "../../src/services/otp";
-import { JwtTokenGenerator } from "../../src/services/tokenGenerator";
-import { UserPoolServiceFactoryImpl } from "../../src/services/userPoolService";
-import { Router } from "../../src/server/Router";
-import { CryptoService } from "../../src/services/crypto";
+} from "../../src/services/index.js";
+import { CognitoServiceFactoryImpl } from "../../src/services/cognitoService.js";
+import { NoOpCache } from "../../src/services/dataStore/cache.js";
+import { DataStoreFactory } from "../../src/services/dataStore/factory.js";
+import { StormDBDataStoreFactory } from "../../src/services/dataStore/stormDb.js";
+import { otp } from "../../src/services/otp.js";
+import { JwtTokenGenerator } from "../../src/services/tokenGenerator.js";
+import { UserPoolServiceFactoryImpl } from "../../src/services/userPoolService.js";
+import { Router } from "../../src/server/Router.js";
+import { CryptoService } from "../../src/services/crypto.js";
 import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
 import { sink } from "pino-test";
-
-const mkdtemp = promisify(fs.mkdtemp);
-const rmdir = promisify(fs.rmdir);
+import { mkdtemp, rmdir } from "fs/promises";
 
 export const withCognitoSdk =
   (

@@ -1,17 +1,17 @@
 import mergeWith from "lodash.mergewith";
 import * as path from "path";
-import { ResourceNotFoundError } from "../errors";
-import { UserPoolDefaults } from "../server/config";
-import { AppClient } from "./appClient";
-import { Clock } from "./clock";
-import { Context } from "./context";
-import { DataStore } from "./dataStore/dataStore";
-import { DataStoreFactory } from "./dataStore/factory";
+import { ResourceNotFoundError } from "../errors.js";
+import { UserPoolDefaults } from "../server/config.js";
+import { AppClient } from "./appClient.js";
+import { Clock } from "./clock.js";
+import { Context } from "./context.js";
+import { DataStore } from "./dataStore/dataStore.js";
+import { DataStoreFactory } from "./dataStore/factory.js";
 import {
   UserPool,
   UserPoolService,
   UserPoolServiceFactory,
-} from "./userPoolService";
+} from "./userPoolService.js";
 import fs from "fs/promises";
 
 const CLIENTS_DATABASE_NAME = "clients";

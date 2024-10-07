@@ -4,19 +4,19 @@ import {
   LambdaService,
   MessagesService,
   TriggersService,
-} from "../services";
-import { CognitoServiceFactoryImpl } from "../services/cognitoService";
-import { InMemoryCache } from "../services/dataStore/cache";
-import { StormDBDataStoreFactory } from "../services/dataStore/stormDb";
-import { ConsoleMessageSender } from "../services/messageDelivery/consoleMessageSender";
-import { MessageDeliveryService } from "../services/messageDelivery/messageDelivery";
-import { otp } from "../services/otp";
-import { JwtTokenGenerator } from "../services/tokenGenerator";
-import { UserPoolServiceFactoryImpl } from "../services/userPoolService";
-import { Router } from "./Router";
-import { loadConfig } from "./config";
-import { createServer, Server } from "./server";
-import { CryptoService } from "../services/crypto";
+} from "../services/index.js";
+import { CognitoServiceFactoryImpl } from "../services/cognitoService.js";
+import { InMemoryCache } from "../services/dataStore/cache.js";
+import { StormDBDataStoreFactory } from "../services/dataStore/stormDb.js";
+import { ConsoleMessageSender } from "../services/messageDelivery/consoleMessageSender.js";
+import { MessageDeliveryService } from "../services/messageDelivery/messageDelivery.js";
+import { otp } from "../services/otp.js";
+import { JwtTokenGenerator } from "../services/tokenGenerator.js";
+import { UserPoolServiceFactoryImpl } from "../services/userPoolService.js";
+import { Router } from "./Router.js";
+import { loadConfig } from "./config.js";
+import { createServer, Server } from "./server.js";
+import { CryptoService } from "../services/crypto.js";
 import { Lambda } from "@aws-sdk/client-lambda";
 
 export const createDefaultServer = async (

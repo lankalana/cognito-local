@@ -1,4 +1,4 @@
-import { ClockFake } from "../__tests__/clockFake";
+import { ClockFake } from "../__tests__/clockFake.js";
 import {
   AttributeType,
   UsernameAttributeType,
@@ -6,10 +6,10 @@ import {
 import {
   newMockDataStore,
   newMockDataStoreFactory,
-} from "../__tests__/mockDataStore";
-import { TestContext } from "../__tests__/testContext";
-import { AppClient } from "./appClient";
-import { DataStore } from "./dataStore/dataStore";
+} from "../__tests__/mockDataStore.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { AppClient } from "./appClient.js";
+import { DataStore } from "./dataStore/dataStore.js";
 import {
   attributesFromRecord,
   attributesInclude,
@@ -21,8 +21,8 @@ import {
   Group,
   UserPoolServiceFactoryImpl,
   UserPool,
-} from "./userPoolService";
-import * as TDB from "../__tests__/testDataBuilder";
+} from "./userPoolService.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 describe("UserPoolServiceFactory", () => {
   it("creates a database", async () => {

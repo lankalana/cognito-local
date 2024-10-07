@@ -4,7 +4,7 @@ import {
   KmsKeyringNode,
 } from "@aws-crypto/client-node";
 import { KMS, KMSClientConfig } from "@aws-sdk/client-kms";
-import { Context } from "./context";
+import { Context } from "./context.js";
 
 export interface KMSConfig {
   KMSKeyId?: string;

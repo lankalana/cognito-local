@@ -1,7 +1,10 @@
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { TestContext } from "../../__tests__/testContext";
-import { Lambda } from "../lambda";
-import { PostConfirmation, PostConfirmationTrigger } from "./postConfirmation";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { Lambda } from "../lambda.js";
+import {
+  PostConfirmation,
+  PostConfirmationTrigger,
+} from "./postConfirmation.js";
 
 describe("PostConfirmation trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
@@ -21,7 +24,7 @@ describe("PostConfirmation trigger", () => {
     describe("when lambda invoke fails", () => {
       it("quietly completes", async () => {
         mockLambda.invoke.mockRejectedValue(
-          new Error("Something bad happened")
+          new Error("Something bad happened"),
         );
 
         await postConfirmation(TestContext, {
@@ -55,7 +58,7 @@ describe("PostConfirmation trigger", () => {
             userAttributes: { email: "example@example.com" },
             userPoolId: "userPoolId",
             username: "example@example.com",
-          }
+          },
         );
       });
     });

@@ -1,7 +1,7 @@
-import { TestContext } from "../../__tests__/testContext";
-import { User } from "../userPoolService";
-import { MessageDeliveryService } from "./messageDelivery";
-import { MessageSender } from "./messageSender";
+import { TestContext } from "../../__tests__/testContext.js";
+import { User } from "../userPoolService.js";
+import { MessageDeliveryService } from "./messageDelivery.js";
+import { MessageSender } from "./messageSender.js";
 
 describe("Message Delivery", () => {
   const user: User = {
@@ -35,14 +35,14 @@ describe("Message Delivery", () => {
           DeliveryMedium: "EMAIL",
           AttributeName: "email",
         },
-        message
+        message,
       );
 
       expect(sender.sendEmail).toHaveBeenCalledWith(
         TestContext,
         user,
         "example@example.com",
-        message
+        message,
       );
       expect(sender.sendSms).not.toHaveBeenCalled();
     });
@@ -68,14 +68,14 @@ describe("Message Delivery", () => {
           DeliveryMedium: "SMS",
           AttributeName: "phone_number",
         },
-        message
+        message,
       );
 
       expect(sender.sendSms).toHaveBeenCalledWith(
         TestContext,
         user,
         "0123445670",
-        message
+        message,
       );
       expect(sender.sendEmail).not.toHaveBeenCalled();
     });

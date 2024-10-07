@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
-import { createDefaultServer } from "../server";
-import Pino from "pino";
+import { createDefaultServer } from "../server/index.js";
+import { pino } from "pino";
 import PinoPretty from "pino-pretty";
 import process from "node:process";
 
-const logger = Pino(
+const logger = pino(
   {
     level: process.env.DEBUG ? "debug" : "info",
   },

@@ -2,11 +2,11 @@ import {
   UpdateUserPoolClientRequest,
   UpdateUserPoolClientResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { MissingParameterError, ResourceNotFoundError } from "../errors";
-import { AppClient } from "../services/appClient";
-import { appClientToResponseObject } from "./responses";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { MissingParameterError, ResourceNotFoundError } from "../errors.js";
+import { AppClient } from "../services/appClient.js";
+import { appClientToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type UpdateUserPoolClientTarget = Target<
   UpdateUserPoolClientRequest,

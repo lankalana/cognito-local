@@ -1,10 +1,10 @@
-import { newMockMessageDelivery } from "../__tests__/mockMessageDelivery";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { TestContext } from "../__tests__/testContext";
-import { MessageDelivery } from "./messageDelivery/messageDelivery";
-import { MessagesService } from "./messages";
-import * as TDB from "../__tests__/testDataBuilder";
-import { Triggers } from "./triggers";
+import { newMockMessageDelivery } from "../__tests__/mockMessageDelivery.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { MessageDelivery } from "./messageDelivery/messageDelivery.js";
+import { MessagesService } from "./messages.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { Triggers } from "./triggers/index.js";
 
 describe("messages service", () => {
   let mockTriggers: jest.Mocked<Triggers>;

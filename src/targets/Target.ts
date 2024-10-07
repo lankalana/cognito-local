@@ -1,5 +1,5 @@
-import { Context } from "../services/context";
-import { Targets } from "./targets";
+import { Context } from "../services/context.js";
+import { Targets } from "./targets.js";
 
 export type TargetName = keyof typeof Targets;
 

@@ -1,11 +1,12 @@
 import { Lambda } from "@aws-sdk/client-lambda";
-import { TestContext } from "../__tests__/testContext";
+import { TestContext } from "../__tests__/testContext.js";
 import {
   InvalidLambdaResponseError,
   UserLambdaValidationError,
-} from "../errors";
-import { LambdaService } from "./lambda";
+} from "../errors.js";
+import { LambdaService } from "./lambda.js";
 import { version } from "@aws-sdk/client-lambda/package.json";
+import "../__tests__/jsonMatching.js";
 
 describe("Lambda function invoker", () => {
   let mockLambdaClient: jest.Mocked<Lambda>;

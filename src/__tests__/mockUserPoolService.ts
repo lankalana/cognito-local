@@ -1,5 +1,8 @@
-import { UserPoolService } from "../services";
-import { UserPool, UserPoolServiceFactory } from "../services/userPoolService";
+import { UserPoolService } from "../services/index.js";
+import {
+  UserPool,
+  UserPoolServiceFactory,
+} from "../services/userPoolService.js";
 
 export const newMockUserPoolService = (
   config: UserPool = {

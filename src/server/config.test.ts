@@ -1,9 +1,9 @@
 import {
   newMockDataStore,
   newMockDataStoreFactory,
-} from "../__tests__/mockDataStore";
-import { TestContext } from "../__tests__/testContext";
-import { DefaultConfig, loadConfig } from "./config";
+} from "../__tests__/mockDataStore.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { DefaultConfig, loadConfig } from "./config.js";
 
 describe("loadConfig", () => {
   it("returns the default config if no config exists", async () => {

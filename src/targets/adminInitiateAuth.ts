@@ -9,10 +9,10 @@ import {
   NotAuthorizedError,
   UnsupportedError,
   UserNotConfirmedException,
-} from "../errors";
-import { Services } from "../services";
-import { Target } from "./Target";
-import { Context } from "../services/context";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
+import { Context } from "../services/context.js";
 
 export type AdminInitiateAuthTarget = Target<
   AdminInitiateAuthRequest,

@@ -1,10 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import fs from "fs";
 import StormDB from "stormdb";
 import { promisify } from "util";
-import { Context } from "../context";
-import { DataStoreCache } from "./cache";
-import { DataStore } from "./dataStore";
-import { DataStoreFactory } from "./factory";
+import { Context } from "../context.js";
+import { DataStoreCache } from "./cache.js";
+import { DataStore } from "./dataStore.js";
+import { DataStoreFactory } from "./factory.js";
 
 export class StormDBDataStore implements DataStore {
   private readonly db: StormDB;
@@ -52,7 +54,7 @@ const mkdir = promisify(fs.mkdir);
 const replaceDatesWithISOStrings: (
   this: Record<string, unknown>,
   key: string,
-  value: unknown
+  value: unknown,
 ) => unknown = function (key, value) {
   if (!key.endsWith("Date")) {
     return value;
@@ -63,7 +65,7 @@ const replaceDatesWithISOStrings: (
     throw new Error(
       `Serialize: Expected ${key} field to contain a Date, received a ${typeof this[
         key
-      ]}`
+      ]}`,
     );
   }
 
@@ -82,7 +84,7 @@ const reviveDates = (key: string, value: unknown): unknown => {
   }
 
   throw new Error(
-    `Deserialize: Expected ${key} to contain a String or Number, received a ${typeof value}`
+    `Deserialize: Expected ${key} to contain a String or Number, received a ${typeof value}`,
   );
 };
 
@@ -109,7 +111,7 @@ export class StormDBDataStoreFactory implements DataStoreFactory {
   public async create(
     ctx: Context,
     id: string,
-    defaults: object
+    defaults: object,
   ): Promise<DataStore> {
     ctx.logger.debug({ id }, "createDataStore");
     await mkdir(this.directory, { recursive: true });

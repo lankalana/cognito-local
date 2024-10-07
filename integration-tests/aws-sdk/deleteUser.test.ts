@@ -1,5 +1,5 @@
-import { UserNotFoundError } from "../../src/errors";
-import { withCognitoSdk } from "./setup";
+import { UserNotFoundError } from "../../src/errors.js";
+import { withCognitoSdk } from "./setup.js";
 
 describe(
   "CognitoIdentityServiceProvider.deleteUser",

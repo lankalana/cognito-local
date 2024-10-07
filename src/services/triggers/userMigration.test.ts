@@ -1,13 +1,13 @@
-import { newMockCognitoService } from "../../__tests__/mockCognitoService";
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { newMockUserPoolService } from "../../__tests__/mockUserPoolService";
-import { UUID } from "../../__tests__/patterns";
-import { TestContext } from "../../__tests__/testContext";
-import { NotAuthorizedError } from "../../errors";
-import { DateClock } from "../clock";
-import { Lambda } from "../lambda";
-import { UserPoolService } from "../userPoolService";
-import { UserMigration, UserMigrationTrigger } from "./userMigration";
+import { newMockCognitoService } from "../../__tests__/mockCognitoService.js";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { newMockUserPoolService } from "../../__tests__/mockUserPoolService.js";
+import { UUID } from "../../__tests__/patterns.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { NotAuthorizedError } from "../../errors.js";
+import { DateClock } from "../clock.js";
+import { Lambda } from "../lambda.js";
+import { UserPoolService } from "../userPoolService.js";
+import { UserMigration, UserMigrationTrigger } from "./userMigration.js";
 
 describe("UserMigration trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
@@ -37,7 +37,7 @@ describe("UserMigration trigger", () => {
           username: "username",
           userPoolId: "userPoolId",
           validationData: undefined,
-        })
+        }),
       ).rejects.toBeInstanceOf(NotAuthorizedError);
     });
   });
@@ -80,7 +80,7 @@ describe("UserMigration trigger", () => {
           validationData: {
             validation: "data",
           },
-        }
+        },
       );
 
       expect(user).not.toBeNull();

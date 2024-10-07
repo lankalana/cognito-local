@@ -1,11 +1,11 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { UserNotFoundError } from "../errors";
-import { UserPoolService } from "../services";
-import { AdminEnableUser, AdminEnableUserTarget } from "./adminEnableUser";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { UserNotFoundError } from "../errors.js";
+import { UserPoolService } from "../services/index.js";
+import { AdminEnableUser, AdminEnableUserTarget } from "./adminEnableUser.js";
 
 const originalDate = new Date();
 

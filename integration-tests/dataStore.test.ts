@@ -1,14 +1,10 @@
-import fs from "fs";
 import StormDB from "stormdb";
-import { promisify } from "util";
-import { TestContext } from "../src/__tests__/testContext";
-import { InMemoryCache, NoOpCache } from "../src/services/dataStore/cache";
-import { DataStoreFactory } from "../src/services/dataStore/factory";
-import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
-
-const mkdtemp = promisify(fs.mkdtemp);
-const readFile = promisify(fs.readFile);
-const rmdir = promisify(fs.rmdir);
+import { TestContext } from "../src/__tests__/testContext.js";
+import { InMemoryCache, NoOpCache } from "../src/services/dataStore/cache.js";
+import { DataStoreFactory } from "../src/services/dataStore/factory.js";
+import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb.js";
+import { mkdtemp, readFile, rmdir, writeFile } from "fs/promises";
+import { existsSync } from "fs";
 
 describe("Data Store", () => {
   let path: string;
@@ -22,19 +18,19 @@ describe("Data Store", () => {
   afterEach(() =>
     rmdir(path, {
       recursive: true,
-    })
+    }),
   );
 
   it("creates a named database", async () => {
     await factory.create(TestContext, "example", {});
 
-    expect(fs.existsSync(path + "/example.json")).toBe(true);
+    expect(existsSync(path + "/example.json")).toBe(true);
   });
 
   it("creates a named database with the defaults persisted", async () => {
     await factory.create(TestContext, "example", { DefaultValue: true });
 
-    expect(fs.existsSync(path + "/example.json")).toBe(true);
+    expect(existsSync(path + "/example.json")).toBe(true);
 
     const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
     expect(file).toEqual({
@@ -43,11 +39,11 @@ describe("Data Store", () => {
   });
 
   it("does not overwrite defaults if the file already exists", async () => {
-    fs.writeFileSync(path + "/example.json", '{"Users":{"a":{"key":"value"}}}');
+    await writeFile(path + "/example.json", '{"Users":{"a":{"key":"value"}}}');
 
     await factory.create(TestContext, "example", { Users: {} });
 
-    expect(fs.existsSync(path + "/example.json")).toBe(true);
+    expect(existsSync(path + "/example.json")).toBe(true);
 
     const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
     expect(file).toEqual({
@@ -81,7 +77,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key2", 2);
 
       const fileBefore = JSON.parse(
-        await readFile(path + "/example.json", "utf-8")
+        await readFile(path + "/example.json", "utf-8"),
       );
 
       expect(fileBefore).toEqual({
@@ -92,7 +88,7 @@ describe("Data Store", () => {
       await dataStore.delete(TestContext, "key1");
 
       const fileAfter = JSON.parse(
-        await readFile(path + "/example.json", "utf-8")
+        await readFile(path + "/example.json", "utf-8"),
       );
 
       expect(fileAfter).toEqual({
@@ -108,7 +104,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key2", 3);
 
       const fileBefore = JSON.parse(
-        await readFile(path + "/example.json", "utf-8")
+        await readFile(path + "/example.json", "utf-8"),
       );
 
       expect(fileBefore).toEqual({
@@ -124,7 +120,7 @@ describe("Data Store", () => {
       await dataStore.delete(TestContext, ["key", "a", "b"]);
 
       const fileAfter = JSON.parse(
-        await readFile(path + "/example.json", "utf-8")
+        await readFile(path + "/example.json", "utf-8"),
       );
 
       expect(fileAfter).toEqual({
@@ -173,11 +169,11 @@ describe("Data Store", () => {
       const date = new Date();
 
       await expect(
-        dataStore.set(TestContext, "SomethingDate", date.getTime())
+        dataStore.set(TestContext, "SomethingDate", date.getTime()),
       ).rejects.toEqual(
         new Error(
-          "Serialize: Expected SomethingDate field to contain a Date, received a number"
-        )
+          "Serialize: Expected SomethingDate field to contain a Date, received a number",
+        ),
       );
     });
 

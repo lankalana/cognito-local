@@ -1,8 +1,8 @@
-import { TestContext } from "../__tests__/testContext";
-import { UnsupportedError } from "../errors";
-import { Services } from "../services";
-import { Router } from "./Router";
-import { Targets } from "../targets/targets";
+import { TestContext } from "../__tests__/testContext.js";
+import { UnsupportedError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { Router } from "./Router.js";
+import { Targets } from "../targets/targets.js";
 
 describe("Router", () => {
   it("returns an error handler for an invalid target", async () => {

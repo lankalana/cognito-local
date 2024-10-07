@@ -2,9 +2,9 @@ import {
   RevokeTokenRequest,
   RevokeTokenResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, NotAuthorizedError } from "../errors";
-import { Services } from "../services";
-import { Target } from "./Target";
+import { MissingParameterError, NotAuthorizedError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
 
 export type RevokeTokenTarget = Target<RevokeTokenRequest, RevokeTokenResponse>;
 

@@ -2,10 +2,10 @@ import {
   ListIdentityProvidersRequest,
   ListIdentityProvidersResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { identityProviderToResponseObject } from "./responses";
-import { Target } from "./Target";
-import { MissingParameterError } from "../errors";
+import { Services } from "../services/index.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
+import { MissingParameterError } from "../errors.js";
 
 export type ListIdentityProvidersTarget = Target<
   ListIdentityProvidersRequest,

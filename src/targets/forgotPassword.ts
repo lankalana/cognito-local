@@ -6,11 +6,11 @@ import {
   MissingParameterError,
   UnsupportedError,
   UserNotFoundError,
-} from "../errors";
-import { Services } from "../services";
-import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
-import { attributeValue } from "../services/userPoolService";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { DeliveryDetails } from "../services/messageDelivery/messageDelivery.js";
+import { attributeValue } from "../services/userPoolService.js";
+import { Target } from "./Target.js";
 
 export type ForgotPasswordTarget = Target<
   ForgotPasswordRequest,

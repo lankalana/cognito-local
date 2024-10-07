@@ -1,11 +1,11 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { CognitoService } from "../services";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import { CreateUserPool, CreateUserPoolTarget } from "./createUserPool";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { CognitoService } from "../services/index.js";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
+import { CreateUserPool, CreateUserPoolTarget } from "./createUserPool.js";
 
 const originalDate = new Date();
 

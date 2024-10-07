@@ -4,10 +4,10 @@ import {
   InvalidParameterError,
   MissingParameterError,
   NotAuthorizedError,
-} from "../errors";
-import { Services } from "../services";
-import { Token } from "../services/tokenGenerator";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Token } from "../services/tokenGenerator.js";
+import { Target } from "./Target.js";
 
 export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 

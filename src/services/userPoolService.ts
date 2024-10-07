@@ -6,13 +6,13 @@ import {
   UserPoolType,
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { InvalidParameterError } from "../errors";
-import { AppClient } from "./appClient";
-import { Clock } from "./clock";
-import { Context } from "./context";
-import { DataStore } from "./dataStore/dataStore";
-import { DataStoreFactory } from "./dataStore/factory";
-import { FilterConfig } from "./filter";
+import { InvalidParameterError } from "../errors.js";
+import { AppClient } from "./appClient.js";
+import { Clock } from "./clock.js";
+import { Context } from "./context.js";
+import { DataStore } from "./dataStore/dataStore.js";
+import { DataStoreFactory } from "./dataStore/factory.js";
+import { FilterConfig } from "./filter.js";
 
 export interface MFAOption {
   DeliveryMedium: "SMS";

@@ -6,9 +6,9 @@ import {
   UserPoolType,
   UserType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { AppClient } from "../services/appClient";
-import { Group, User, UserPool } from "../services/userPoolService";
-import { IdentityProvider } from "../services/userPoolService";
+import { AppClient } from "../services/appClient.js";
+import { Group, User, UserPool } from "../services/userPoolService.js";
+import { IdentityProvider } from "../services/userPoolService.js";
 
 export const appClientToResponseListObject = (
   appClient: AppClient,

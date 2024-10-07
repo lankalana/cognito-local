@@ -1,12 +1,12 @@
 import { v4 } from "uuid";
-import { AppClient } from "../services/appClient";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import { AppClient } from "../services/appClient.js";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
 import {
   Group,
   IdentityProvider,
   User,
   UserPool,
-} from "../services/userPoolService";
+} from "../services/userPoolService.js";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;

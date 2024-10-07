@@ -2,10 +2,10 @@ import {
   AdminDeleteUserAttributesRequest,
   AdminDeleteUserAttributesResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, NotAuthorizedError } from "../errors";
-import { Services } from "../services";
-import { attributesRemove } from "../services/userPoolService";
-import { Target } from "./Target";
+import { MissingParameterError, NotAuthorizedError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { attributesRemove } from "../services/userPoolService.js";
+import { Target } from "./Target.js";
 
 export type AdminDeleteUserAttributesTarget = Target<
   AdminDeleteUserAttributesRequest,

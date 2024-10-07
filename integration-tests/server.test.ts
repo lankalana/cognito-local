@@ -6,10 +6,10 @@ import {
   NotAuthorizedError,
   UnsupportedError,
   UsernameExistsError,
-} from "../src/errors";
-import { createServer } from "../src";
+} from "../src/errors.js";
+import { createServer } from "../src/index.js";
 import { sink } from "pino-test";
-import pino from "pino";
+import { pino } from "pino";
 
 describe("HTTP server", () => {
   describe("/", () => {

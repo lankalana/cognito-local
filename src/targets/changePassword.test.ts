@@ -1,18 +1,18 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 import {
   InvalidParameterError,
   InvalidPasswordError,
   NotAuthorizedError,
-} from "../errors";
-import PrivateKey from "../keys/cognitoLocal.private.json";
-import { UserPoolService } from "../services";
-import { ChangePassword, ChangePasswordTarget } from "./changePassword";
+} from "../errors.js";
+import PrivateKey from "../keys/cognitoLocal.private.json" with { type: "json" };
+import { UserPoolService } from "../services/index.js";
+import { ChangePassword, ChangePasswordTarget } from "./changePassword.js";
 
 const currentDate = new Date();
 

@@ -1,14 +1,14 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { ResourceNotFoundError } from "../errors";
-import { CognitoService, UserPoolService } from "../services";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { ResourceNotFoundError } from "../errors.js";
+import { CognitoService, UserPoolService } from "../services/index.js";
 import {
   UpdateUserPoolClient,
   UpdateUserPoolClientTarget,
-} from "./updateUserPoolClient";
+} from "./updateUserPoolClient.js";
 
 const originalDate = new Date();
 

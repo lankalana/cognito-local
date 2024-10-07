@@ -2,10 +2,10 @@ import {
   ListUserPoolClientsRequest,
   ListUserPoolClientsResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { appClientToResponseListObject } from "./responses";
-import { Target } from "./Target";
-import { MissingParameterError } from "../errors";
+import { Services } from "../services/index.js";
+import { appClientToResponseListObject } from "./responses.js";
+import { Target } from "./Target.js";
+import { MissingParameterError } from "../errors.js";
 
 export type ListUserPoolClientsTarget = Target<
   ListUserPoolClientsRequest,

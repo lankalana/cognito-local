@@ -1,7 +1,7 @@
 import { AdminDeleteUserRequest } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { MissingParameterError, UserNotFoundError } from "../errors";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { MissingParameterError, UserNotFoundError } from "../errors.js";
+import { Target } from "./Target.js";
 
 export type AdminDeleteUserTarget = Target<AdminDeleteUserRequest, object>;
 

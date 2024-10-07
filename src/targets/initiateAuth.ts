@@ -12,17 +12,17 @@ import {
   PasswordResetRequiredError,
   UnsupportedError,
   UserNotConfirmedException,
-} from "../errors";
-import { Services, UserPoolService } from "../services";
-import { AppClient } from "../services/appClient";
+} from "../errors.js";
+import { Services, UserPoolService } from "../services/index.js";
+import { AppClient } from "../services/appClient.js";
 import {
   attributesToRecord,
   attributeValue,
   MFAOption,
   User,
-} from "../services/userPoolService";
-import { Target } from "./Target";
-import { Context } from "../services/context";
+} from "../services/userPoolService.js";
+import { Target } from "./Target.js";
+import { Context } from "../services/context.js";
 
 export type InitiateAuthTarget = Target<
   InitiateAuthRequest,

@@ -3,10 +3,10 @@ import {
   AdminConfirmSignUpResponse,
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { MissingParameterError, NotAuthorizedError } from "../errors";
-import { attribute, attributesAppend } from "../services/userPoolService";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { MissingParameterError, NotAuthorizedError } from "../errors.js";
+import { attribute, attributesAppend } from "../services/userPoolService.js";
+import { Target } from "./Target.js";
 
 export type AdminConfirmSignUpTarget = Target<
   AdminConfirmSignUpRequest,

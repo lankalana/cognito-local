@@ -7,10 +7,10 @@ import {
   InvalidParameterError,
   MissingParameterError,
   UserNotFoundError,
-} from "../errors";
-import { Services } from "../services";
-import { Token } from "../services/tokenGenerator";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Token } from "../services/tokenGenerator.js";
+import { Target } from "./Target.js";
 
 export type GetUserTarget = Target<GetUserRequest, GetUserResponse>;
 

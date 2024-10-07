@@ -2,9 +2,9 @@ import {
   ListUserPoolsRequest,
   ListUserPoolsResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { userPoolToResponseObject } from "./responses";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { userPoolToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type ListUserPoolsTarget = Target<
   ListUserPoolsRequest,

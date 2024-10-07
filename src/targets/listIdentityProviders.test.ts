@@ -1,12 +1,12 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { UserPoolService } from "../services";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { UserPoolService } from "../services/index.js";
 import {
   ListIdentityProviders,
   ListIdentityProvidersTarget,
-} from "./listIdentityProviders";
-import * as TDB from "../__tests__/testDataBuilder";
+} from "./listIdentityProviders.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 describe("ListIdentityProviders target", () => {
   let listIdentityProviders: ListIdentityProvidersTarget;

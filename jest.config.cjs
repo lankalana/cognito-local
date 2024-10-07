@@ -3,11 +3,13 @@ module.exports = {
   setupFiles: ["jest-date-mock"],
   setupFilesAfterEnv: [
     "<rootDir>/setupTests.ts",
-    "jest-extended/all"
   ],
-  preset: 'ts-jest',
+  extensionsToTreatAsEsm: ['.ts'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
   transform: {
-    "^.+\\.ts$": "ts-jest",
+    "^.+\\.ts$": "@swc/jest",
   },
   testMatch: ["**/*.test.ts"],
 };

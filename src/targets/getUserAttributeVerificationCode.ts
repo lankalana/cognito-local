@@ -3,17 +3,17 @@ import {
   GetUserAttributeVerificationCodeResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { Messages, Services, UserPoolService } from "../services";
+import { Messages, Services, UserPoolService } from "../services/index.js";
 import {
   InvalidParameterError,
   MissingParameterError,
   UserNotFoundError,
-} from "../errors";
-import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
-import { Token } from "../services/tokenGenerator";
-import { User } from "../services/userPoolService";
-import { Target } from "./Target";
-import { Context } from "../services/context";
+} from "../errors.js";
+import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod.js";
+import { Token } from "../services/tokenGenerator.js";
+import { User } from "../services/userPoolService.js";
+import { Target } from "./Target.js";
+import { Context } from "../services/context.js";
 
 const sendAttributeVerificationCode = async (
   ctx: Context,

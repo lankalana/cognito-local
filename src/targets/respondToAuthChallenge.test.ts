@@ -1,21 +1,21 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
 import {
   CodeMismatchError,
   InvalidParameterError,
   NotAuthorizedError,
-} from "../errors";
-import { Triggers, UserPoolService } from "../services";
-import { TokenGenerator } from "../services/tokenGenerator";
+} from "../errors.js";
+import { Triggers, UserPoolService } from "../services/index.js";
+import { TokenGenerator } from "../services/tokenGenerator.js";
 import {
   RespondToAuthChallenge,
   RespondToAuthChallengeTarget,
-} from "./respondToAuthChallenge";
-import * as TDB from "../__tests__/testDataBuilder";
+} from "./respondToAuthChallenge.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 const currentDate = new Date();
 

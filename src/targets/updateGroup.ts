@@ -2,10 +2,10 @@ import {
   UpdateGroupRequest,
   UpdateGroupResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { GroupNotFoundError, MissingParameterError } from "../errors";
-import { groupToResponseObject } from "./responses";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { GroupNotFoundError, MissingParameterError } from "../errors.js";
+import { groupToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type UpdateGroupTarget = Target<UpdateGroupRequest, UpdateGroupResponse>;
 

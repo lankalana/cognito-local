@@ -1,5 +1,5 @@
-import { FilterConfig } from "./filter";
-import { InvalidParameterError } from "../errors";
+import { FilterConfig } from "./filter.js";
+import { InvalidParameterError } from "../errors.js";
 
 describe("FilterConfig", () => {
   it.each(["abc", 'attr1 != "value"', "attr1 = value"])(
