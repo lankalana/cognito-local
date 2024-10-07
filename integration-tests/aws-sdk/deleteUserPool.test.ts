@@ -1,14 +1,14 @@
-import { withCognitoSdk } from "./setup.js";
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.deleteUserPool",
+  'CognitoIdentityServiceProvider.deleteUserPool',
   withCognitoSdk((Cognito) => {
-    it("deletes a group", async () => {
+    it('deletes a group', async () => {
       const client = Cognito();
 
       // create the user pool
       const up = await client.createUserPool({
-        PoolName: "newPool",
+        PoolName: 'newPool',
       });
 
       const listResponse = await client.listUserPools({
@@ -29,5 +29,5 @@ describe(
 
       expect(listResponseAfter.UserPools).toHaveLength(0);
     });
-  }),
+  })
 );

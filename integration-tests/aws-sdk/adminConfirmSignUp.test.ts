@@ -1,41 +1,41 @@
-import { withCognitoSdk } from "./setup.js";
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.adminConfirmSignUp",
+  'CognitoIdentityServiceProvider.adminConfirmSignUp',
   withCognitoSdk((Cognito) => {
-    it("confirms a user", async () => {
+    it('confirms a user', async () => {
       const client = Cognito();
 
       const upc = await client.createUserPoolClient({
-        UserPoolId: "test",
-        ClientName: "test",
+        UserPoolId: 'test',
+        ClientName: 'test',
       });
 
       await client.signUp({
-        UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-        Username: "abc",
+        UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
+        Username: 'abc',
         ClientId: upc.UserPoolClient?.ClientId,
-        Password: "def",
+        Password: 'def',
       });
 
       let user = await client.adminGetUser({
-        UserPoolId: "test",
-        Username: "abc",
+        UserPoolId: 'test',
+        Username: 'abc',
       });
 
-      expect(user.UserStatus).toEqual("UNCONFIRMED");
+      expect(user.UserStatus).toEqual('UNCONFIRMED');
 
       await client.adminConfirmSignUp({
-        UserPoolId: "test",
-        Username: "abc",
+        UserPoolId: 'test',
+        Username: 'abc',
       });
 
       user = await client.adminGetUser({
-        UserPoolId: "test",
-        Username: "abc",
+        UserPoolId: 'test',
+        Username: 'abc',
       });
 
-      expect(user.UserStatus).toEqual("CONFIRMED");
+      expect(user.UserStatus).toEqual('CONFIRMED');
     });
-  }),
+  })
 );

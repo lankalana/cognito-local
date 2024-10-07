@@ -1,18 +1,15 @@
-import { ClockFake } from "../__tests__/clockFake.js";
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { InvalidParameterError } from "../errors.js";
-import { CognitoService } from "../services/index.js";
-import {
-  AddCustomAttributes,
-  AddCustomAttributesTarget,
-} from "./addCustomAttributes.js";
+import { ClockFake } from '../__tests__/clockFake.js';
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { InvalidParameterError } from '../errors.js';
+import { CognitoService } from '../services/index.js';
+import { AddCustomAttributes, AddCustomAttributesTarget } from './addCustomAttributes.js';
 
 const originalDate = new Date();
 
-describe("AddCustomAttributes target", () => {
+describe('AddCustomAttributes target', () => {
   let addCustomAttributes: AddCustomAttributesTarget;
   let clock: ClockFake;
   let mockCognitoService: jest.Mocked<CognitoService>;
@@ -27,7 +24,7 @@ describe("AddCustomAttributes target", () => {
     });
   });
 
-  it("appends a custom attribute to the user pool", async () => {
+  it('appends a custom attribute to the user pool', async () => {
     const userPool = TDB.userPool();
     const mockUserPoolService = newMockUserPoolService(userPool);
 
@@ -37,36 +34,33 @@ describe("AddCustomAttributes target", () => {
     clock.advanceTo(newDate);
 
     await addCustomAttributes(TestContext, {
-      UserPoolId: "test",
+      UserPoolId: 'test',
       CustomAttributes: [
         {
-          AttributeDataType: "String",
-          Name: "test",
+          AttributeDataType: 'String',
+          Name: 'test',
         },
       ],
     });
 
-    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(
-      TestContext,
-      {
-        ...userPool,
-        SchemaAttributes: [
-          ...(userPool.SchemaAttributes ?? []),
-          {
-            Name: "custom:test",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {},
-          },
-        ],
-        LastModifiedDate: newDate,
-      },
-    );
+    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
+      ...userPool,
+      SchemaAttributes: [
+        ...(userPool.SchemaAttributes ?? []),
+        {
+          Name: 'custom:test',
+          AttributeDataType: 'String',
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {},
+        },
+      ],
+      LastModifiedDate: newDate,
+    });
   });
 
-  it("can create a custom attribute with no name", async () => {
+  it('can create a custom attribute with no name', async () => {
     const userPool = TDB.userPool();
     const mockUserPoolService = newMockUserPoolService(userPool);
 
@@ -76,40 +70,37 @@ describe("AddCustomAttributes target", () => {
     clock.advanceTo(newDate);
 
     await addCustomAttributes(TestContext, {
-      UserPoolId: "test",
+      UserPoolId: 'test',
       CustomAttributes: [
         {
-          AttributeDataType: "String",
+          AttributeDataType: 'String',
         },
       ],
     });
 
-    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(
-      TestContext,
-      {
-        ...userPool,
-        SchemaAttributes: [
-          ...(userPool.SchemaAttributes ?? []),
-          {
-            Name: "custom:null",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {},
-          },
-        ],
-        LastModifiedDate: newDate,
-      },
-    );
+    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
+      ...userPool,
+      SchemaAttributes: [
+        ...(userPool.SchemaAttributes ?? []),
+        {
+          Name: 'custom:null',
+          AttributeDataType: 'String',
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {},
+        },
+      ],
+      LastModifiedDate: newDate,
+    });
   });
 
-  it("throws if an attribute with the name already exists", async () => {
+  it('throws if an attribute with the name already exists', async () => {
     const userPool = TDB.userPool({
       SchemaAttributes: [
         {
-          Name: "custom:test",
-          AttributeDataType: "String",
+          Name: 'custom:test',
+          AttributeDataType: 'String',
           DeveloperOnlyAttribute: false,
           Mutable: true,
           Required: false,
@@ -123,18 +114,16 @@ describe("AddCustomAttributes target", () => {
 
     await expect(
       addCustomAttributes(TestContext, {
-        UserPoolId: "test",
+        UserPoolId: 'test',
         CustomAttributes: [
           {
-            AttributeDataType: "String",
-            Name: "test",
+            AttributeDataType: 'String',
+            Name: 'test',
           },
         ],
-      }),
+      })
     ).rejects.toEqual(
-      new InvalidParameterError(
-        "custom:test: Existing attribute already has name custom:test.",
-      ),
+      new InvalidParameterError('custom:test: Existing attribute already has name custom:test.')
     );
 
     expect(mockUserPoolService.updateOptions).not.toHaveBeenCalled();

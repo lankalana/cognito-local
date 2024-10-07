@@ -1,14 +1,11 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import { CognitoService } from "../services/index.js";
-import {
-  DescribeUserPool,
-  DescribeUserPoolTarget,
-} from "./describeUserPool.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { CognitoService } from '../services/index.js';
+import { DescribeUserPool, DescribeUserPoolTarget } from './describeUserPool.js';
 
-describe("DescribeUserPool target", () => {
+describe('DescribeUserPool target', () => {
   let describeUserPool: DescribeUserPoolTarget;
   let mockCognitoService: jest.Mocked<CognitoService>;
 
@@ -19,11 +16,9 @@ describe("DescribeUserPool target", () => {
     });
   });
 
-  it("returns an existing user pool", async () => {
+  it('returns an existing user pool', async () => {
     const existingUserPool = TDB.userPool();
-    mockCognitoService.getUserPool.mockResolvedValue(
-      newMockUserPoolService(existingUserPool),
-    );
+    mockCognitoService.getUserPool.mockResolvedValue(newMockUserPoolService(existingUserPool));
 
     const result = await describeUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,
@@ -34,5 +29,5 @@ describe("DescribeUserPool target", () => {
     });
   });
 
-  it.todo("throws resource not found for an invalid user pool");
+  it.todo('throws resource not found for an invalid user pool');
 });

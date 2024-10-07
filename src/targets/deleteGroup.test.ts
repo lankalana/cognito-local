@@ -1,12 +1,12 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { GroupNotFoundError } from "../errors.js";
-import { UserPoolService } from "../services/index.js";
-import { DeleteGroup, DeleteGroupTarget } from "./deleteGroup.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { GroupNotFoundError } from '../errors.js';
+import { UserPoolService } from '../services/index.js';
+import { DeleteGroup, DeleteGroupTarget } from './deleteGroup.js';
 
-describe("DeleteGroup target", () => {
+describe('DeleteGroup target', () => {
   let deleteGroup: DeleteGroupTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -18,20 +18,17 @@ describe("DeleteGroup target", () => {
     });
   });
 
-  it("deletes a group", async () => {
+  it('deletes a group', async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     await deleteGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
-    expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(
-      TestContext,
-      existingGroup,
-    );
+    expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(TestContext, existingGroup);
   });
 
   it("throws if the group doesn't exist", async () => {
@@ -39,9 +36,9 @@ describe("DeleteGroup target", () => {
 
     await expect(
       deleteGroup(TestContext, {
-        GroupName: "group",
-        UserPoolId: "test",
-      }),
+        GroupName: 'group',
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

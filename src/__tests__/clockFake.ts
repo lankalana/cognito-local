@@ -1,4 +1,4 @@
-import { Clock } from "../services/index.js";
+import { Clock } from '../services/index.js';
 
 export class ClockFake implements Clock {
   private currentValue: Date;

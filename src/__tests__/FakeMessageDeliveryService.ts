@@ -1,10 +1,7 @@
-import { Context } from "../services/context.js";
-import {
-  DeliveryDetails,
-  MessageDelivery,
-} from "../services/messageDelivery/messageDelivery.js";
-import { Message } from "../services/messages.js";
-import { User } from "../services/userPoolService.js";
+import { Context } from '../services/context.js';
+import { DeliveryDetails, MessageDelivery } from '../services/messageDelivery/messageDelivery.js';
+import { Message } from '../services/messages.js';
+import { User } from '../services/userPoolService.js';
 
 interface CollectedMessage {
   readonly deliveryDetails: DeliveryDetails;
@@ -22,7 +19,7 @@ export class FakeMessageDeliveryService implements MessageDelivery {
     ctx: Context,
     user: User,
     deliveryDetails: DeliveryDetails,
-    message: Message,
+    message: Message
   ): Promise<void> {
     this.messages.push({
       deliveryDetails,

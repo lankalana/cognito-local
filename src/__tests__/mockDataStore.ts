@@ -1,5 +1,5 @@
-import { DataStore } from "../services/dataStore/dataStore.js";
-import { DataStoreFactory } from "../services/dataStore/factory.js";
+import { DataStore } from '../services/dataStore/dataStore.js';
+import { DataStoreFactory } from '../services/dataStore/factory.js';
 
 export const newMockDataStore = (): jest.Mocked<DataStore> => ({
   delete: jest.fn(),
@@ -9,7 +9,7 @@ export const newMockDataStore = (): jest.Mocked<DataStore> => ({
 });
 
 export const newMockDataStoreFactory = (
-  dataStore: jest.Mocked<DataStore> = newMockDataStore(),
+  dataStore: jest.Mocked<DataStore> = newMockDataStore()
 ): jest.Mocked<DataStoreFactory> => ({
   create: jest.fn().mockResolvedValue(dataStore),
 });

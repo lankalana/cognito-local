@@ -1,12 +1,9 @@
-import { Context } from "./context.js";
-import {
-  DeliveryDetails,
-  MessageDelivery,
-} from "./messageDelivery/messageDelivery.js";
-import { Triggers } from "./triggers/index.js";
-import { User } from "./userPoolService.js";
+import { Context } from './context.js';
+import { DeliveryDetails, MessageDelivery } from './messageDelivery/messageDelivery.js';
+import { Triggers } from './triggers/index.js';
+import { User } from './userPoolService.js';
 
-const AWS_ADMIN_CLIENT_ID = "CLIENT_ID_NOT_APPLICABLE";
+const AWS_ADMIN_CLIENT_ID = 'CLIENT_ID_NOT_APPLICABLE';
 
 export interface Message {
   __code?: string; // not really part of the message, but we pass it around for convenience logging to the console
@@ -16,13 +13,13 @@ export interface Message {
 }
 
 type MessageSource =
-  | "AdminCreateUser"
-  | "Authentication"
-  | "ForgotPassword"
-  | "ResendCode"
-  | "SignUp"
-  | "UpdateUserAttribute"
-  | "VerifyUserAttribute";
+  | 'AdminCreateUser'
+  | 'Authentication'
+  | 'ForgotPassword'
+  | 'ResendCode'
+  | 'SignUp'
+  | 'UpdateUserAttribute'
+  | 'VerifyUserAttribute';
 
 export interface Messages {
   deliver(
@@ -33,7 +30,7 @@ export interface Messages {
     user: User,
     code: string,
     clientMetadata: Record<string, string> | undefined,
-    deliveryDetails: DeliveryDetails,
+    deliveryDetails: DeliveryDetails
   ): Promise<void>;
 }
 
@@ -54,21 +51,10 @@ export class MessagesService implements Messages {
     user: User,
     code: string,
     clientMetadata: Record<string, string> | undefined,
-    deliveryDetails: DeliveryDetails,
+    deliveryDetails: DeliveryDetails
   ): Promise<void> {
-    if (
-      this.triggers.enabled("CustomEmailSender") &&
-      source !== "Authentication"
-    ) {
-      return this.customDelivery(
-        ctx,
-        source,
-        clientId,
-        userPoolId,
-        user,
-        code,
-        clientMetadata,
-      );
+    if (this.triggers.enabled('CustomEmailSender') && source !== 'Authentication') {
+      return this.customDelivery(ctx, source, clientId, userPoolId, user, code, clientMetadata);
     }
 
     const message = await this.create(
@@ -78,7 +64,7 @@ export class MessagesService implements Messages {
       userPoolId,
       user,
       code,
-      clientMetadata,
+      clientMetadata
     );
 
     await this.messageDelivery.deliver(ctx, user, deliveryDetails, message);
@@ -91,9 +77,9 @@ export class MessagesService implements Messages {
     userPoolId: string,
     user: User,
     code: string,
-    clientMetadata: Record<string, string> | undefined,
+    clientMetadata: Record<string, string> | undefined
   ): Promise<Message> {
-    if (this.triggers.enabled("CustomMessage")) {
+    if (this.triggers.enabled('CustomMessage')) {
       const message = await this.triggers.customMessage(ctx, {
         clientId: clientId ?? AWS_ADMIN_CLIENT_ID,
         clientMetadata,
@@ -118,12 +104,12 @@ export class MessagesService implements Messages {
 
   private async customDelivery(
     ctx: Context,
-    source: Exclude<MessageSource, "Authentication">,
+    source: Exclude<MessageSource, 'Authentication'>,
     clientId: string | null,
     userPoolId: string,
     user: User,
     code: string,
-    clientMetadata: Record<string, string> | undefined,
+    clientMetadata: Record<string, string> | undefined
   ): Promise<void> {
     await this.triggers.customEmailSender(ctx, {
       clientId: clientId ?? AWS_ADMIN_CLIENT_ID,

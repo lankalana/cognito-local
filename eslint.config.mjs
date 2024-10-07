@@ -1,4 +1,5 @@
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import simpleImportSort from "eslint-plugin-simple-import-sort"
 import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -22,12 +23,13 @@ export default [
   {
     plugins: {
       "@typescript-eslint": typescriptEslint,
+      "simple-import-sort": simpleImportSort
     },
 
     languageOptions: {
       parser: tsParser,
-      ecmaVersion: 5,
-      sourceType: "script",
+      ecmaVersion: 2020,
+      sourceType: "module",
 
       parserOptions: {
         project: "./tsconfig.json",
@@ -35,11 +37,11 @@ export default [
     },
 
     rules: {
-      "@typescript-eslint/explicit-function-return-type": "off",
-      "@typescript-eslint/camelcase": "off",
+      "simple-import-sort/imports": "error",
+      "simple-import-sort/exports": "error",
     },
 
-    ignores: ["eslint.config.mjs", "**/jest.config.cjs"],
+    ignores: ["eslint.config.mjs", "**/jest.config.cjs", ".prettierrc.js"],
   },
   {
     files: ["**/*.test.ts"],

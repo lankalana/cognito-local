@@ -1,15 +1,12 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { GroupNotFoundError, UserNotFoundError } from "../errors.js";
-import { UserPoolService } from "../services/index.js";
-import {
-  ListUsersInGroup,
-  ListUsersInGroupTarget,
-} from "./listUsersInGroup.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { GroupNotFoundError, UserNotFoundError } from '../errors.js';
+import { UserPoolService } from '../services/index.js';
+import { ListUsersInGroup, ListUsersInGroupTarget } from './listUsersInGroup.js';
 
-describe("ListUsersInGroup target", () => {
+describe('ListUsersInGroup target', () => {
   let listUsersInGroup: ListUsersInGroupTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -21,7 +18,7 @@ describe("ListUsersInGroup target", () => {
     });
   });
 
-  it("lists users in a group", async () => {
+  it('lists users in a group', async () => {
     const existingUser1 = TDB.user();
     const existingUser2 = TDB.user();
     const existingGroup = TDB.group({
@@ -29,25 +26,23 @@ describe("ListUsersInGroup target", () => {
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
-    mockUserPoolService.getUserByUsername.mockImplementation(
-      (ctx, username) => {
-        if (username === existingUser1.Username) {
-          return Promise.resolve(existingUser1);
-        } else if (username === existingUser2.Username) {
-          return Promise.resolve(existingUser2);
-        }
-        return Promise.resolve(null);
-      },
-    );
+    mockUserPoolService.getUserByUsername.mockImplementation((ctx, username) => {
+      if (username === existingUser1.Username) {
+        return Promise.resolve(existingUser1);
+      } else if (username === existingUser2.Username) {
+        return Promise.resolve(existingUser2);
+      }
+      return Promise.resolve(null);
+    });
 
     const result = await listUsersInGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName,
+      existingGroup.GroupName
     );
 
     expect(result.Users).toEqual([
@@ -72,19 +67,19 @@ describe("ListUsersInGroup target", () => {
     ]);
   });
 
-  it("lists users in an empty group", async () => {
+  it('lists users in an empty group', async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     const result = await listUsersInGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName,
+      existingGroup.GroupName
     );
 
     expect(result.Users).toHaveLength(0);
@@ -95,9 +90,9 @@ describe("ListUsersInGroup target", () => {
 
     await expect(
       listUsersInGroup(TestContext, {
-        GroupName: "group",
-        UserPoolId: "test",
-      }),
+        GroupName: 'group',
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new GroupNotFoundError());
   });
 
@@ -109,21 +104,19 @@ describe("ListUsersInGroup target", () => {
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
-    mockUserPoolService.getUserByUsername.mockImplementation(
-      (ctx, username) => {
-        if (username === existingUser1.Username) {
-          return Promise.resolve(existingUser1);
-        }
-        // don't ever return a value for existingUser2
-        return Promise.resolve(null);
-      },
-    );
+    mockUserPoolService.getUserByUsername.mockImplementation((ctx, username) => {
+      if (username === existingUser1.Username) {
+        return Promise.resolve(existingUser1);
+      }
+      // don't ever return a value for existingUser2
+      return Promise.resolve(null);
+    });
 
     await expect(
       listUsersInGroup(TestContext, {
         GroupName: existingGroup.GroupName,
-        UserPoolId: "test",
-      }),
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

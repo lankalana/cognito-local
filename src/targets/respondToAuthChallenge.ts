@@ -1,16 +1,17 @@
 import {
   RespondToAuthChallengeRequest,
   RespondToAuthChallengeResponse,
-} from "@aws-sdk/client-cognito-identity-provider";
+} from '@aws-sdk/client-cognito-identity-provider';
+
 import {
   CodeMismatchError,
   InvalidParameterError,
   MissingParameterError,
   NotAuthorizedError,
   UnsupportedError,
-} from "../errors.js";
-import { Services } from "../services/index.js";
-import { Target } from "./Target.js";
+} from '../errors.js';
+import { Services } from '../services/index.js';
+import { Target } from './Target.js';
 
 export type RespondToAuthChallengeTarget = Target<
   RespondToAuthChallengeRequest,
@@ -19,7 +20,7 @@ export type RespondToAuthChallengeTarget = Target<
 
 type RespondToAuthChallengeService = Pick<
   Services,
-  "clock" | "cognito" | "triggers" | "tokenGenerator"
+  'clock' | 'cognito' | 'triggers' | 'tokenGenerator'
 >;
 
 export const RespondToAuthChallenge =
@@ -30,32 +31,27 @@ export const RespondToAuthChallenge =
     tokenGenerator,
   }: RespondToAuthChallengeService): RespondToAuthChallengeTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.ClientId) throw new MissingParameterError('ClientId');
 
     if (!req.ChallengeResponses) {
-      throw new InvalidParameterError(
-        "Missing required parameter challenge responses",
-      );
+      throw new InvalidParameterError('Missing required parameter challenge responses');
     }
     if (!req.ChallengeResponses.USERNAME) {
-      throw new InvalidParameterError("Missing required parameter USERNAME");
+      throw new InvalidParameterError('Missing required parameter USERNAME');
     }
     if (!req.Session) {
-      throw new InvalidParameterError("Missing required parameter Session");
+      throw new InvalidParameterError('Missing required parameter Session');
     }
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const userPoolClient = await cognito.getAppClient(ctx, req.ClientId);
 
-    const user = await userPool.getUserByUsername(
-      ctx,
-      req.ChallengeResponses.USERNAME,
-    );
+    const user = await userPool.getUserByUsername(ctx, req.ChallengeResponses.USERNAME);
     if (!user || !userPoolClient) {
       throw new NotAuthorizedError();
     }
 
-    if (req.ChallengeName === "SMS_MFA") {
+    if (req.ChallengeName === 'SMS_MFA') {
       if (user.MFACode !== req.ChallengeResponses.SMS_MFA_CODE) {
         throw new CodeMismatchError();
       }
@@ -65,11 +61,9 @@ export const RespondToAuthChallenge =
         MFACode: undefined,
         UserLastModifiedDate: clock.get(),
       });
-    } else if (req.ChallengeName === "NEW_PASSWORD_REQUIRED") {
+    } else if (req.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
       if (!req.ChallengeResponses.NEW_PASSWORD) {
-        throw new InvalidParameterError(
-          "Missing required parameter NEW_PASSWORD",
-        );
+        throw new InvalidParameterError('Missing required parameter NEW_PASSWORD');
       }
 
       // TODO: validate the password?
@@ -77,19 +71,17 @@ export const RespondToAuthChallenge =
         ...user,
         Password: req.ChallengeResponses.NEW_PASSWORD,
         UserLastModifiedDate: clock.get(),
-        UserStatus: "CONFIRMED",
+        UserStatus: 'CONFIRMED',
       });
     } else {
-      throw new UnsupportedError(
-        `respondToAuthChallenge with ChallengeName=${req.ChallengeName}`,
-      );
+      throw new UnsupportedError(`respondToAuthChallenge with ChallengeName=${req.ChallengeName}`);
     }
 
-    if (triggers.enabled("PostAuthentication")) {
+    if (triggers.enabled('PostAuthentication')) {
       await triggers.postAuthentication(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,
-        source: "PostAuthentication_Authentication",
+        source: 'PostAuthentication_Authentication',
         userAttributes: user.Attributes,
         username: user.Username,
         userPoolId: userPool.options.Id,
@@ -106,7 +98,7 @@ export const RespondToAuthChallenge =
         userGroups,
         userPoolClient,
         req.ClientMetadata,
-        "Authentication",
+        'Authentication'
       ),
     };
   };

@@ -1,21 +1,14 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { newMockTriggers } from "../__tests__/mockTriggers.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import {
-  CognitoService,
-  Triggers,
-  UserPoolService,
-} from "../services/index.js";
-import { TokenGenerator } from "../services/tokenGenerator.js";
-import {
-  AdminInitiateAuth,
-  AdminInitiateAuthTarget,
-} from "./adminInitiateAuth.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockTokenGenerator } from '../__tests__/mockTokenGenerator.js';
+import { newMockTriggers } from '../__tests__/mockTriggers.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { CognitoService, Triggers, UserPoolService } from '../services/index.js';
+import { TokenGenerator } from '../services/tokenGenerator.js';
+import { AdminInitiateAuth, AdminInitiateAuthTarget } from './adminInitiateAuth.js';
 
-describe("AdminInitiateAuth target", () => {
+describe('AdminInitiateAuth target', () => {
   let adminInitiateAuth: AdminInitiateAuthTarget;
 
   let mockCognitoService: jest.Mocked<CognitoService>;
@@ -39,11 +32,11 @@ describe("AdminInitiateAuth target", () => {
     });
   });
 
-  it("create tokens with username, password and admin user password auth flow", async () => {
+  it('create tokens with username, password and admin user password auth flow', async () => {
     mockTokenGenerator.generate.mockResolvedValue({
-      AccessToken: "access",
-      IdToken: "id",
-      RefreshToken: "refresh",
+      AccessToken: 'access',
+      IdToken: 'id',
+      RefreshToken: 'refresh',
     });
 
     const existingUser = TDB.user();
@@ -52,7 +45,7 @@ describe("AdminInitiateAuth target", () => {
     mockUserPoolService.listUserGroupMembership.mockResolvedValue([]);
 
     const response = await adminInitiateAuth(TestContext, {
-      AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+      AuthFlow: 'ADMIN_USER_PASSWORD_AUTH',
       ClientId: userPoolClient.ClientId,
       UserPoolId: userPoolClient.UserPoolId,
       AuthParameters: {
@@ -60,19 +53,19 @@ describe("AdminInitiateAuth target", () => {
         PASSWORD: existingUser.Password,
       },
       ClientMetadata: {
-        client: "metadata",
+        client: 'metadata',
       },
     });
 
     expect(mockUserPoolService.storeRefreshToken).toHaveBeenCalledWith(
       TestContext,
       response.AuthenticationResult?.RefreshToken,
-      existingUser,
+      existingUser
     );
 
-    expect(response.AuthenticationResult?.AccessToken).toEqual("access");
-    expect(response.AuthenticationResult?.IdToken).toEqual("id");
-    expect(response.AuthenticationResult?.RefreshToken).toEqual("refresh");
+    expect(response.AuthenticationResult?.AccessToken).toEqual('access');
+    expect(response.AuthenticationResult?.IdToken).toEqual('id');
+    expect(response.AuthenticationResult?.RefreshToken).toEqual('refresh');
 
     expect(mockTokenGenerator.generate).toHaveBeenCalledWith(
       TestContext,
@@ -80,46 +73,46 @@ describe("AdminInitiateAuth target", () => {
       [],
       userPoolClient,
       {
-        client: "metadata",
+        client: 'metadata',
       },
-      "Authentication",
+      'Authentication'
     );
   });
 
-  it("supports REFRESH_TOKEN_AUTH", async () => {
+  it('supports REFRESH_TOKEN_AUTH', async () => {
     mockTokenGenerator.generate.mockResolvedValue({
-      AccessToken: "access",
-      IdToken: "id",
-      RefreshToken: "refresh",
+      AccessToken: 'access',
+      IdToken: 'id',
+      RefreshToken: 'refresh',
     });
 
     const existingUser = TDB.user({
-      RefreshTokens: ["refresh token"],
+      RefreshTokens: ['refresh token'],
     });
 
     mockUserPoolService.getUserByRefreshToken.mockResolvedValue(existingUser);
     mockUserPoolService.listUserGroupMembership.mockResolvedValue([]);
 
     const response = await adminInitiateAuth(TestContext, {
-      AuthFlow: "REFRESH_TOKEN_AUTH",
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
       ClientId: userPoolClient.ClientId,
       UserPoolId: userPoolClient.UserPoolId,
       AuthParameters: {
-        REFRESH_TOKEN: "refresh token",
+        REFRESH_TOKEN: 'refresh token',
       },
       ClientMetadata: {
-        client: "metadata",
+        client: 'metadata',
       },
     });
 
     expect(mockUserPoolService.getUserByRefreshToken).toHaveBeenCalledWith(
       TestContext,
-      "refresh token",
+      'refresh token'
     );
     expect(mockUserPoolService.storeRefreshToken).not.toHaveBeenCalled();
 
-    expect(response.AuthenticationResult?.AccessToken).toEqual("access");
-    expect(response.AuthenticationResult?.IdToken).toEqual("id");
+    expect(response.AuthenticationResult?.AccessToken).toEqual('access');
+    expect(response.AuthenticationResult?.IdToken).toEqual('id');
 
     // does not return a refresh token as part of a refresh token flow
     expect(response.AuthenticationResult?.RefreshToken).not.toBeDefined();
@@ -130,9 +123,9 @@ describe("AdminInitiateAuth target", () => {
       [],
       userPoolClient,
       {
-        client: "metadata",
+        client: 'metadata',
       },
-      "RefreshTokens",
+      'RefreshTokens'
     );
   });
 });

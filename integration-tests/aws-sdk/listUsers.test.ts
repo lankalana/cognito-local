@@ -1,19 +1,19 @@
-import { withCognitoSdk } from "./setup.js";
+import { withCognitoSdk } from './setup.js';
 
 describe(
-  "CognitoIdentityServiceProvider.listUsers",
+  'CognitoIdentityServiceProvider.listUsers',
   withCognitoSdk((Cognito) => {
-    it("lists users", async () => {
+    it('lists users', async () => {
       const client = Cognito();
 
       const createUserResult = await client.adminCreateUser({
-        UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-        Username: "abc",
-        UserPoolId: "test",
+        UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
+        Username: 'abc',
+        UserPoolId: 'test',
       });
 
       const result = await client.listUsers({
-        UserPoolId: "test",
+        UserPoolId: 'test',
       });
 
       expect(result?.Users).toEqual([
@@ -22,29 +22,29 @@ describe(
           Enabled: true,
           UserCreateDate: createUserResult.User?.UserCreateDate,
           UserLastModifiedDate: createUserResult.User?.UserLastModifiedDate,
-          UserStatus: "FORCE_CHANGE_PASSWORD",
-          Username: "abc",
+          UserStatus: 'FORCE_CHANGE_PASSWORD',
+          Username: 'abc',
         },
       ]);
     });
 
-    it("filters users", async () => {
+    it('filters users', async () => {
       const client = Cognito();
 
       await client.adminCreateUser({
-        UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-        Username: "abc1",
-        UserPoolId: "test",
+        UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
+        Username: 'abc1',
+        UserPoolId: 'test',
       });
 
       const createUserResult2 = await client.adminCreateUser({
-        UserAttributes: [{ Name: "phone_number", Value: "0500000000" }],
-        Username: "abc2",
-        UserPoolId: "test",
+        UserAttributes: [{ Name: 'phone_number', Value: '0500000000' }],
+        Username: 'abc2',
+        UserPoolId: 'test',
       });
 
       const result = await client.listUsers({
-        UserPoolId: "test",
+        UserPoolId: 'test',
         Filter: 'phone_number ^= "05"',
       });
 
@@ -54,20 +54,20 @@ describe(
           Enabled: true,
           UserCreateDate: createUserResult2.User?.UserCreateDate,
           UserLastModifiedDate: createUserResult2.User?.UserLastModifiedDate,
-          UserStatus: "FORCE_CHANGE_PASSWORD",
-          Username: "abc2",
+          UserStatus: 'FORCE_CHANGE_PASSWORD',
+          Username: 'abc2',
         },
       ]);
     });
 
-    it("handles no users", async () => {
+    it('handles no users', async () => {
       const client = Cognito();
 
       const result = await client.listUsers({
-        UserPoolId: "test",
+        UserPoolId: 'test',
       });
 
       expect(result?.Users).toEqual([]);
     });
-  }),
+  })
 );

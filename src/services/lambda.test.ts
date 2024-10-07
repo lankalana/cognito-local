@@ -1,14 +1,13 @@
-import { Lambda } from "@aws-sdk/client-lambda";
-import { TestContext } from "../__tests__/testContext.js";
-import {
-  InvalidLambdaResponseError,
-  UserLambdaValidationError,
-} from "../errors.js";
-import { LambdaService } from "./lambda.js";
-import { awsSdkVersion } from "../constants.js";
-import "../__tests__/jsonMatching.js";
+import '../__tests__/jsonMatching.js';
 
-describe("Lambda function invoker", () => {
+import { Lambda } from '@aws-sdk/client-lambda';
+
+import { TestContext } from '../__tests__/testContext.js';
+import { awsSdkVersion } from '../constants.js';
+import { InvalidLambdaResponseError, UserLambdaValidationError } from '../errors.js';
+import { LambdaService } from './lambda.js';
+
+describe('Lambda function invoker', () => {
   let mockLambdaClient: jest.Mocked<Lambda>;
   const encoder = new TextEncoder();
 
@@ -19,45 +18,45 @@ describe("Lambda function invoker", () => {
     };
   });
 
-  describe("enabled", () => {
-    it("returns true if lambda is configured", () => {
+  describe('enabled', () => {
+    it('returns true if lambda is configured', () => {
       const lambda = new LambdaService(
         {
-          UserMigration: "MyLambdaName",
+          UserMigration: 'MyLambdaName',
         },
-        mockLambdaClient,
+        mockLambdaClient
       );
 
-      expect(lambda.enabled("UserMigration")).toBe(true);
+      expect(lambda.enabled('UserMigration')).toBe(true);
     });
 
-    it("returns false if lambda is not configured", () => {
+    it('returns false if lambda is not configured', () => {
       const lambda = new LambdaService({}, mockLambdaClient);
 
-      expect(lambda.enabled("UserMigration")).toBe(false);
+      expect(lambda.enabled('UserMigration')).toBe(false);
     });
   });
 
-  describe("invoke", () => {
-    it("throws if lambda is not configured", async () => {
+  describe('invoke', () => {
+    it('throws if lambda is not configured', async () => {
       const lambda = new LambdaService({}, mockLambdaClient);
 
       await expect(
-        lambda.invoke(TestContext, "UserMigration", {
-          clientId: "clientId",
+        lambda.invoke(TestContext, 'UserMigration', {
+          clientId: 'clientId',
           clientMetadata: undefined,
-          password: "password",
-          triggerSource: "UserMigration_Authentication",
+          password: 'password',
+          triggerSource: 'UserMigration_Authentication',
           userAttributes: {},
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           validationData: undefined,
-        }),
-      ).rejects.toEqual(new Error("UserMigration trigger not configured"));
+        })
+      ).rejects.toEqual(new Error('UserMigration trigger not configured'));
     });
 
-    describe("when lambda is successful", () => {
-      it("returns string payload as json", async () => {
+    describe('when lambda is successful', () => {
+      it('returns string payload as json', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "response": { "ok": "value" } }'),
@@ -65,26 +64,26 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        const result = await lambda.invoke(TestContext, "UserMigration", {
-          clientId: "clientId",
+        const result = await lambda.invoke(TestContext, 'UserMigration', {
+          clientId: 'clientId',
           clientMetadata: undefined,
-          password: "password",
-          triggerSource: "UserMigration_Authentication",
+          password: 'password',
+          triggerSource: 'UserMigration_Authentication',
           userAttributes: {},
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           validationData: undefined,
         });
 
-        expect(result).toEqual({ ok: "value" });
+        expect(result).toEqual({ ok: 'value' });
       });
 
-      it("throws if an invalid payload is returned", async () => {
+      it('throws if an invalid payload is returned', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "respo...'),
@@ -92,90 +91,84 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await expect(
-          lambda.invoke(TestContext, "UserMigration", {
-            clientId: "clientId",
+          lambda.invoke(TestContext, 'UserMigration', {
+            clientId: 'clientId',
             clientMetadata: undefined,
-            password: "password",
-            triggerSource: "UserMigration_Authentication",
+            password: 'password',
+            triggerSource: 'UserMigration_Authentication',
             userAttributes: {},
-            username: "username",
-            userPoolId: "userPoolId",
+            username: 'username',
+            userPoolId: 'userPoolId',
             validationData: undefined,
-          }),
+          })
         ).rejects.toBeInstanceOf(InvalidLambdaResponseError);
       });
 
-      it("throws if the function returns an error", async () => {
+      it('throws if the function returns an error', async () => {
         const response = Promise.resolve({
           StatusCode: 500,
-          FunctionError: "Something bad happened",
+          FunctionError: 'Something bad happened',
         });
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await expect(
-          lambda.invoke(TestContext, "UserMigration", {
-            clientId: "clientId",
+          lambda.invoke(TestContext, 'UserMigration', {
+            clientId: 'clientId',
             clientMetadata: undefined,
-            password: "password",
-            triggerSource: "UserMigration_Authentication",
+            password: 'password',
+            triggerSource: 'UserMigration_Authentication',
             userAttributes: {},
-            username: "username",
-            userPoolId: "userPoolId",
+            username: 'username',
+            userPoolId: 'userPoolId',
             validationData: undefined,
-          }),
-        ).rejects.toEqual(
-          new UserLambdaValidationError("Something bad happened"),
-        );
+          })
+        ).rejects.toEqual(new UserLambdaValidationError('Something bad happened'));
       });
 
-      it("throws if the function returns an Unhandled error with a 200 status code and a errorMessage payload", async () => {
+      it('throws if the function returns an Unhandled error with a 200 status code and a errorMessage payload', async () => {
         // this seems to happen whenever userland code throws an error which isn't handled
         const response = Promise.resolve({
           StatusCode: 200,
-          FunctionError: "Unhandled",
-          Payload: encoder.encode(
-            '{"errorMessage":"Something bad in Userland"}',
-          ),
+          FunctionError: 'Unhandled',
+          Payload: encoder.encode('{"errorMessage":"Something bad in Userland"}'),
         });
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await expect(
-          lambda.invoke(TestContext, "UserMigration", {
-            clientId: "clientId",
+          lambda.invoke(TestContext, 'UserMigration', {
+            clientId: 'clientId',
             clientMetadata: undefined,
-            password: "password",
-            triggerSource: "UserMigration_Authentication",
+            password: 'password',
+            triggerSource: 'UserMigration_Authentication',
             userAttributes: {},
-            username: "username",
-            userPoolId: "userPoolId",
+            username: 'username',
+            userPoolId: 'userPoolId',
             validationData: undefined,
-          }),
+          })
         ).rejects.toEqual(
-          new UserLambdaValidationError(
-            "MyLambdaName failed with error Something bad in Userland.",
-          ),
+          new UserLambdaValidationError('MyLambdaName failed with error Something bad in Userland.')
         );
       });
 
-      it("returns Buffer payload as json", async () => {
+      it('returns Buffer payload as json', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: Buffer.from('{ "response": "value" }'),
@@ -183,32 +176,32 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        const result = await lambda.invoke(TestContext, "UserMigration", {
-          clientId: "clientId",
+        const result = await lambda.invoke(TestContext, 'UserMigration', {
+          clientId: 'clientId',
           clientMetadata: undefined,
-          password: "password",
-          triggerSource: "UserMigration_Authentication",
+          password: 'password',
+          triggerSource: 'UserMigration_Authentication',
           userAttributes: {},
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           validationData: undefined,
         });
 
-        expect(result).toEqual("value");
+        expect(result).toEqual('value');
       });
     });
 
     describe.each([
-      "PreSignUp_AdminCreateUser",
-      "PreSignUp_ExternalProvider",
-      "PreSignUp_SignUp",
-    ] as const)("%s", (source) => {
-      it("invokes the lambda", async () => {
+      'PreSignUp_AdminCreateUser',
+      'PreSignUp_ExternalProvider',
+      'PreSignUp_SignUp',
+    ] as const)('%s', (source) => {
+      it('invokes the lambda', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -216,41 +209,41 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            PreSignUp: "MyLambdaName",
+            PreSignUp: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        await lambda.invoke(TestContext, "PreSignUp", {
-          clientId: "clientId",
+        await lambda.invoke(TestContext, 'PreSignUp', {
+          clientId: 'clientId',
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
           triggerSource: source,
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           userAttributes: {},
           validationData: {
-            validation: "data",
+            validation: 'data',
           },
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
             request: {
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
               userAttributes: {},
               validationData: {
-                validation: "data",
+                validation: 'data',
               },
             },
             response: {
@@ -258,14 +251,14 @@ describe("Lambda function invoker", () => {
               autoVerifyEmail: false,
               autoVerifyPhone: false,
             },
-            userName: "username",
+            userName: 'username',
           }),
         });
       });
     });
 
-    describe("UserMigration_Authentication", () => {
-      it("invokes the lambda", async () => {
+    describe('UserMigration_Authentication', () => {
+      it('invokes the lambda', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -273,49 +266,49 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            UserMigration: "MyLambdaName",
+            UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        await lambda.invoke(TestContext, "UserMigration", {
-          clientId: "clientId",
+        await lambda.invoke(TestContext, 'UserMigration', {
+          clientId: 'clientId',
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
-          password: "password",
-          triggerSource: "UserMigration_Authentication",
-          username: "username",
-          userPoolId: "userPoolId",
+          password: 'password',
+          triggerSource: 'UserMigration_Authentication',
+          username: 'username',
+          userPoolId: 'userPoolId',
           userAttributes: {},
           validationData: {
-            validation: "data",
+            validation: 'data',
           },
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
-            triggerSource: "UserMigration_Authentication",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
+            triggerSource: 'UserMigration_Authentication',
             request: {
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
-              password: "password",
+              password: 'password',
               validationData: {
-                validation: "data",
+                validation: 'data',
               },
             },
             response: {
               desiredDeliveryMediums: [],
               userAttributes: {},
             },
-            userName: "username",
+            userName: 'username',
           }),
         });
       });
@@ -323,9 +316,9 @@ describe("Lambda function invoker", () => {
 
     describe.each`
       trigger                 | source
-      ${"PostAuthentication"} | ${"PostAuthentication_Authentication"}
-    `("$source", ({ trigger, source }) => {
-      it("invokes the lambda", async () => {
+      ${'PostAuthentication'} | ${'PostAuthentication_Authentication'}
+    `('$source', ({ trigger, source }) => {
+      it('invokes the lambda', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -333,44 +326,44 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            [trigger]: "MyLambdaName",
+            [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await lambda.invoke(TestContext, trigger, {
-          clientId: "clientId",
+          clientId: 'clientId',
           triggerSource: source,
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           userAttributes: {
-            user: "attributes",
+            user: 'attributes',
           },
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
             request: {
               userAttributes: {
-                user: "attributes",
+                user: 'attributes',
               },
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
               newDeviceUsed: false,
             },
             response: {},
-            userName: "username",
+            userName: 'username',
           }),
         });
       });
@@ -378,10 +371,10 @@ describe("Lambda function invoker", () => {
 
     describe.each`
       trigger               | source
-      ${"PostConfirmation"} | ${"PostConfirmation_ConfirmSignUp"}
-      ${"PostConfirmation"} | ${"PostConfirmation_ConfirmForgotPassword"}
-    `("$source", ({ trigger, source }) => {
-      it("invokes the lambda", async () => {
+      ${'PostConfirmation'} | ${'PostConfirmation_ConfirmSignUp'}
+      ${'PostConfirmation'} | ${'PostConfirmation_ConfirmForgotPassword'}
+    `('$source', ({ trigger, source }) => {
+      it('invokes the lambda', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -389,43 +382,43 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            [trigger]: "MyLambdaName",
+            [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await lambda.invoke(TestContext, trigger, {
-          clientId: "clientId",
+          clientId: 'clientId',
           triggerSource: source,
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           userAttributes: {
-            user: "attributes",
+            user: 'attributes',
           },
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
             request: {
               userAttributes: {
-                user: "attributes",
+                user: 'attributes',
               },
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
             },
             response: {},
-            userName: "username",
+            userName: 'username',
           }),
         });
       });
@@ -433,13 +426,13 @@ describe("Lambda function invoker", () => {
 
     describe.each`
       trigger              | source
-      ${"TokenGeneration"} | ${"TokenGeneration_AuthenticateDevice"}
-      ${"TokenGeneration"} | ${"TokenGeneration_Authentication"}
-      ${"TokenGeneration"} | ${"TokenGeneration_HostedAuth"}
-      ${"TokenGeneration"} | ${"TokenGeneration_NewPasswordChallenge"}
-      ${"TokenGeneration"} | ${"TokenGeneration_RefreshTokens"}
-    `("$source", ({ trigger, source }) => {
-      it("invokes the lambda", async () => {
+      ${'TokenGeneration'} | ${'TokenGeneration_AuthenticateDevice'}
+      ${'TokenGeneration'} | ${'TokenGeneration_Authentication'}
+      ${'TokenGeneration'} | ${'TokenGeneration_HostedAuth'}
+      ${'TokenGeneration'} | ${'TokenGeneration_NewPasswordChallenge'}
+      ${'TokenGeneration'} | ${'TokenGeneration_RefreshTokens'}
+    `('$source', ({ trigger, source }) => {
+      it('invokes the lambda', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -447,59 +440,59 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            [trigger]: "MyLambdaName",
+            [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
         await lambda.invoke(TestContext, trigger, {
-          clientId: "clientId",
+          clientId: 'clientId',
           triggerSource: source,
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
           userAttributes: {
-            user: "attributes",
+            user: 'attributes',
           },
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
             request: {
               userAttributes: {
-                user: "attributes",
+                user: 'attributes',
               },
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
               groupConfiguration: {},
             },
             response: { claimsOverrideDetails: {} },
-            userName: "username",
+            userName: 'username',
           }),
         });
       });
     });
 
     describe.each([
-      "CustomMessage_SignUp",
-      "CustomMessage_AdminCreateUser",
-      "CustomMessage_ResendCode",
-      "CustomMessage_ForgotPassword",
-      "CustomMessage_UpdateUserAttribute",
-      "CustomMessage_VerifyUserAttribute",
-      "CustomMessage_Authentication",
-    ] as const)("%s", (source) => {
-      it("invokes the lambda function with the code parameter", async () => {
+      'CustomMessage_SignUp',
+      'CustomMessage_AdminCreateUser',
+      'CustomMessage_ResendCode',
+      'CustomMessage_ForgotPassword',
+      'CustomMessage_UpdateUserAttribute',
+      'CustomMessage_VerifyUserAttribute',
+      'CustomMessage_Authentication',
+    ] as const)('%s', (source) => {
+      it('invokes the lambda function with the code parameter', async () => {
         const response = Promise.resolve({
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -507,46 +500,46 @@ describe("Lambda function invoker", () => {
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(
           {
-            CustomMessage: "MyLambdaName",
+            CustomMessage: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        await lambda.invoke(TestContext, "CustomMessage", {
-          clientId: "clientId",
+        await lambda.invoke(TestContext, 'CustomMessage', {
+          clientId: 'clientId',
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
-          codeParameter: "{####}",
+          codeParameter: '{####}',
           triggerSource: source,
           userAttributes: {},
-          username: "username",
-          usernameParameter: "{username}",
-          userPoolId: "userPoolId",
+          username: 'username',
+          usernameParameter: '{username}',
+          userPoolId: 'userPoolId',
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
-            userName: "username",
+            userName: 'username',
             request: {
               userAttributes: {},
-              usernameParameter: "{username}",
-              codeParameter: "{####}",
+              usernameParameter: '{username}',
+              codeParameter: '{####}',
               clientMetadata: {
-                client: "metadata",
+                client: 'metadata',
               },
             },
             response: {
-              smsMessage: "",
-              emailMessage: "",
-              emailSubject: "",
+              smsMessage: '',
+              emailMessage: '',
+              emailSubject: '',
             },
           }),
         });
@@ -554,14 +547,14 @@ describe("Lambda function invoker", () => {
     });
 
     describe.each([
-      "CustomEmailSender_SignUp",
-      "CustomEmailSender_ResendCode",
-      "CustomEmailSender_ForgotPassword",
-      "CustomEmailSender_UpdateUserAttribute",
-      "CustomEmailSender_VerifyUserAttribute",
-      "CustomEmailSender_AdminCreateUser",
-    ] as const)("%s", (source) => {
-      it("invokes the lambda function with the code parameter", async () => {
+      'CustomEmailSender_SignUp',
+      'CustomEmailSender_ResendCode',
+      'CustomEmailSender_ForgotPassword',
+      'CustomEmailSender_UpdateUserAttribute',
+      'CustomEmailSender_VerifyUserAttribute',
+      'CustomEmailSender_AdminCreateUser',
+    ] as const)('%s', (source) => {
+      it('invokes the lambda function with the code parameter', async () => {
         const response = {
           StatusCode: 200,
           Payload: encoder.encode('{ "some": "json" }'),
@@ -571,38 +564,38 @@ describe("Lambda function invoker", () => {
 
         const lambda = new LambdaService(
           {
-            CustomEmailSender: "MyLambdaName",
+            CustomEmailSender: 'MyLambdaName',
           },
-          mockLambdaClient,
+          mockLambdaClient
         );
 
-        await lambda.invoke(TestContext, "CustomEmailSender", {
-          code: "code",
-          clientId: "clientId",
+        await lambda.invoke(TestContext, 'CustomEmailSender', {
+          code: 'code',
+          clientId: 'clientId',
           clientMetadata: {
-            client: "metadata",
+            client: 'metadata',
           },
           triggerSource: source,
           userAttributes: {},
-          username: "username",
-          userPoolId: "userPoolId",
+          username: 'username',
+          userPoolId: 'userPoolId',
         });
 
         expect(mockLambdaClient.invoke).toHaveBeenCalledWith({
-          FunctionName: "MyLambdaName",
-          InvocationType: "RequestResponse",
+          FunctionName: 'MyLambdaName',
+          InvocationType: 'RequestResponse',
           Payload: expect.jsonMatching({
-            version: "0",
-            callerContext: { awsSdkVersion, clientId: "clientId" },
-            region: "local",
-            userPoolId: "userPoolId",
+            version: '0',
+            callerContext: { awsSdkVersion, clientId: 'clientId' },
+            region: 'local',
+            userPoolId: 'userPoolId',
             triggerSource: source,
-            userName: "username",
+            userName: 'username',
             request: {
-              type: "customEmailSenderRequestV1",
-              code: "code",
+              type: 'customEmailSenderRequestV1',
+              code: 'code',
               userAttributes: {},
-              clientMetadata: { client: "metadata" },
+              clientMetadata: { client: 'metadata' },
             },
             response: {},
           }),

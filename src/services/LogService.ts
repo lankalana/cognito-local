@@ -1,4 +1,4 @@
-import pino from "pino";
+import pino from 'pino';
 
 export type LogService = {
   child(bindings: pino.Bindings, options?: pino.ChildLoggerOptions): LogService;

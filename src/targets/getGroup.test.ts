@@ -1,12 +1,12 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder.js";
-import { GroupNotFoundError } from "../errors.js";
-import { UserPoolService } from "../services/index.js";
-import { GetGroup, GetGroupTarget } from "./getGroup.js";
+import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
+import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
+import { TestContext } from '../__tests__/testContext.js';
+import * as TDB from '../__tests__/testDataBuilder.js';
+import { GroupNotFoundError } from '../errors.js';
+import { UserPoolService } from '../services/index.js';
+import { GetGroup, GetGroupTarget } from './getGroup.js';
 
-describe("GetGroup target", () => {
+describe('GetGroup target', () => {
   let getGroup: GetGroupTarget;
   let mockUserPoolService: jest.Mocked<UserPoolService>;
 
@@ -18,19 +18,19 @@ describe("GetGroup target", () => {
     });
   });
 
-  it("gets a group", async () => {
+  it('gets a group', async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     const result = await getGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName,
+      existingGroup.GroupName
     );
 
     expect(result.Group).toEqual({
@@ -39,7 +39,7 @@ describe("GetGroup target", () => {
       GroupName: existingGroup.GroupName,
       LastModifiedDate: existingGroup.LastModifiedDate,
       RoleArn: existingGroup.RoleArn,
-      UserPoolId: "test",
+      UserPoolId: 'test',
     });
   });
 
@@ -48,9 +48,9 @@ describe("GetGroup target", () => {
 
     await expect(
       getGroup(TestContext, {
-        GroupName: "group",
-        UserPoolId: "test",
-      }),
+        GroupName: 'group',
+        UserPoolId: 'test',
+      })
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

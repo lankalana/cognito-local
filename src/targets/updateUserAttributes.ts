@@ -1,26 +1,23 @@
 import {
   UpdateUserAttributesRequest,
   UpdateUserAttributesResponse,
-} from "@aws-sdk/client-cognito-identity-provider";
-import jwt from "jsonwebtoken";
-import { Messages, Services, UserPoolService } from "../services/index.js";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  NotAuthorizedError,
-} from "../errors.js";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
-import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod.js";
-import { Token } from "../services/tokenGenerator.js";
+} from '@aws-sdk/client-cognito-identity-provider';
+import jwt from 'jsonwebtoken';
+
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from '../errors.js';
+import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
+import { Context } from '../services/context.js';
+import { Messages, Services, UserPoolService } from '../services/index.js';
+import { selectAppropriateDeliveryMethod } from '../services/messageDelivery/deliveryMethod.js';
+import { Token } from '../services/tokenGenerator.js';
 import {
   attributesAppend,
   defaultVerifiedAttributesIfModified,
   hasUnverifiedContactAttributes,
   User,
   validatePermittedAttributeChanges,
-} from "../services/userPoolService.js";
-import { Target } from "./Target.js";
-import { Context } from "../services/context.js";
+} from '../services/userPoolService.js';
+import { Target } from './Target.js';
 
 const sendAttributeVerificationCode = async (
   ctx: Context,
@@ -28,28 +25,28 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: UpdateUserAttributesRequest,
-  code: string,
+  code: string
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user,
+    user
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      "User has no attribute matching desired auto verified attributes",
+      'User has no attribute matching desired auto verified attributes'
     );
   }
 
   await messages.deliver(
     ctx,
-    "UpdateUserAttribute",
+    'UpdateUserAttribute',
     null,
     userPool.options.Id,
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails,
+    deliveryDetails
   );
 
   return deliveryDetails;
@@ -60,32 +57,21 @@ export type UpdateUserAttributesTarget = Target<
   UpdateUserAttributesResponse
 >;
 
-type UpdateUserAttributesServices = Pick<
-  Services,
-  "clock" | "cognito" | "otp" | "messages"
->;
+type UpdateUserAttributesServices = Pick<Services, 'clock' | 'cognito' | 'otp' | 'messages'>;
 
 export const UpdateUserAttributes =
-  ({
-    clock,
-    cognito,
-    otp,
-    messages,
-  }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
+  ({ clock, cognito, otp, messages }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
-    if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
+    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
+    if (!req.UserAttributes) throw new MissingParameterError('UserAttributes');
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info("Unable to decode token");
+      ctx.logger.info('Unable to decode token');
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();
@@ -98,10 +84,8 @@ export const UpdateUserAttributes =
         // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
         // this case, otherwise checks against the schema for default attributes like email will
         // fail.
-        userPool.options.SchemaAttributes ??
-          USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-          [],
-      ),
+        userPool.options.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []
+      )
     );
 
     const updatedUser = {
@@ -131,7 +115,7 @@ export const UpdateUserAttributes =
         user,
         messages,
         req,
-        code,
+        code
       );
 
       return {

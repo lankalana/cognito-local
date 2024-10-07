@@ -5,22 +5,19 @@ import {
   UserPoolClientType,
   UserPoolType,
   UserType,
-} from "@aws-sdk/client-cognito-identity-provider";
-import { AppClient } from "../services/appClient.js";
-import { Group, User, UserPool } from "../services/userPoolService.js";
-import { IdentityProvider } from "../services/userPoolService.js";
+} from '@aws-sdk/client-cognito-identity-provider';
 
-export const appClientToResponseListObject = (
-  appClient: AppClient,
-): UserPoolClientDescription => ({
+import { AppClient } from '../services/appClient.js';
+import { Group, User, UserPool } from '../services/userPoolService.js';
+import { IdentityProvider } from '../services/userPoolService.js';
+
+export const appClientToResponseListObject = (appClient: AppClient): UserPoolClientDescription => ({
   ClientId: appClient.ClientId,
   ClientName: appClient.ClientName,
   UserPoolId: appClient.UserPoolId,
 });
 
-export const appClientToResponseObject = (
-  appClient: AppClient,
-): UserPoolClientType => ({
+export const appClientToResponseObject = (appClient: AppClient): UserPoolClientType => ({
   AccessTokenValidity: appClient.AccessTokenValidity,
   AllowedOAuthFlows: appClient.AllowedOAuthFlows,
   AllowedOAuthFlowsUserPoolClient: appClient.AllowedOAuthFlowsUserPoolClient,
