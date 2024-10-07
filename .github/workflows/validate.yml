@@ -71,11 +71,17 @@ jobs:
     needs: smoke_test
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           load: true
           tags: ${{ env.TEST_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Get a free port
         run: echo "PORT=$(scripts/get-free-port.sh)" >> $GITHUB_ENV
