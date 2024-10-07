@@ -1,6 +1,6 @@
-import { ClockFake } from "../../src/__tests__/clockFake";
-import { USER_POOL_AWS_DEFAULTS } from "../../src/services/cognitoService";
-import { withCognitoSdk } from "./setup";
+import { ClockFake } from "../../src/__tests__/clockFake.js";
+import { USER_POOL_AWS_DEFAULTS } from "../../src/services/cognitoService.js";
+import { withCognitoSdk } from "./setup.js";
 
 const currentDate = new Date();
 const roundedDate = new Date(currentDate.getTime());

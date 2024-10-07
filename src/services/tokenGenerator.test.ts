@@ -1,12 +1,12 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { UUID } from "../__tests__/patterns";
-import { TestContext } from "../__tests__/testContext";
-import { JwtTokenGenerator, TokenGenerator } from "./tokenGenerator";
-import { Triggers } from "./triggers";
-import * as TDB from "../__tests__/testDataBuilder";
-import { attributeValue } from "./userPoolService";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { UUID } from "../__tests__/patterns.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { JwtTokenGenerator, TokenGenerator } from "./tokenGenerator.js";
+import { Triggers } from "./triggers/index.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { attributeValue } from "./userPoolService.js";
 
 const originalDate = new Date(2022, 4, 30, 17, 30, 0, 0);
 const ONE_MINUTE = 60;

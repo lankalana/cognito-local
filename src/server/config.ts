@@ -1,10 +1,10 @@
-import { Context } from "../services/context";
-import { DataStoreFactory } from "../services/dataStore/factory";
-import { FunctionConfig } from "../services/lambda";
-import { UserPool } from "../services/userPoolService";
-import { TokenConfig } from "../services/tokenGenerator";
+import { Context } from "../services/context.js";
+import { DataStoreFactory } from "../services/dataStore/factory.js";
+import { FunctionConfig } from "../services/lambda.js";
+import { UserPool } from "../services/userPoolService.js";
+import { TokenConfig } from "../services/tokenGenerator.js";
 import mergeWith from "lodash.mergewith";
-import { KMSConfig } from "../services/crypto";
+import { KMSConfig } from "../services/crypto.js";
 import { KMSClientConfig } from "@aws-sdk/client-kms";
 import { LambdaClientConfig } from "@aws-sdk/client-lambda";
 

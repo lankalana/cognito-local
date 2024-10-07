@@ -1,11 +1,11 @@
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { TestContext } from "../../__tests__/testContext";
-import { CryptoService } from "../crypto";
-import { Lambda } from "../lambda";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { CryptoService } from "../crypto.js";
+import { Lambda } from "../lambda.js";
 import {
   CustomEmailSender,
   CustomEmailSenderTrigger,
-} from "./customEmailSender";
+} from "./customEmailSender.js";
 
 describe.only("CustomEmailSender trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
@@ -69,7 +69,7 @@ describe.only("CustomEmailSender trigger", () => {
           userAttributes: { user: "hello" },
           username: "example@example.com",
           userPoolId: "userPoolId",
-        }
+        },
       );
     });
   });

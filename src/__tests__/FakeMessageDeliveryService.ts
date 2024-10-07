@@ -1,10 +1,10 @@
-import { Context } from "../services/context";
+import { Context } from "../services/context.js";
 import {
   DeliveryDetails,
   MessageDelivery,
-} from "../services/messageDelivery/messageDelivery";
-import { Message } from "../services/messages";
-import { User } from "../services/userPoolService";
+} from "../services/messageDelivery/messageDelivery.js";
+import { Message } from "../services/messages.js";
+import { User } from "../services/userPoolService.js";
 
 interface CollectedMessage {
   readonly deliveryDetails: DeliveryDetails;

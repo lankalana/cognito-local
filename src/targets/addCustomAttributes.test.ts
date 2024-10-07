@@ -1,14 +1,14 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { InvalidParameterError } from "../errors";
-import { CognitoService } from "../services";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { InvalidParameterError } from "../errors.js";
+import { CognitoService } from "../services/index.js";
 import {
   AddCustomAttributes,
   AddCustomAttributesTarget,
-} from "./addCustomAttributes";
+} from "./addCustomAttributes.js";
 
 const originalDate = new Date();
 

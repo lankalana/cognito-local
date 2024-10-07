@@ -2,12 +2,12 @@ import {
   AdminLinkProviderForUserRequest,
   AdminLinkProviderForUserResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
 import {
   IdentityProviderNotFoundError,
   MissingParameterError,
-} from "../errors";
+} from "../errors.js";
 
 export type AdminLinkProviderForUserTarget = Target<
   AdminLinkProviderForUserRequest,

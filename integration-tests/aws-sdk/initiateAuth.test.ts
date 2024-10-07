@@ -1,8 +1,8 @@
-import jwt from "jsonwebtoken";
-import { UUID } from "../../src/__tests__/patterns";
-import { attributeValue } from "../../src/services/userPoolService";
-import { withCognitoSdk } from "./setup";
-import { UserNotConfirmedException } from "../../src/errors";
+import * as jwt from "jsonwebtoken";
+import { UUID } from "../../src/__tests__/patterns.js";
+import { attributeValue } from "../../src/services/userPoolService.js";
+import { withCognitoSdk } from "./setup.js";
+import { UserNotConfirmedException } from "../../src/errors.js";
 
 describe(
   "CognitoIdentityServiceProvider.initiateAuth",

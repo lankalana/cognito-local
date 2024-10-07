@@ -1,5 +1,5 @@
-import { ClockFake } from "../../src/__tests__/clockFake";
-import { withCognitoSdk } from "./setup";
+import { ClockFake } from "../../src/__tests__/clockFake.js";
+import { withCognitoSdk } from "./setup.js";
 
 const originalDate = new Date();
 const roundedDate = new Date(originalDate.getTime());

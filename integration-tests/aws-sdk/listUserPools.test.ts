@@ -1,4 +1,4 @@
-import { withCognitoSdk } from "./setup";
+import { withCognitoSdk } from "./setup.js";
 
 describe(
   "CognitoIdentityServiceProvider.listUserPools",

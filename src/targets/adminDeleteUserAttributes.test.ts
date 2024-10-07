@@ -1,15 +1,15 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { NotAuthorizedError } from "../errors";
-import { UserPoolService } from "../services";
-import { attribute } from "../services/userPoolService";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { NotAuthorizedError } from "../errors.js";
+import { UserPoolService } from "../services/index.js";
+import { attribute } from "../services/userPoolService.js";
 import {
   AdminDeleteUserAttributes,
   AdminDeleteUserAttributesTarget,
-} from "./adminDeleteUserAttributes";
-import * as TDB from "../__tests__/testDataBuilder";
+} from "./adminDeleteUserAttributes.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 describe("AdminDeleteUserAttributes target", () => {
   let adminDeleteUserAttributes: AdminDeleteUserAttributesTarget;

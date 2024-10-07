@@ -1,13 +1,13 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockMessages } from "../__tests__/mockMessages";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { UserNotFoundError } from "../errors";
-import { Messages, UserPoolService } from "../services";
-import { attributeValue } from "../services/userPoolService";
-import { ForgotPassword, ForgotPasswordTarget } from "./forgotPassword";
-import * as TDB from "../__tests__/testDataBuilder";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockMessages } from "../__tests__/mockMessages.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { UserNotFoundError } from "../errors.js";
+import { Messages, UserPoolService } from "../services/index.js";
+import { attributeValue } from "../services/userPoolService.js";
+import { ForgotPassword, ForgotPasswordTarget } from "./forgotPassword.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 const currentDate = new Date();
 

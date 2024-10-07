@@ -2,11 +2,11 @@ import {
   CreateIdentityProviderRequest,
   CreateIdentityProviderResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { Services } from "../services";
-import { IdentityProvider } from "../services/userPoolService";
-import { identityProviderToResponseObject } from "./responses";
-import { Target } from "./Target";
-import { MissingParameterError } from "../errors";
+import { Services } from "../services/index.js";
+import { IdentityProvider } from "../services/userPoolService.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
+import { MissingParameterError } from "../errors.js";
 
 export type CreateIdentityProviderTarget = Target<
   CreateIdentityProviderRequest,

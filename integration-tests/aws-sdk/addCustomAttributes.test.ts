@@ -1,5 +1,5 @@
-import { USER_POOL_AWS_DEFAULTS } from "../../src/services/cognitoService";
-import { withCognitoSdk } from "./setup";
+import { USER_POOL_AWS_DEFAULTS } from "../../src/services/cognitoService.js";
+import { withCognitoSdk } from "./setup.js";
 
 describe(
   "CognitoIdentityServiceProvider.addCustomAttributes",

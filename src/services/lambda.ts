@@ -11,13 +11,13 @@ import {
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
 } from "aws-lambda";
-import { version as awsSdkVersion } from "@aws-sdk/client-lambda/package.json";
+import { version as awsSdkVersion } from "@aws-sdk/client-lambda/package.json" with { type: "json" };
 import {
   InvalidLambdaResponseError,
   UnexpectedLambdaExceptionError,
   UserLambdaValidationError,
-} from "../errors";
-import { Context } from "./context";
+} from "../errors.js";
+import { Context } from "./context.js";
 import {
   InvocationResponse,
   InvocationType,

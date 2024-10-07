@@ -2,6 +2,7 @@
   "name": "cognito-local",
   "version": "0.0.0-development",
   "license": "MIT",
+  "type": "module",
   "bin": "lib/bin/start.js",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -11,11 +12,10 @@
   "scripts": {
     "build": "rm -rf lib && tsc --emitDeclarationOnly --project tsconfig.build.json && esbuild $(find src -name '*.ts' ! -name '*.test.ts' ! -path '*/__tests__/*') --outdir=lib --platform=node --target=node20 --format=cjs && cp -r src/keys lib/keys",
     "format": "prettier --write src/**/*.ts integration-tests/**/*.ts",
-    "integration-test": "jest --config integration-tests/jest.config.js",
-    "integration-test:watch": "jest --config integration-tests/jest.config.js --watch",
-    "lint": "eslint --cache --fix src/**/*.ts && tsc --noEmit",
-    "start": "COGNITO_LOCAL_DEVMODE=1 ts-node src/bin/start.ts",
-    "start:debug": "COGNITO_LOCAL_DEVMODE=1 DEBUG=1 node -r ts-node/register --inspect=9230 --enable-source-maps src/bin/start.ts",
+    "integration-test": "jest --config integration-tests/jest.config.cjs",
+    "integration-test:watch": "jest --config integration-tests/jest.config.cjs --watch",
+    "lint": "eslint --cache --fix src/**/*.ts integration-tests/**/*.ts && tsc --noEmit",
+    "start": "COGNITO_LOCAL_DEVMODE=1 tsx src/bin/start.ts",
     "start:watch": "nodemon",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -24,6 +24,8 @@
   "devDependencies": {
     "@eslint/js": "^9.11.1",
     "@jest/globals": "^29.7.0",
+    "@swc/core": "^1.7.26",
+    "@swc/jest": "^0.2.36",
     "@types/aws-lambda": "^8.10.145",
     "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.17",
@@ -42,15 +44,13 @@
     "husky": "^9.1.6",
     "jest": "^29.7.0",
     "jest-date-mock": "^1.0.10",
-    "jest-extended": "^4.0.2",
     "lint-staged": "^15.2.10",
     "markdown-toc": "^1.2.0",
     "nodemon": "^3.1.7",
     "pino-test": "^1.0.1",
     "prettier": "^3.3.3",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.2.5",
-    "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
     "typescript": "^5.5.4"
   },
   "dependencies": {
@@ -86,7 +86,7 @@
   "lint-staged": {
     "*.ts": [
       "eslint --fix --cache",
-      "tsc --target es2020 --moduleResolution node --esModuleInterop --resolveJsonModule",
+      "tsc --noEmit --target es2020 --module NodeNext --moduleResolution NodeNext --esModuleInterop --resolveJsonModule",
       "prettier --write"
     ],
     "README.md": "markdown-toc -i --bullets=- --maxdepth=3"

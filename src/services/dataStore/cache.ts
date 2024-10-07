@@ -1,4 +1,4 @@
-import { DataStore } from "./dataStore";
+import { DataStore } from "./dataStore.js";
 
 export type DataStoreCache = {
   get(key: string): DataStore | null;
@@ -22,6 +22,5 @@ export class NoOpCache implements DataStoreCache {
     return null;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-function
   set(): void {}
 }

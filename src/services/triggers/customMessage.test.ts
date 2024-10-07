@@ -1,7 +1,7 @@
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { TestContext } from "../../__tests__/testContext";
-import { Lambda } from "../lambda";
-import { CustomMessage, CustomMessageTrigger } from "./customMessage";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { Lambda } from "../lambda.js";
+import { CustomMessage, CustomMessageTrigger } from "./customMessage.js";
 
 describe("CustomMessage trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
@@ -68,16 +68,16 @@ describe("CustomMessage trigger", () => {
           username: "example@example.com",
           usernameParameter: "{username}",
           userPoolId: "userPoolId",
-        }
+        },
       );
 
       expect(message).not.toBeNull();
       expect(message?.emailMessage).toEqual(
-        "hi example@example.com your code is 123456. via email"
+        "hi example@example.com your code is 123456. via email",
       );
       expect(message?.emailSubject).toEqual("email subject");
       expect(message?.smsMessage).toEqual(
-        "hi example@example.com your code is 123456. via sms"
+        "hi example@example.com your code is 123456. via sms",
       );
     });
   });

@@ -1,6 +1,6 @@
-import { ClockFake } from "../../src/__tests__/clockFake";
-import { UserNotFoundError } from "../../src/errors";
-import { withCognitoSdk } from "./setup";
+import { ClockFake } from "../../src/__tests__/clockFake.js";
+import { UserNotFoundError } from "../../src/errors.js";
+import { withCognitoSdk } from "./setup.js";
 
 const currentDate = new Date();
 const roundedDate = new Date(currentDate.getTime());

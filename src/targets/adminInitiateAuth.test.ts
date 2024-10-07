@@ -1,15 +1,19 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { CognitoService, Triggers, UserPoolService } from "../services";
-import { TokenGenerator } from "../services/tokenGenerator";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import {
+  CognitoService,
+  Triggers,
+  UserPoolService,
+} from "../services/index.js";
+import { TokenGenerator } from "../services/tokenGenerator.js";
 import {
   AdminInitiateAuth,
   AdminInitiateAuthTarget,
-} from "./adminInitiateAuth";
+} from "./adminInitiateAuth.js";
 
 describe("AdminInitiateAuth target", () => {
   let adminInitiateAuth: AdminInitiateAuthTarget;

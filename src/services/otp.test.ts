@@ -1,4 +1,4 @@
-import { otp } from "./otp";
+import { otp } from "./otp.js";
 
 describe("otp", () => {
   it("generates a code", () => {

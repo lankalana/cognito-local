@@ -1,8 +1,8 @@
-import { Services } from "../services";
-import { UnsupportedError } from "../errors";
-import { isSupportedTarget } from "../targets/Target";
-import { Targets } from "../targets/targets";
-import { Context } from "../services/context";
+import { Services } from "../services/index.js";
+import { UnsupportedError } from "../errors.js";
+import { isSupportedTarget } from "../targets/Target.js";
+import { Targets } from "../targets/targets.js";
+import { Context } from "../services/context.js";
 
 // eslint-disable-next-line
 export type Route = (ctx: Context, req: any) => Promise<unknown>;

@@ -4,10 +4,10 @@ import express from "express";
 import * as http from "http";
 import type { Logger } from "pino";
 import * as uuid from "uuid";
-import { CognitoError, UnsupportedError } from "../errors";
-import { Router } from "./Router";
-import PublicKey from "../keys/cognitoLocal.public.json";
-import Pino from "pino-http";
+import { CognitoError, UnsupportedError } from "../errors.js";
+import { Router } from "./Router.js";
+import PublicKey from "../keys/cognitoLocal.public.json" with { type: "json" };
+import { pinoHttp } from "pino-http";
 
 export interface ServerOptions {
   port: number;
@@ -25,7 +25,7 @@ export const createServer = (
   logger: Logger,
   options: Partial<ServerOptions> = {},
 ): Server => {
-  const pino = Pino({
+  const pino = pinoHttp({
     logger,
     useLevel: "debug",
     genReqId: () => uuid.v4().split("-")[0],

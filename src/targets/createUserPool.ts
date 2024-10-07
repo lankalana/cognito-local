@@ -4,10 +4,10 @@ import {
   SchemaAttributeType,
 } from "@aws-sdk/client-cognito-identity-provider";
 import shortUUID from "short-uuid";
-import { Services } from "../services";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import { userPoolToResponseObject } from "./responses";
-import { Target } from "./Target";
+import { Services } from "../services/index.js";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
+import { userPoolToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 const REGION = "local";
 const ACCOUNT_ID = "local";

@@ -1,11 +1,18 @@
 import fs from "fs";
 import { promisify } from "util";
-import { TestContext } from "../src/__tests__/testContext";
-import { CognitoService, DateClock, UserPoolService } from "../src/services";
-import { CognitoServiceFactoryImpl } from "../src/services/cognitoService";
-import { NoOpCache } from "../src/services/dataStore/cache";
-import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
-import { User, UserPoolServiceFactoryImpl } from "../src/services/userPoolService";
+import { TestContext } from "../src/__tests__/testContext.js";
+import {
+  CognitoService,
+  DateClock,
+  UserPoolService,
+} from "../src/services/index.js";
+import { CognitoServiceFactoryImpl } from "../src/services/cognitoService.js";
+import { NoOpCache } from "../src/services/dataStore/cache.js";
+import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb.js";
+import {
+  User,
+  UserPoolServiceFactoryImpl,
+} from "../src/services/userPoolService.js";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const readFile = promisify(fs.readFile);
@@ -22,21 +29,21 @@ describe("User Pool Service", () => {
     const clock = new DateClock();
     const dataStoreFactory = new StormDBDataStoreFactory(
       dataDirectory,
-      new NoOpCache()
+      new NoOpCache(),
     );
 
     cognitoClient = await new CognitoServiceFactoryImpl(
       dataDirectory,
       clock,
       dataStoreFactory,
-      new UserPoolServiceFactoryImpl(clock, dataStoreFactory)
+      new UserPoolServiceFactoryImpl(clock, dataStoreFactory),
     ).create(TestContext, {});
   });
 
   afterEach(() =>
     rmdir(dataDirectory, {
       recursive: true,
-    })
+    }),
   );
 
   it("creates a database", async () => {
@@ -66,7 +73,7 @@ describe("User Pool Service", () => {
         });
 
         const file = JSON.parse(
-          await readFile(dataDirectory + "/local.json", "utf-8")
+          await readFile(dataDirectory + "/local.json", "utf-8"),
         ) as { Users: User[] };
 
         expect(file.Users).toEqual({
@@ -106,7 +113,7 @@ describe("User Pool Service", () => {
         });
 
         let file = JSON.parse(
-          await readFile(dataDirectory + "/local.json", "utf-8")
+          await readFile(dataDirectory + "/local.json", "utf-8"),
         ) as { Users: User[] };
 
         expect(file.Users).toEqual({
@@ -141,7 +148,7 @@ describe("User Pool Service", () => {
         });
 
         file = JSON.parse(
-          await readFile(dataDirectory + "/local.json", "utf-8")
+          await readFile(dataDirectory + "/local.json", "utf-8"),
         ) as { Users: User[] };
 
         expect(file.Users).toEqual({
@@ -232,7 +239,7 @@ describe("User Pool Service", () => {
     it("returns user by their refresh token", async () => {
       const user = await userPool.getUserByRefreshToken(
         TestContext,
-        "refresh token"
+        "refresh token",
       );
 
       expect(user).not.toBeNull();
@@ -269,7 +276,7 @@ describe("User Pool Service", () => {
 
       const foundUser = await userPool.getUserByRefreshToken(
         TestContext,
-        "refresh token"
+        "refresh token",
       );
 
       expect(foundUser).toMatchObject({

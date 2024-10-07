@@ -8,11 +8,11 @@ import {
   InvalidParameterError,
   MissingParameterError,
   NotAuthorizedError,
-} from "../errors";
-import { Services } from "../services";
-import { Token } from "../services/tokenGenerator";
-import { attribute, attributesAppend } from "../services/userPoolService";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Token } from "../services/tokenGenerator.js";
+import { attribute, attributesAppend } from "../services/userPoolService.js";
+import { Target } from "./Target.js";
 
 export type VerifyUserAttributeTarget = Target<
   VerifyUserAttributeRequest,

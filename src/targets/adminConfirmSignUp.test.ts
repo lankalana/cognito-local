@@ -1,17 +1,17 @@
 import { UserStatusType } from "@aws-sdk/client-cognito-identity-provider";
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { NotAuthorizedError } from "../errors";
-import { Triggers, UserPoolService } from "../services";
-import { attribute, attributesAppend } from "../services/userPoolService";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { NotAuthorizedError } from "../errors.js";
+import { Triggers, UserPoolService } from "../services/index.js";
+import { attribute, attributesAppend } from "../services/userPoolService.js";
 import {
   AdminConfirmSignUp,
   AdminConfirmSignUpTarget,
-} from "./adminConfirmSignUp";
+} from "./adminConfirmSignUp.js";
 
 const currentDate = new Date();
 

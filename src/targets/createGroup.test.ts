@@ -1,9 +1,9 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { UserPoolService } from "../services";
-import { CreateGroup, CreateGroupTarget } from "./createGroup";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { UserPoolService } from "../services/index.js";
+import { CreateGroup, CreateGroupTarget } from "./createGroup.js";
 
 const originalDate = new Date();
 

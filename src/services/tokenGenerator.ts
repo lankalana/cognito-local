@@ -1,18 +1,18 @@
-import { StringMap } from "aws-lambda/trigger/cognito-user-pool-trigger/_common";
-import { GroupOverrideDetails } from "aws-lambda/trigger/cognito-user-pool-trigger/pre-token-generation";
+import { StringMap } from "aws-lambda/trigger/cognito-user-pool-trigger/_common.js";
+import { GroupOverrideDetails } from "aws-lambda/trigger/cognito-user-pool-trigger/pre-token-generation.js";
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
 import PrivateKey from "../keys/cognitoLocal.private.json";
-import { AppClient } from "./appClient";
-import { Clock } from "./clock";
-import { Context } from "./context";
-import { Triggers } from "./triggers";
+import { AppClient } from "./appClient.js";
+import { Clock } from "./clock.js";
+import { Context } from "./context.js";
+import { Triggers } from "./triggers/index.js";
 import {
   attributesToRecord,
   attributeValue,
   customAttributes,
   User,
-} from "./userPoolService";
+} from "./userPoolService.js";
 
 type ValidityUnit = string;
 

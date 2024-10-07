@@ -6,19 +6,19 @@ import {
   InvalidParameterError,
   MissingParameterError,
   NotAuthorizedError,
-} from "../errors";
-import { Messages, Services, UserPoolService } from "../services";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
+} from "../errors.js";
+import { Messages, Services, UserPoolService } from "../services/index.js";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
+import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod.js";
 import {
   attributesAppend,
   defaultVerifiedAttributesIfModified,
   hasUnverifiedContactAttributes,
   User,
   validatePermittedAttributeChanges,
-} from "../services/userPoolService";
-import { Target } from "./Target";
-import { Context } from "../services/context";
+} from "../services/userPoolService.js";
+import { Target } from "./Target.js";
+import { Context } from "../services/context.js";
 
 const sendAttributeVerificationCode = async (
   ctx: Context,

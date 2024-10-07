@@ -1,4 +1,4 @@
-import { Context } from "../context";
+import { Context } from "../context.js";
 
 export interface DataStore {
   delete(ctx: Context, key: string | string[]): Promise<void>;

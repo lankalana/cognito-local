@@ -2,9 +2,9 @@ import { DeleteIdentityProviderRequest } from "@aws-sdk/client-cognito-identity-
 import {
   IdentityProviderNotFoundError,
   MissingParameterError,
-} from "../errors";
-import { Services } from "../services";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
 
 export type DeleteIdentityProviderTarget = Target<
   DeleteIdentityProviderRequest,

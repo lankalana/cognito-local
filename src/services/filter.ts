@@ -1,4 +1,4 @@
-import { InvalidParameterError } from "../errors";
+import { InvalidParameterError } from "../errors.js";
 
 const FilterExpression = new RegExp(
   /^\s*(?<attr>.*)\s+(?<type>\^?=)\s+"(?<value>.*)"\s*$/,

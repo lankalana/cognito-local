@@ -1,15 +1,15 @@
 import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
-import { NotAuthorizedError, ResourceNotFoundError } from "../../errors";
-import { Clock } from "../clock";
-import { CognitoService } from "../cognitoService";
-import { UserMigrationTriggerResponse, Lambda } from "../lambda";
+import { NotAuthorizedError, ResourceNotFoundError } from "../../errors.js";
+import { Clock } from "../clock.js";
+import { CognitoService } from "../cognitoService.js";
+import { UserMigrationTriggerResponse, Lambda } from "../lambda.js";
 import {
   attributesFromRecord,
   attributesToRecord,
   User,
-} from "../userPoolService";
-import { Trigger } from "./trigger";
+} from "../userPoolService.js";
+import { Trigger } from "./trigger.js";
 
 export type UserMigrationTrigger = Trigger<
   {
@@ -61,7 +61,7 @@ export const UserMigration =
       username,
       userPoolId,
       validationData,
-    }
+    },
   ) => {
     const userPool = await cognitoClient.getUserPoolForClientId(ctx, clientId);
     if (!userPool) {

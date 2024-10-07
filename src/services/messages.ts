@@ -1,10 +1,10 @@
-import { Context } from "./context";
+import { Context } from "./context.js";
 import {
   DeliveryDetails,
   MessageDelivery,
-} from "./messageDelivery/messageDelivery";
-import { Triggers } from "./triggers";
-import { User } from "./userPoolService";
+} from "./messageDelivery/messageDelivery.js";
+import { Triggers } from "./triggers/index.js";
+import { User } from "./userPoolService.js";
 
 const AWS_ADMIN_CLIENT_ID = "CLIENT_ID_NOT_APPLICABLE";
 

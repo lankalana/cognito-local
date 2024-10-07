@@ -1,6 +1,6 @@
-import { CognitoService, UserPoolService } from "../services";
-import { CognitoServiceFactory } from "../services/cognitoService";
-import { newMockUserPoolService } from "./mockUserPoolService";
+import { CognitoService, UserPoolService } from "../services/index.js";
+import { CognitoServiceFactory } from "../services/cognitoService.js";
+import { newMockUserPoolService } from "./mockUserPoolService.js";
 
 export const newMockCognitoService = (
   userPoolClient: UserPoolService = newMockUserPoolService(),

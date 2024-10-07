@@ -1,14 +1,14 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockMessages } from "../__tests__/mockMessages";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { UUID } from "../__tests__/patterns";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { InvalidParameterError, UsernameExistsError } from "../errors";
-import { Messages, UserPoolService } from "../services";
-import { AdminCreateUser, AdminCreateUserTarget } from "./adminCreateUser";
-import { Config, DefaultConfig } from "../server/config";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockMessages } from "../__tests__/mockMessages.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { UUID } from "../__tests__/patterns.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { InvalidParameterError, UsernameExistsError } from "../errors.js";
+import { Messages, UserPoolService } from "../services/index.js";
+import { AdminCreateUser, AdminCreateUserTarget } from "./adminCreateUser.js";
+import { Config, DefaultConfig } from "../server/config.js";
 
 const originalDate = new Date();
 

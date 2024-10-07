@@ -5,10 +5,10 @@ import {
 import {
   IdentityProviderNotFoundError,
   MissingParameterError,
-} from "../errors";
-import { Services } from "../services";
-import { identityProviderToResponseObject } from "./responses";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import { Target } from "./Target.js";
 
 export type GetIdentityProviderByIdentifierTarget = Target<
   GetIdentityProviderByIdentifierRequest,

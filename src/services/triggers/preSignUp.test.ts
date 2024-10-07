@@ -1,7 +1,7 @@
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { TestContext } from "../../__tests__/testContext";
-import { Lambda } from "../lambda";
-import { PreSignUp, PreSignUpTrigger } from "./preSignUp";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { Lambda } from "../lambda.js";
+import { PreSignUp, PreSignUpTrigger } from "./preSignUp.js";
 
 describe("PreSignUp trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
@@ -22,7 +22,7 @@ describe("PreSignUp trigger", () => {
     describe("when lambda invoke fails", () => {
       it("throws", async () => {
         mockLambda.invoke.mockRejectedValue(
-          new Error("Something bad happened")
+          new Error("Something bad happened"),
         );
 
         await expect(
@@ -34,7 +34,7 @@ describe("PreSignUp trigger", () => {
             username: "username",
             userPoolId: "userPoolId",
             validationData: undefined,
-          })
+          }),
         ).rejects.toEqual(new Error("Something bad happened"));
       });
     });
@@ -72,7 +72,7 @@ describe("PreSignUp trigger", () => {
             validationData: {
               validation: "data",
             },
-          }
+          },
         );
       });
     });

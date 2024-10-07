@@ -1,14 +1,14 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { InvalidParameterError, UserNotFoundError } from "../errors";
-import PrivateKey from "../keys/cognitoLocal.private.json";
-import { UserPoolService } from "../services";
-import { attributeValue } from "../services/userPoolService";
-import { GetUser, GetUserTarget } from "./getUser";
-import * as TDB from "../__tests__/testDataBuilder";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { InvalidParameterError, UserNotFoundError } from "../errors.js";
+import PrivateKey from "../keys/cognitoLocal.private.json" with { type: "json" };
+import { UserPoolService } from "../services/index.js";
+import { attributeValue } from "../services/userPoolService.js";
+import { GetUser, GetUserTarget } from "./getUser.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 describe("GetUser target", () => {
   let getUser: GetUserTarget;

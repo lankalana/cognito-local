@@ -1,22 +1,22 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 import {
   CodeMismatchError,
   InvalidParameterError,
   NotAuthorizedError,
-} from "../errors";
-import PrivateKey from "../keys/cognitoLocal.private.json";
-import { UserPoolService } from "../services";
-import { attribute, attributesAppend } from "../services/userPoolService";
+} from "../errors.js";
+import PrivateKey from "../keys/cognitoLocal.private.json" with { type: "json" };
+import { UserPoolService } from "../services/index.js";
+import { attribute, attributesAppend } from "../services/userPoolService.js";
 import {
   VerifyUserAttribute,
   VerifyUserAttributeTarget,
-} from "./verifyUserAttribute";
+} from "./verifyUserAttribute.js";
 
 const clock = new ClockFake(new Date());
 

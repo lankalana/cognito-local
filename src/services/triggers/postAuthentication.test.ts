@@ -1,22 +1,19 @@
-import { newMockLambda } from "../../__tests__/mockLambda";
-import { newMockUserPoolService } from "../../__tests__/mockUserPoolService";
-import { TestContext } from "../../__tests__/testContext";
-import { Lambda } from "../lambda";
-import { attributesToRecord, UserPoolService } from "../userPoolService";
+import { newMockLambda } from "../../__tests__/mockLambda.js";
+import { TestContext } from "../../__tests__/testContext.js";
+import { Lambda } from "../lambda.js";
+import { attributesToRecord } from "../userPoolService.js";
 import {
   PostAuthentication,
   PostAuthenticationTrigger,
-} from "./postAuthentication";
-import * as TDB from "../../__tests__/testDataBuilder";
+} from "./postAuthentication.js";
+import * as TDB from "../../__tests__/testDataBuilder.js";
 
 describe("PostAuthentication trigger", () => {
   let mockLambda: jest.Mocked<Lambda>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
   let postAuthentication: PostAuthenticationTrigger;
 
   beforeEach(() => {
     mockLambda = newMockLambda();
-    mockUserPoolService = newMockUserPoolService();
     postAuthentication = PostAuthentication({
       lambda: mockLambda,
     });
@@ -38,7 +35,7 @@ describe("PostAuthentication trigger", () => {
           userAttributes: user.Attributes,
           username: user.Username,
           userPoolId: "userPoolId",
-        })
+        }),
       ).resolves.toEqual(undefined);
     });
 
@@ -68,7 +65,7 @@ describe("PostAuthentication trigger", () => {
           userAttributes: attributesToRecord(user.Attributes),
           userPoolId: "userPoolId",
           username: user.Username,
-        }
+        },
       );
     });
   });

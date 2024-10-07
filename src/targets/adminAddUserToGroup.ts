@@ -3,9 +3,9 @@ import {
   GroupNotFoundError,
   MissingParameterError,
   UserNotFoundError,
-} from "../errors";
-import { Services } from "../services";
-import { Target } from "./Target";
+} from "../errors.js";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
 
 export type AdminAddUserToGroupTarget = Target<
   AdminAddUserToGroupRequest,

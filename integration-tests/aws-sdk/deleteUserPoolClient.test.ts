@@ -1,5 +1,5 @@
-import { ResourceNotFoundError } from "../../src/errors";
-import { withCognitoSdk } from "./setup";
+import { ResourceNotFoundError } from "../../src/errors.js";
+import { withCognitoSdk } from "./setup.js";
 
 describe(
   "CognitoIdentityServiceProvider.deleteUserPoolClient",

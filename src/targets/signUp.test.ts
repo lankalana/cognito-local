@@ -1,19 +1,19 @@
-import { ClockFake } from "../__tests__/clockFake";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockMessages } from "../__tests__/mockMessages";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { UUID } from "../__tests__/patterns";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
+import { ClockFake } from "../__tests__/clockFake.js";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockMessages } from "../__tests__/mockMessages.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { UUID } from "../__tests__/patterns.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 import {
   InvalidParameterError,
   UserLambdaValidationError,
   UsernameExistsError,
-} from "../errors";
-import { Messages, Triggers, UserPoolService } from "../services";
-import { SignUp, SignUpTarget } from "./signUp";
-import { Config, DefaultConfig } from "../server/config";
+} from "../errors.js";
+import { Messages, Triggers, UserPoolService } from "../services/index.js";
+import { SignUp, SignUpTarget } from "./signUp.js";
+import { Config, DefaultConfig } from "../server/config.js";
 
 describe("SignUp target", () => {
   let signUp: SignUpTarget;

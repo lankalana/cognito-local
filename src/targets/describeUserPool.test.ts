@@ -1,9 +1,12 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { CognitoService } from "../services";
-import { DescribeUserPool, DescribeUserPoolTarget } from "./describeUserPool";
-import * as TDB from "../__tests__/testDataBuilder";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { CognitoService } from "../services/index.js";
+import {
+  DescribeUserPool,
+  DescribeUserPoolTarget,
+} from "./describeUserPool.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 describe("DescribeUserPool target", () => {
   let describeUserPool: DescribeUserPoolTarget;

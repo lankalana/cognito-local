@@ -8,19 +8,19 @@ import {
   InvalidParameterError,
   MissingParameterError,
   UsernameExistsError,
-} from "../errors";
-import { Messages, Services, UserPoolService } from "../services";
-import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
-import { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
+} from "../errors.js";
+import { Messages, Services, UserPoolService } from "../services/index.js";
+import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod.js";
+import { DeliveryDetails } from "../services/messageDelivery/messageDelivery.js";
 import {
   attribute,
   attributesAppend,
   attributesInclude,
   attributeValue,
   User,
-} from "../services/userPoolService";
-import { Target } from "./Target";
-import { Context } from "../services/context";
+} from "../services/userPoolService.js";
+import { Target } from "./Target.js";
+import { Context } from "../services/context.js";
 
 export type SignUpTarget = Target<SignUpRequest, SignUpResponse>;
 

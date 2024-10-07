@@ -2,9 +2,9 @@ import {
   AdminSetUserPasswordRequest,
   AdminSetUserPasswordResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import { MissingParameterError, UserNotFoundError } from "../errors";
-import { Services } from "../services";
-import { Target } from "./Target";
+import { MissingParameterError, UserNotFoundError } from "../errors.js";
+import { Services } from "../services/index.js";
+import { Target } from "./Target.js";
 
 export type AdminSetUserPasswordTarget = Target<
   AdminSetUserPasswordRequest,

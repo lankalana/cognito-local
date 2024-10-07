@@ -1,18 +1,18 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockMessages } from "../__tests__/mockMessages";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import { InvalidParameterError, UserNotFoundError } from "../errors";
-import PrivateKey from "../keys/cognitoLocal.private.json";
-import { Messages, UserPoolService } from "../services";
-import { attribute, attributeValue } from "../services/userPoolService";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockMessages } from "../__tests__/mockMessages.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import { InvalidParameterError, UserNotFoundError } from "../errors.js";
+import PrivateKey from "../keys/cognitoLocal.private.json" with { type: "json" };
+import { Messages, UserPoolService } from "../services/index.js";
+import { attribute, attributeValue } from "../services/userPoolService.js";
 import {
   GetUserAttributeVerificationCode,
   GetUserAttributeVerificationCodeTarget,
-} from "./getUserAttributeVerificationCode";
-import * as TDB from "../__tests__/testDataBuilder";
+} from "./getUserAttributeVerificationCode.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 
 const validToken = jwt.sign(
   {

@@ -1,5 +1,5 @@
-import { DataStore } from "../services/dataStore/dataStore";
-import { DataStoreFactory } from "../services/dataStore/factory";
+import { DataStore } from "../services/dataStore/dataStore.js";
+import { DataStoreFactory } from "../services/dataStore/factory.js";
 
 export const newMockDataStore = (): jest.Mocked<DataStore> => ({
   delete: jest.fn(),

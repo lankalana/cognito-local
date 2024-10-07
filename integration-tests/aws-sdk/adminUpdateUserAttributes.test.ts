@@ -1,5 +1,5 @@
-import { UUID } from "../../src/__tests__/patterns";
-import { withCognitoSdk } from "./setup";
+import { UUID } from "../../src/__tests__/patterns.js";
+import { withCognitoSdk } from "./setup.js";
 
 describe(
   "CognitoIdentityServiceProvider.adminUpdateUserAttributes",

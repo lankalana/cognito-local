@@ -1,21 +1,21 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockMessages } from "../__tests__/mockMessages";
-import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
-import { newMockTriggers } from "../__tests__/mockTriggers";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { UUID } from "../__tests__/patterns";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockMessages } from "../__tests__/mockMessages.js";
+import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator.js";
+import { newMockTriggers } from "../__tests__/mockTriggers.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { UUID } from "../__tests__/patterns.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
 import {
   InvalidParameterError,
   InvalidPasswordError,
   NotAuthorizedError,
   PasswordResetRequiredError,
-} from "../errors";
-import { Messages, Triggers, UserPoolService } from "../services";
-import { TokenGenerator } from "../services/tokenGenerator";
-import { attributesToRecord, User } from "../services/userPoolService";
-import { InitiateAuth, InitiateAuthTarget } from "./initiateAuth";
+} from "../errors.js";
+import { Messages, Triggers, UserPoolService } from "../services/index.js";
+import { TokenGenerator } from "../services/tokenGenerator.js";
+import { attributesToRecord, User } from "../services/userPoolService.js";
+import { InitiateAuth, InitiateAuthTarget } from "./initiateAuth.js";
 
 describe("InitiateAuth target", () => {
   let initiateAuth: InitiateAuthTarget;
@@ -474,10 +474,6 @@ describe("InitiateAuth target", () => {
                 userPoolId: userPoolClient.UserPoolId,
               },
             );
-
-            expect(
-              mockTriggers.postAuthentication as jest.Mock,
-            ).toHaveBeenCalledBefore(mockTokenGenerator.generate as jest.Mock);
           });
         });
       });

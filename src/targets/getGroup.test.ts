@@ -1,10 +1,10 @@
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
-import { TestContext } from "../__tests__/testContext";
-import * as TDB from "../__tests__/testDataBuilder";
-import { GroupNotFoundError } from "../errors";
-import { UserPoolService } from "../services";
-import { GetGroup, GetGroupTarget } from "./getGroup";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { GroupNotFoundError } from "../errors.js";
+import { UserPoolService } from "../services/index.js";
+import { GetGroup, GetGroupTarget } from "./getGroup.js";
 
 describe("GetGroup target", () => {
   let getGroup: GetGroupTarget;
