@@ -1,6 +1,6 @@
 {
   "name": "cognito-local",
-  "version": "0.0.0-development",
+  "version": "1.2.0",
   "license": "MIT",
   "type": "module",
   "bin": "lib/bin/start.js",
