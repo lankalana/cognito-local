@@ -16,7 +16,6 @@
     "start:debug": "COGNITO_LOCAL_DEVMODE=1 DEBUG=1 tsx --inspect-brk src/bin/start.ts",
     "start:watch": "nodemon",
     "test": "vitest",
-    "test-once": "vitest --run",
     "type-check": "tsc --target es2019 --esModuleInterop --resolveJsonModule --noEmit",
     "prepare": "husky install"
   },
@@ -31,6 +30,7 @@
     "@types/node": "^24.10.1",
     "@types/supertest": "^6.0.3",
     "@types/uuid": "^11.0.0",
+    "@vitest/coverage-v8": "4.0.14",
     "esbuild": "^0.27.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
