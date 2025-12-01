@@ -1,4 +1,4 @@
-FROM node:22.21-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /app
 
 # dependencies
@@ -9,9 +9,9 @@ RUN yarn --frozen-lockfile
 COPY src src
 
 # bundle
-RUN yarn esbuild src/bin/start.ts --outdir=lib --platform=node --target=node22 --bundle
+RUN yarn esbuild src/bin/start.ts --outdir=lib --platform=node --target=node24 --bundle
 
-FROM node:22.21-alpine
+FROM node:24-alpine
 WORKDIR /app
 COPY --from=builder /app/lib .
 

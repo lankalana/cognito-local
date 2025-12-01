@@ -5,12 +5,12 @@ import type { Messages } from "./messages";
 import type { TokenGenerator } from "./tokenGenerator";
 import type { Triggers } from "./triggers";
 
-export { DateClock, type Clock } from "./clock";
-export { CognitoServiceImpl, type CognitoService } from "./cognitoService";
-export { LambdaService, type Lambda } from "./lambda";
-export { MessagesService, type Messages } from "./messages";
-export { TriggersService, type Triggers } from "./triggers";
-export { UserPoolServiceImpl, type UserPoolService } from "./userPoolService";
+export { type Clock, DateClock } from "./clock";
+export { type CognitoService, CognitoServiceImpl } from "./cognitoService";
+export { type Lambda, LambdaService } from "./lambda";
+export { type Messages, MessagesService } from "./messages";
+export { type Triggers, TriggersService } from "./triggers";
+export { type UserPoolService, UserPoolServiceImpl } from "./userPoolService";
 
 export interface Services {
   clock: Clock;

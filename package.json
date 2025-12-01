@@ -10,13 +10,13 @@
     "lib"
   ],
   "scripts": {
-    "build": "rm -rf lib && tsc --emitDeclarationOnly --project tsconfig.build.json && esbuild $(find src -name '*.ts' ! -name '*.test.ts' ! -path '*/__tests__/*') --outdir=lib --platform=node --target=node22 --format=cjs && cp -r src/keys lib/keys",
+    "build": "rm -rf lib && tsc --emitDeclarationOnly --project tsconfig.build.json && esbuild $(find src -name '*.ts' ! -name '*.test.ts' ! -path '*/__tests__/*') --outdir=lib --platform=node --target=node24 --format=cjs && cp -r src/keys lib/keys",
     "lint": "biome check --write",
     "start": "COGNITO_LOCAL_DEVMODE=1 tsx src/bin/start.ts",
     "start:debug": "COGNITO_LOCAL_DEVMODE=1 DEBUG=1 tsx --inspect-brk src/bin/start.ts",
     "start:watch": "nodemon",
     "test": "vitest",
-    "type-check": "tsc --target es2019 --esModuleInterop --resolveJsonModule --noEmit",
+    "type-check": "tsc --target es2024 --esModuleInterop --resolveJsonModule --noEmit",
     "prepare": "husky install"
   },
   "devDependencies": {
@@ -73,7 +73,7 @@
   "lint-staged": {
     "*.ts": [
       "biome check --write",
-      "tsc --target es2019 --moduleResolution bundler --esModuleInterop --resolveJsonModule --noEmit ./setupTests.ts"
+      "tsc --target es2024 --moduleResolution bundler --esModuleInterop --resolveJsonModule --noEmit ./setupTests.ts"
     ],
     "README.md": "markdown-toc -i --bullets=- --maxdepth=3"
   },
