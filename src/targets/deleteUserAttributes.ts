@@ -14,17 +14,21 @@ export type DeleteUserAttributesTarget = Target<
   DeleteUserAttributesResponse
 >;
 
-type DeleteUserAttributesServices = Pick<Services, 'clock' | 'cognito'>;
+type DeleteUserAttributesServices = Pick<Services, "clock" | "cognito">;
 
 export const DeleteUserAttributes =
-  ({ clock, cognito }: DeleteUserAttributesServices): DeleteUserAttributesTarget =>
+  ({
+    clock,
+    cognito,
+  }: DeleteUserAttributesServices): DeleteUserAttributesTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
-    if (!req.UserAttributeNames) throw new MissingParameterError('UserAttributeNames');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+    if (!req.UserAttributeNames)
+      throw new MissingParameterError("UserAttributeNames");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 

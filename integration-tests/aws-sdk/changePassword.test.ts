@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.changePassword',
+  "CognitoIdentityServiceProvider.changePassword",
   withCognitoSdk((Cognito) => {
-    it('deletes the current user', async () => {
+    it("deletes the current user", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -45,18 +45,18 @@ describe(
       // login
       const initAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'firstPassword',
+          USERNAME: "abc",
+          PASSWORD: "firstPassword",
         },
       });
 
       // delete the user with their token
       await client.changePassword({
         AccessToken: initAuthResponse.AuthenticationResult?.AccessToken,
-        PreviousPassword: 'firstPassword',
-        ProposedPassword: 'secondPassword',
+        PreviousPassword: "firstPassword",
+        ProposedPassword: "secondPassword",
       });
 
       // (fail to) login with the old password
@@ -76,10 +76,10 @@ describe(
       // login with the new password
       const initAuthResponse2nd = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'secondPassword',
+          USERNAME: "abc",
+          PASSWORD: "secondPassword",
         },
       });
 

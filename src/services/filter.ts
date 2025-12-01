@@ -1,10 +1,10 @@
-import { InvalidParameterError } from '../errors.js';
+import { InvalidParameterError } from "../errors.js";
 
 const FilterExpression = new RegExp(
   /^\s*(?<attr>.*)\s+(?<type>\^?=)\s+"(?<value>.*)"\s*$/,
 );
 
-type Matcher<T> = (obj: T, filterType: '=' | '^=', value: string) => boolean;
+type Matcher<T> = (obj: T, filterType: "=" | "^=", value: string) => boolean;
 type FieldLookup<T> = (obj: T) => string | boolean | undefined;
 
 function compare<_T>(
@@ -44,13 +44,13 @@ export class FilterConfig<T> {
 
     const match = FilterExpression.exec(filter);
     if (!match?.groups) {
-      throw new InvalidParameterError('Error while parsing filter');
+      throw new InvalidParameterError("Error while parsing filter");
     }
 
     const { attr, type, value } = match.groups;
-    if (type !== '=' && type !== '^=') {
+    if (type !== "=" && type !== "^=") {
       // this isn't really necessary as the regexp will only match the two types, but it keeps typescript happy
-      throw new InvalidParameterError('Error while parsing filter');
+      throw new InvalidParameterError("Error while parsing filter");
     }
 
     const field = this.#fields[attr];

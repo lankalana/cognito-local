@@ -15,7 +15,7 @@ import {
 
 const currentDate = new Date();
 
-describe('ConfirmForgotPassword target', () => {
+describe("ConfirmForgotPassword target", () => {
   let confirmForgotPassword: ConfirmForgotPasswordTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let mockTriggers: MockedObject<Triggers>;
@@ -49,8 +49,8 @@ describe('ConfirmForgotPassword target', () => {
 
   it("throws if confirmation code doesn't match stored value", async () => {
     const user = TDB.user({
-      ConfirmationCode: '456789',
-      UserStatus: 'UNCONFIRMED',
+      ConfirmationCode: "456789",
+      UserStatus: "UNCONFIRMED",
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -65,11 +65,11 @@ describe('ConfirmForgotPassword target', () => {
     ).rejects.toBeInstanceOf(CodeMismatchError);
   });
 
-  describe('when code matches', () => {
+  describe("when code matches", () => {
     it("updates the user's password", async () => {
       const user = TDB.user({
-        ConfirmationCode: '456789',
-        UserStatus: 'UNCONFIRMED',
+        ConfirmationCode: "456789",
+        UserStatus: "UNCONFIRMED",
       });
 
       mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -78,40 +78,40 @@ describe('ConfirmForgotPassword target', () => {
       const newNow = clock.advanceBy(5000);
 
       await confirmForgotPassword(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         Username: user.Username,
-        ConfirmationCode: '456789',
-        Password: 'newPassword',
+        ConfirmationCode: "456789",
+        Password: "newPassword",
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
         ...user,
         ConfirmationCode: undefined,
-        Password: 'newPassword',
+        Password: "newPassword",
         UserLastModifiedDate: newNow,
-        UserStatus: 'CONFIRMED',
+        UserStatus: "CONFIRMED",
       });
     });
 
-    describe('when PostConfirmation trigger configured', () => {
-      it('invokes the trigger', async () => {
+    describe("when PostConfirmation trigger configured", () => {
+      it("invokes the trigger", async () => {
         mockTriggers.enabled.mockReturnValue(true);
 
         const user = TDB.user({
-          ConfirmationCode: '456789',
-          UserStatus: 'UNCONFIRMED',
+          ConfirmationCode: "456789",
+          UserStatus: "UNCONFIRMED",
         });
 
         mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
         await confirmForgotPassword(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
           Username: user.Username,
-          ConfirmationCode: '456789',
-          Password: 'newPassword',
+          ConfirmationCode: "456789",
+          Password: "newPassword",
         });
 
         expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
@@ -133,22 +133,22 @@ describe('ConfirmForgotPassword target', () => {
       });
     });
 
-    describe('when PostConfirmation trigger not configured', () => {
+    describe("when PostConfirmation trigger not configured", () => {
       it("doesn't invoke the trigger", async () => {
         mockTriggers.enabled.mockReturnValue(false);
 
         const user = TDB.user({
-          ConfirmationCode: '456789',
-          UserStatus: 'UNCONFIRMED',
+          ConfirmationCode: "456789",
+          UserStatus: "UNCONFIRMED",
         });
 
         mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
         await confirmForgotPassword(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           Username: user.Username,
-          ConfirmationCode: '456789',
-          Password: 'newPassword',
+          ConfirmationCode: "456789",
+          Password: "newPassword",
         });
 
         expect(mockTriggers.postConfirmation).not.toHaveBeenCalled();

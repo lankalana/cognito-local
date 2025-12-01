@@ -13,13 +13,16 @@ export type UpdateUserPoolClientTarget = Target<
   UpdateUserPoolClientResponse
 >;
 
-type UpdateUserPoolClientServices = Pick<Services, 'clock' | 'cognito'>;
+type UpdateUserPoolClientServices = Pick<Services, "clock" | "cognito">;
 
 export const UpdateUserPoolClient =
-  ({ clock, cognito }: UpdateUserPoolClientServices): UpdateUserPoolClientTarget =>
+  ({
+    clock,
+    cognito,
+  }: UpdateUserPoolClientServices): UpdateUserPoolClientTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const appClient = await cognito.getAppClient(ctx, req.ClientId);
@@ -29,16 +32,22 @@ export const UpdateUserPoolClient =
 
     const updatedAppClient: AppClient = {
       ...appClient,
-      AccessTokenValidity: req.AccessTokenValidity ?? appClient.AccessTokenValidity,
+      AccessTokenValidity:
+        req.AccessTokenValidity ?? appClient.AccessTokenValidity,
       AllowedOAuthFlows: req.AllowedOAuthFlows ?? appClient.AllowedOAuthFlows,
       AllowedOAuthFlowsUserPoolClient:
-        req.AllowedOAuthFlowsUserPoolClient ?? appClient.AllowedOAuthFlowsUserPoolClient,
-      AllowedOAuthScopes: req.AllowedOAuthScopes ?? appClient.AllowedOAuthScopes,
-      AnalyticsConfiguration: req.AnalyticsConfiguration ?? appClient.AnalyticsConfiguration,
+        req.AllowedOAuthFlowsUserPoolClient ??
+        appClient.AllowedOAuthFlowsUserPoolClient,
+      AllowedOAuthScopes:
+        req.AllowedOAuthScopes ?? appClient.AllowedOAuthScopes,
+      AnalyticsConfiguration:
+        req.AnalyticsConfiguration ?? appClient.AnalyticsConfiguration,
       CallbackURLs: req.CallbackURLs ?? appClient.CallbackURLs,
       ClientName: req.ClientName ?? appClient.ClientName,
-      DefaultRedirectURI: req.DefaultRedirectURI ?? appClient.DefaultRedirectURI,
-      EnableTokenRevocation: req.EnableTokenRevocation ?? appClient.EnableTokenRevocation,
+      DefaultRedirectURI:
+        req.DefaultRedirectURI ?? appClient.DefaultRedirectURI,
+      EnableTokenRevocation:
+        req.EnableTokenRevocation ?? appClient.EnableTokenRevocation,
       ExplicitAuthFlows: req.ExplicitAuthFlows ?? appClient.ExplicitAuthFlows,
       IdTokenValidity: req.IdTokenValidity ?? appClient.IdTokenValidity,
       LastModifiedDate: clock.get(),
@@ -46,20 +55,23 @@ export const UpdateUserPoolClient =
       PreventUserExistenceErrors:
         req.PreventUserExistenceErrors ?? appClient.PreventUserExistenceErrors,
       ReadAttributes: req.ReadAttributes ?? appClient.ReadAttributes,
-      RefreshTokenValidity: req.RefreshTokenValidity ?? appClient.RefreshTokenValidity,
+      RefreshTokenValidity:
+        req.RefreshTokenValidity ?? appClient.RefreshTokenValidity,
       SupportedIdentityProviders:
         req.SupportedIdentityProviders ?? appClient.SupportedIdentityProviders,
       TokenValidityUnits: {
         AccessToken:
           req.TokenValidityUnits?.AccessToken ??
           appClient.TokenValidityUnits?.AccessToken ??
-          'hours',
+          "hours",
         IdToken:
-          req.TokenValidityUnits?.IdToken ?? appClient.TokenValidityUnits?.IdToken ?? 'minutes',
+          req.TokenValidityUnits?.IdToken ??
+          appClient.TokenValidityUnits?.IdToken ??
+          "minutes",
         RefreshToken:
           req.TokenValidityUnits?.RefreshToken ??
           appClient.TokenValidityUnits?.RefreshToken ??
-          'days',
+          "days",
       },
       WriteAttributes: req.WriteAttributes ?? appClient.WriteAttributes,
     };

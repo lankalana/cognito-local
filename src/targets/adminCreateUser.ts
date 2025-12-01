@@ -2,9 +2,9 @@ import type {
   AdminCreateUserRequest,
   AdminCreateUserResponse,
   DeliveryMediumType,
-} from '@aws-sdk/client-cognito-identity-provider';
-import shortUUID from 'short-uuid';
-import * as uuid from 'uuid';
+} from "@aws-sdk/client-cognito-identity-provider";
+import shortUUID from "short-uuid";
+import * as uuid from "uuid";
 
 import {
   InvalidParameterError,
@@ -27,31 +27,37 @@ const generator = shortUUID(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!",
 );
 
-export type AdminCreateUserTarget = Target<AdminCreateUserRequest, AdminCreateUserResponse>;
+export type AdminCreateUserTarget = Target<
+  AdminCreateUserRequest,
+  AdminCreateUserResponse
+>;
 
-type AdminCreateUserServices = Pick<Services, 'clock' | 'cognito' | 'messages' | 'config'>;
+type AdminCreateUserServices = Pick<
+  Services,
+  "clock" | "cognito" | "messages" | "config"
+>;
 
 const selectAppropriateDeliveryMethod = (
   desiredDeliveryMediums: DeliveryMediumListType,
   user: User,
 ): DeliveryDetails | null => {
-  if (desiredDeliveryMediums.includes('SMS')) {
-    const phoneNumber = attributeValue('phone_number', user.Attributes);
+  if (desiredDeliveryMediums.includes("SMS")) {
+    const phoneNumber = attributeValue("phone_number", user.Attributes);
     if (phoneNumber) {
       return {
-        AttributeName: 'phone_number',
-        DeliveryMedium: 'SMS',
+        AttributeName: "phone_number",
+        DeliveryMedium: "SMS",
         Destination: phoneNumber,
       };
     }
   }
 
-  if (desiredDeliveryMediums.includes('EMAIL')) {
-    const email = attributeValue('email', user.Attributes);
+  if (desiredDeliveryMediums.includes("EMAIL")) {
+    const email = attributeValue("email", user.Attributes);
     if (email) {
       return {
-        AttributeName: 'email',
-        DeliveryMedium: 'EMAIL',
+        AttributeName: "email",
+        DeliveryMedium: "EMAIL",
         Destination: email,
       };
     }
@@ -81,7 +87,7 @@ const deliverWelcomeMessage = async (
 
   await messages.deliver(
     ctx,
-    'AdminCreateUser',
+    "AdminCreateUser",
     null,
     userPool.options.Id,
     user,
@@ -98,15 +104,15 @@ export const AdminCreateUser =
     messages,
   }: AdminCreateUserServices): AdminCreateUserTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const existingUser = await userPool.getUserByUsername(ctx, req.Username);
-    const supressWelcomeMessage = req.MessageAction === 'SUPPRESS';
+    const supressWelcomeMessage = req.MessageAction === "SUPPRESS";
 
-    if (existingUser && req.MessageAction === 'RESEND') {
-      throw new UnsupportedError('AdminCreateUser with MessageAction=RESEND');
+    if (existingUser && req.MessageAction === "RESEND") {
+      throw new UnsupportedError("AdminCreateUser with MessageAction=RESEND");
     } else if (existingUser) {
       throw new UsernameExistsError();
     }
@@ -143,7 +149,7 @@ export const AdminCreateUser =
       Password: temporaryPassword,
       Attributes: attributes.sort((a, b) => a.Name.localeCompare(b.Name)),
       Enabled: true,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
       ConfirmationCode: undefined,
       UserCreateDate: now,
       UserLastModifiedDate: now,

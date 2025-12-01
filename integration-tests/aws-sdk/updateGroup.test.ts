@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.updateGroup',
+  "CognitoIdentityServiceProvider.updateGroup",
   withCognitoSdk((Cognito) => {
-    it('updates a group', async () => {
+    it("updates a group", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -50,8 +50,8 @@ describe(
         .promise();
 
       expect(getGroupResponseAfterUpdate.Group).toMatchObject({
-        GroupName: 'abc',
-        Description: 'new description',
+        GroupName: "abc",
+        Description: "new description",
       });
     });
   }),

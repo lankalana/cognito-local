@@ -5,9 +5,9 @@ import { attributeValue } from "../../src/services/userPoolService";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.initiateAuth',
+  "CognitoIdentityServiceProvider.initiateAuth",
   withCognitoSdk((Cognito) => {
-    it('throws for missing user', async () => {
+    it("throws for missing user", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -36,11 +36,11 @@ describe(
           })
           .promise(),
       ).rejects.toMatchObject({
-        message: 'User not authorized',
+        message: "User not authorized",
       });
     });
 
-    it('handles users with FORCE_CHANGE_PASSWORD status', async () => {
+    it("handles users with FORCE_CHANGE_PASSWORD status", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -73,16 +73,16 @@ describe(
 
       const response = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'def',
+          USERNAME: "abc",
+          PASSWORD: "def",
         },
       });
 
       expect(response).toEqual({
         $metadata: response.$metadata,
-        ChallengeName: 'NEW_PASSWORD_REQUIRED',
+        ChallengeName: "NEW_PASSWORD_REQUIRED",
         ChallengeParameters: {
           USER_ID_FOR_SRP: "abc",
           requiredAttributes: "[]",
@@ -92,7 +92,7 @@ describe(
       });
     });
 
-    it('handles users with UNCONFIRMED status', async () => {
+    it("handles users with UNCONFIRMED status", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -111,9 +111,9 @@ describe(
 
       await client.signUp({
         ClientId: upc.UserPoolClient?.ClientId,
-        Password: 'def',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        Username: 'abc',
+        Password: "def",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        Username: "abc",
       });
 
       await expect(
@@ -133,7 +133,7 @@ describe(
       });
     });
 
-    it('can authenticate users with USER_PASSWORD_AUTH auth flow', async () => {
+    it("can authenticate users with USER_PASSWORD_AUTH auth flow", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -175,10 +175,10 @@ describe(
 
       const response = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'def',
+          USERNAME: "abc",
+          PASSWORD: "def",
         },
       });
 
@@ -192,10 +192,10 @@ describe(
         iat: expect.any(Number),
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
-        scope: 'aws.cognito.signin.user.admin',
+        scope: "aws.cognito.signin.user.admin",
         sub: userSub,
-        token_use: 'access',
-        username: 'abc',
+        token_use: "access",
+        username: "abc",
       });
 
       expect(
@@ -204,7 +204,7 @@ describe(
         "cognito:username": "abc",
         aud: upc.UserPoolClient?.ClientId,
         auth_time: expect.any(Number),
-        email: 'example@example.com',
+        email: "example@example.com",
         email_verified: false,
         event_id: expect.stringMatching(UUID),
         exp: expect.any(Number),
@@ -212,7 +212,7 @@ describe(
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
         sub: userSub,
-        token_use: 'id',
+        token_use: "id",
       });
 
       expect(
@@ -227,7 +227,7 @@ describe(
       });
     });
 
-    it('can authenticate users with REFRESH_TOKEN_AUTH auth flow', async () => {
+    it("can authenticate users with REFRESH_TOKEN_AUTH auth flow", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -269,18 +269,19 @@ describe(
 
       const initialLoginResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'def',
+          USERNAME: "abc",
+          PASSWORD: "def",
         },
       });
 
       const refreshTokenLoginResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'REFRESH_TOKEN_AUTH',
+        AuthFlow: "REFRESH_TOKEN_AUTH",
         AuthParameters: {
-          REFRESH_TOKEN: initialLoginResponse.AuthenticationResult?.RefreshToken as string,
+          REFRESH_TOKEN: initialLoginResponse.AuthenticationResult
+            ?.RefreshToken as string,
         },
       });
 
@@ -296,10 +297,10 @@ describe(
         iat: expect.any(Number),
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
-        scope: 'aws.cognito.signin.user.admin',
+        scope: "aws.cognito.signin.user.admin",
         sub: userSub,
-        token_use: 'access',
-        username: 'abc',
+        token_use: "access",
+        username: "abc",
       });
 
       expect(

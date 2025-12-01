@@ -39,26 +39,29 @@ interface TokenOverrides {
 }
 
 const RESERVED_CLAIMS = [
-  'acr',
-  'amr',
-  'aud',
-  'at_hash',
-  'auth_time',
-  'azp',
-  'cognito:username',
-  'exp',
-  'iat',
-  'identities',
-  'iss',
-  'jti',
-  'nbf',
-  'nonce',
-  'origin_jti',
-  'sub',
-  'token_use',
+  "acr",
+  "amr",
+  "aud",
+  "at_hash",
+  "auth_time",
+  "azp",
+  "cognito:username",
+  "exp",
+  "iat",
+  "identities",
+  "iss",
+  "jti",
+  "nbf",
+  "nonce",
+  "origin_jti",
+  "sub",
+  "token_use",
 ];
 
-type RawToken = Record<string, string | number | boolean | undefined | readonly string[]>;
+type RawToken = Record<
+  string,
+  string | number | boolean | undefined | readonly string[]
+>;
 
 const applyTokenOverrides = (
   token: RawToken,
@@ -153,7 +156,7 @@ export class JwtTokenGenerator implements TokenGenerator {
   ): Promise<Tokens> {
     const eventId = uuid.v4();
     const authTime = Math.floor(this.clock.get().getTime() / 1000);
-    const sub = attributeValue('sub', user.Attributes);
+    const sub = attributeValue("sub", user.Attributes);
 
     const accessToken: RawToken = {
       auth_time: authTime,
@@ -161,13 +164,13 @@ export class JwtTokenGenerator implements TokenGenerator {
       event_id: eventId,
       iat: authTime,
       jti: uuid.v4(),
-      scope: 'aws.cognito.signin.user.admin', // TODO: scopes
+      scope: "aws.cognito.signin.user.admin", // TODO: scopes
       sub,
-      token_use: 'access',
+      token_use: "access",
       username: user.Username,
     };
     let idToken: RawToken = {
-      'cognito:username': user.Username,
+      "cognito:username": user.Username,
       auth_time: authTime,
       email: attributeValue("email", user.Attributes),
       email_verified: Boolean(
@@ -177,16 +180,16 @@ export class JwtTokenGenerator implements TokenGenerator {
       iat: authTime,
       jti: uuid.v4(),
       sub,
-      token_use: 'id',
+      token_use: "id",
       ...attributesToRecord(customAttributes(user.Attributes)),
     };
 
     if (userGroups.length) {
-      accessToken['cognito:groups'] = userGroups;
-      idToken['cognito:groups'] = userGroups;
+      accessToken["cognito:groups"] = userGroups;
+      idToken["cognito:groups"] = userGroups;
     }
 
-    if (this.triggers.enabled('PreTokenGeneration')) {
+    if (this.triggers.enabled("PreTokenGeneration")) {
       const result = await this.triggers.preTokenGeneration(ctx, {
         clientId: userPoolClient.ClientId,
         clientMetadata,
@@ -209,7 +212,7 @@ export class JwtTokenGenerator implements TokenGenerator {
 
     return {
       AccessToken: jwt.sign(accessToken, PrivateKey.pem, {
-        algorithm: 'RS256',
+        algorithm: "RS256",
         issuer,
         expiresIn: formatExpiration(
           userPoolClient.AccessTokenValidity,
@@ -219,7 +222,7 @@ export class JwtTokenGenerator implements TokenGenerator {
         keyid: "CognitoLocal",
       } satisfies SignOptions),
       IdToken: jwt.sign(idToken, PrivateKey.pem, {
-        algorithm: 'RS256',
+        algorithm: "RS256",
         issuer,
         expiresIn: formatExpiration(
           userPoolClient.IdTokenValidity,
@@ -233,14 +236,14 @@ export class JwtTokenGenerator implements TokenGenerator {
       // in reality token payload is encrypted and uses different algorithm
       RefreshToken: jwt.sign(
         {
-          'cognito:username': user.Username,
-          email: attributeValue('email', user.Attributes),
+          "cognito:username": user.Username,
+          email: attributeValue("email", user.Attributes),
           iat: authTime,
           jti: uuid.v4(),
         },
         PrivateKey.pem,
         {
-          algorithm: 'RS256',
+          algorithm: "RS256",
           issuer,
           expiresIn: formatExpiration(
             userPoolClient.RefreshTokenValidity,

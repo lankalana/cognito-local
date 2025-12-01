@@ -47,13 +47,13 @@ export class CryptoService {
   }
 
   async encrypt(ctx: Context, plaintext: string): Promise<string> {
-    ctx.logger.debug({ plaintext }, 'encrypting code');
+    ctx.logger.debug({ plaintext }, "encrypting code");
 
     const { result } = await encrypt(this.keyringNode, plaintext);
 
-    const encryptedCode = result.toString('base64');
+    const encryptedCode = result.toString("base64");
 
-    ctx.logger.debug({ encryptedCode }, 'code succesfully encrypted');
+    ctx.logger.debug({ encryptedCode }, "code succesfully encrypted");
 
     return encryptedCode;
   }

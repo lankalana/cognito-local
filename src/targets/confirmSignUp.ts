@@ -2,7 +2,7 @@ import type {
   ConfirmSignUpRequest,
   ConfirmSignUpResponse,
   UserStatusType,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "@aws-sdk/client-cognito-identity-provider";
 
 import {
   CodeMismatchError,
@@ -14,17 +14,20 @@ import type { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import type { Target } from "./Target";
 
-export type ConfirmSignUpTarget = Target<ConfirmSignUpRequest, ConfirmSignUpResponse>;
+export type ConfirmSignUpTarget = Target<
+  ConfirmSignUpRequest,
+  ConfirmSignUpResponse
+>;
 
 export const ConfirmSignUp =
   ({
     cognito,
     clock,
     triggers,
-  }: Pick<Services, 'cognito' | 'clock' | 'triggers'>): ConfirmSignUpTarget =>
+  }: Pick<Services, "cognito" | "clock" | "triggers">): ConfirmSignUpTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -49,11 +52,11 @@ export const ConfirmSignUp =
 
     await userPool.saveUser(ctx, updatedUser);
 
-    if (triggers.enabled('PostConfirmation')) {
+    if (triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,
-        source: 'PostConfirmation_ConfirmSignUp',
+        source: "PostConfirmation_ConfirmSignUp",
         username: updatedUser.Username,
         userPoolId: userPool.options.Id,
 

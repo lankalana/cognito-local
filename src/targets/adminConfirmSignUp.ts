@@ -12,13 +12,20 @@ export type AdminConfirmSignUpTarget = Target<
   AdminConfirmSignUpResponse
 >;
 
-type AdminConfirmSignUpServices = Pick<Services, 'clock' | 'cognito' | 'triggers'>;
+type AdminConfirmSignUpServices = Pick<
+  Services,
+  "clock" | "cognito" | "triggers"
+>;
 
 export const AdminConfirmSignUp =
-  ({ clock, cognito, triggers }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
+  ({
+    clock,
+    cognito,
+    triggers,
+  }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -40,9 +47,9 @@ export const AdminConfirmSignUp =
 
     await userPool.saveUser(ctx, updatedUser);
 
-    if (triggers.enabled('PostConfirmation')) {
+    if (triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
-        source: 'PostConfirmation_ConfirmSignUp',
+        source: "PostConfirmation_ConfirmSignUp",
         clientId: null,
         clientMetadata: req.ClientMetadata,
         username: updatedUser.Username,

@@ -1,20 +1,22 @@
 import mergeWith from "lodash.mergewith";
 import type { Context } from "../services/context";
+import type { Context } from "../services/context.js";
 import type { KMSConfig } from "../services/crypto";
+import type { KMSConfig } from "../services/crypto.js";
 import type { DataStoreFactory } from "../services/dataStore/factory";
+import type { DataStoreFactory } from "../services/dataStore/factory.js";
 import type { FunctionConfig } from "../services/lambda";
+import type { FunctionConfig } from "../services/lambda.js";
 import type { TokenConfig } from "../services/tokenGenerator";
+import type { TokenConfig } from "../services/tokenGenerator.js";
 import type { UserPool } from "../services/userPoolService";
+import type { UserPool } from "../services/userPoolService.js";
 import type { ServerOptions } from "./server";
 
-import { Context } from '../services/context.js';
-import { KMSConfig } from '../services/crypto.js';
-import { DataStoreFactory } from '../services/dataStore/factory.js';
-import { FunctionConfig } from '../services/lambda.js';
-import { TokenConfig } from '../services/tokenGenerator.js';
-import { UserPool } from '../services/userPoolService.js';
-
-export type UserPoolDefaults = Omit<UserPool, 'Id' | 'CreationDate' | 'LastModifiedDate'>;
+export type UserPoolDefaults = Omit<
+  UserPool,
+  "Id" | "CreationDate" | "LastModifiedDate"
+>;
 
 export interface Config {
   LambdaClient: LambdaClientConfig;
@@ -31,24 +33,24 @@ const hostname = process.env.HOST ?? "localhost";
 export const DefaultConfig: Config = {
   LambdaClient: {
     credentials: {
-      accessKeyId: 'local',
-      secretAccessKey: 'local',
+      accessKeyId: "local",
+      secretAccessKey: "local",
     },
-    region: 'local',
+    region: "local",
   },
   TriggerFunctions: {},
   UserPoolDefaults: {
-    UsernameAttributes: ['email'],
+    UsernameAttributes: ["email"],
   },
   TokenConfig: {
     IssuerDomain: `http://${hostname}:${port}`,
   },
   KMSConfig: {
     credentials: {
-      accessKeyId: 'local',
-      secretAccessKey: 'local',
+      accessKeyId: "local",
+      secretAccessKey: "local",
     },
-    region: 'local',
+    region: "local",
   },
   ServerConfig: {
     port,
@@ -62,8 +64,8 @@ export const loadConfig = async (
   ctx: Context,
   dataStoreFactory: DataStoreFactory,
 ): Promise<Config> => {
-  ctx.logger.debug('loadConfig');
-  const dataStore = await dataStoreFactory.create(ctx, 'config', {});
+  ctx.logger.debug("loadConfig");
+  const dataStore = await dataStoreFactory.create(ctx, "config", {});
 
   const config = await dataStore.getRoot<Config>(ctx);
 

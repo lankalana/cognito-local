@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.getGroup',
+  "CognitoIdentityServiceProvider.getGroup",
   withCognitoSdk(
     (Cognito) => {
-      it('get a group', async () => {
+      it("get a group", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -41,8 +41,8 @@ describe(
 
         expect(getGroupResponse.Group).toEqual({
           CreationDate: roundedDate,
-          Description: 'Description',
-          GroupName: 'abc',
+          Description: "Description",
+          GroupName: "abc",
           LastModifiedDate: roundedDate,
           Precedence: 1,
           RoleArn: "arn",

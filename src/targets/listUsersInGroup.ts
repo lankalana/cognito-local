@@ -3,22 +3,28 @@ import type {
   ListUsersInGroupResponse,
 } from "aws-sdk/clients/cognitoidentityserviceprovider";
 import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import {
+  GroupNotFoundError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors.js";
 import type { Services } from "../services";
+import type { Services } from "../services/index.js";
 import { userToResponseObject } from "./responses";
+import { userToResponseObject } from "./responses.js";
 import type { Target } from "./Target";
+import type { Target } from "./Target.js";
 
-import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { userToResponseObject } from './responses.js';
-import { Target } from './Target.js';
-
-export type ListUsersInGroupTarget = Target<ListUsersInGroupRequest, ListUsersInGroupResponse>;
+export type ListUsersInGroupTarget = Target<
+  ListUsersInGroupRequest,
+  ListUsersInGroupResponse
+>;
 
 export const ListUsersInGroup =
-  ({ cognito }: Pick<Services, 'cognito'>): ListUsersInGroupTarget =>
+  ({ cognito }: Pick<Services, "cognito">): ListUsersInGroupTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.GroupName) throw new MissingParameterError('GroupName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const group = await userPool.getGroupByGroupName(ctx, req.GroupName);

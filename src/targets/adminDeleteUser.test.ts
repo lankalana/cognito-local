@@ -7,7 +7,7 @@ import { UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
 import { AdminDeleteUser, type AdminDeleteUserTarget } from "./adminDeleteUser";
 
-describe('AdminDeleteUser target', () => {
+describe("AdminDeleteUser target", () => {
   let adminDeleteUser: AdminDeleteUserTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -18,14 +18,14 @@ describe('AdminDeleteUser target', () => {
     });
   });
 
-  it('deletes the user', async () => {
+  it("deletes the user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
 
     await adminDeleteUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
@@ -34,7 +34,7 @@ describe('AdminDeleteUser target', () => {
     );
   });
 
-  it('handles trying to delete an invalid user', async () => {
+  it("handles trying to delete an invalid user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);

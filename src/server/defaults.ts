@@ -33,7 +33,7 @@ export const createDefaultServer = async (
     new StormDBDataStoreFactory(configDirectory),
   );
 
-  logger.debug({ config }, 'Loaded config');
+  logger.debug({ config }, "Loaded config");
 
   const clock = new DateClock();
 

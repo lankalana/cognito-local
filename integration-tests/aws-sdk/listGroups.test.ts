@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(originalDate);
 
 describe(
-  'CognitoIdentityServiceProvider.listGroups',
+  "CognitoIdentityServiceProvider.listGroups",
   withCognitoSdk(
     (Cognito) => {
-      it('lists groups', async () => {
+      it("lists groups", async () => {
         const client = Cognito();
 
         const pool1 = await client
@@ -90,33 +90,33 @@ describe(
         expect(result1?.Groups).toEqual([
           {
             CreationDate: roundedDate,
-            GroupName: 'abc',
+            GroupName: "abc",
             LastModifiedDate: roundedDate,
-            UserPoolId: 'test1',
+            UserPoolId: "test1",
           },
           {
             CreationDate: roundedDate,
-            GroupName: 'def',
+            GroupName: "def",
             LastModifiedDate: roundedDate,
-            UserPoolId: 'test1',
+            UserPoolId: "test1",
           },
         ]);
 
         const result2 = await client.listGroups({
-          UserPoolId: 'test2',
+          UserPoolId: "test2",
         });
 
         expect(result2?.Groups).toEqual([
           {
             CreationDate: roundedDate,
-            GroupName: 'ghi',
+            GroupName: "ghi",
             LastModifiedDate: roundedDate,
-            UserPoolId: 'test2',
+            UserPoolId: "test2",
           },
         ]);
       });
 
-      it('returns an empty collection when there are no groups', async () => {
+      it("returns an empty collection when there are no groups", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -140,7 +140,7 @@ describe(
       });
 
       // TODO: getUserPool lazily creates a pool right now, so we can't handle invalid user pools
-      it.todo('handles invalid user pool');
+      it.todo("handles invalid user pool");
     },
     {
       clock,

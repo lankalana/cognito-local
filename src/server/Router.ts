@@ -25,7 +25,7 @@ export const Router =
         target,
       });
 
-      targetLogger.debug('start');
+      targetLogger.debug("start");
       const res = await t(
         {
           ...ctx,
@@ -33,7 +33,7 @@ export const Router =
         },
         req,
       );
-      targetLogger.debug('end');
+      targetLogger.debug("end");
       return res;
     };
   };

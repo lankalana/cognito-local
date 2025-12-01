@@ -12,13 +12,16 @@ export type CreateUserPoolClientTarget = Target<
   CreateUserPoolClientResponse
 >;
 
-type CreateUserPoolClientServices = Pick<Services, 'clock' | 'cognito'>;
+type CreateUserPoolClientServices = Pick<Services, "clock" | "cognito">;
 
 export const CreateUserPoolClient =
-  ({ clock, cognito }: CreateUserPoolClientServices): CreateUserPoolClientTarget =>
+  ({
+    clock,
+    cognito,
+  }: CreateUserPoolClientServices): CreateUserPoolClientTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.ClientName) throw new MissingParameterError('ClientName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ClientName) throw new MissingParameterError("ClientName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
@@ -44,9 +47,9 @@ export const CreateUserPoolClient =
       RefreshTokenValidity: req.RefreshTokenValidity,
       SupportedIdentityProviders: req.SupportedIdentityProviders,
       TokenValidityUnits: {
-        AccessToken: req.TokenValidityUnits?.AccessToken ?? 'hours',
-        IdToken: req.TokenValidityUnits?.IdToken ?? 'minutes',
-        RefreshToken: req.TokenValidityUnits?.RefreshToken ?? 'days',
+        AccessToken: req.TokenValidityUnits?.AccessToken ?? "hours",
+        IdToken: req.TokenValidityUnits?.IdToken ?? "minutes",
+        RefreshToken: req.TokenValidityUnits?.RefreshToken ?? "days",
       },
       UserPoolId: req.UserPoolId,
       WriteAttributes: req.WriteAttributes,

@@ -13,7 +13,7 @@ import {
 
 const originalDate = new Date();
 
-describe('AddCustomAttributes target', () => {
+describe("AddCustomAttributes target", () => {
   let addCustomAttributes: AddCustomAttributesTarget;
   let clock: ClockFake;
   let mockCognitoService: MockedObject<CognitoService>;
@@ -28,7 +28,7 @@ describe('AddCustomAttributes target', () => {
     });
   });
 
-  it('appends a custom attribute to the user pool', async () => {
+  it("appends a custom attribute to the user pool", async () => {
     const userPool = TDB.userPool();
     const mockUserPoolService = newMockUserPoolService(userPool);
 
@@ -38,11 +38,11 @@ describe('AddCustomAttributes target', () => {
     clock.advanceTo(newDate);
 
     await addCustomAttributes(TestContext, {
-      UserPoolId: 'test',
+      UserPoolId: "test",
       CustomAttributes: [
         {
-          AttributeDataType: 'String',
-          Name: 'test',
+          AttributeDataType: "String",
+          Name: "test",
         },
       ],
     });
@@ -67,7 +67,7 @@ describe('AddCustomAttributes target', () => {
     );
   });
 
-  it('can create a custom attribute with no name', async () => {
+  it("can create a custom attribute with no name", async () => {
     const userPool = TDB.userPool();
     const mockUserPoolService = newMockUserPoolService(userPool);
 
@@ -77,10 +77,10 @@ describe('AddCustomAttributes target', () => {
     clock.advanceTo(newDate);
 
     await addCustomAttributes(TestContext, {
-      UserPoolId: 'test',
+      UserPoolId: "test",
       CustomAttributes: [
         {
-          AttributeDataType: 'String',
+          AttributeDataType: "String",
         },
       ],
     });
@@ -105,12 +105,12 @@ describe('AddCustomAttributes target', () => {
     );
   });
 
-  it('throws if an attribute with the name already exists', async () => {
+  it("throws if an attribute with the name already exists", async () => {
     const userPool = TDB.userPool({
       SchemaAttributes: [
         {
-          Name: 'custom:test',
-          AttributeDataType: 'String',
+          Name: "custom:test",
+          AttributeDataType: "String",
           DeveloperOnlyAttribute: false,
           Mutable: true,
           Required: false,
@@ -124,11 +124,11 @@ describe('AddCustomAttributes target', () => {
 
     await expect(
       addCustomAttributes(TestContext, {
-        UserPoolId: 'test',
+        UserPoolId: "test",
         CustomAttributes: [
           {
-            AttributeDataType: 'String',
-            Name: 'test',
+            AttributeDataType: "String",
+            Name: "test",
           },
         ],
       }),

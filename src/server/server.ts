@@ -33,11 +33,11 @@ export const createServer = (
 ): Server => {
   const pino = pinoHttp({
     logger,
-    useLevel: 'debug',
-    genReqId: () => uuid.v4().split('-')[0],
+    useLevel: "debug",
+    genReqId: () => uuid.v4().split("-")[0],
     quietReqLogger: true,
     autoLogging: {
-      ignore: (req) => req.method === 'OPTIONS',
+      ignore: (req) => req.method === "OPTIONS",
     },
   });
   const app = express();
@@ -61,9 +61,9 @@ export const createServer = (
     });
   });
 
-  app.get('/:userPoolId/.well-known/openid-configuration', (req, res) => {
+  app.get("/:userPoolId/.well-known/openid-configuration", (req, res) => {
     res.status(200).json({
-      id_token_signing_alg_values_supported: ['RS256'],
+      id_token_signing_alg_values_supported: ["RS256"],
       jwks_uri: `http://localhost:9229/${req.params.userPoolId}/.well-known/jwks.json`,
       issuer: `http://localhost:9229/${req.params.userPoolId}`,
     });
@@ -73,20 +73,20 @@ export const createServer = (
     res.status(200).json({ ok: true });
   });
 
-  app.post('/', (req, res) => {
-    const xAmzTarget = req.headers['x-amz-target'];
+  app.post("/", (req, res) => {
+    const xAmzTarget = req.headers["x-amz-target"];
 
     if (!xAmzTarget) {
-      res.status(400).json({ message: 'Missing x-amz-target header' });
+      res.status(400).json({ message: "Missing x-amz-target header" });
       return;
     } else if (Array.isArray(xAmzTarget)) {
       res.status(400).json({ message: "Too many x-amz-target headers" });
       return;
     }
 
-    const [, target] = xAmzTarget.split('.');
+    const [, target] = xAmzTarget.split(".");
     if (!target) {
-      res.status(400).json({ message: 'Invalid x-amz-target header' });
+      res.status(400).json({ message: "Invalid x-amz-target header" });
       return;
     }
 
@@ -113,20 +113,20 @@ export const createServer = (
       (ex) => {
         if (ex instanceof UnsupportedError) {
           if (options.development) {
-            req.log.info('======');
-            req.log.info('');
-            req.log.info('Unsupported target');
-            req.log.info('');
+            req.log.info("======");
+            req.log.info("");
+            req.log.info("Unsupported target");
+            req.log.info("");
             req.log.info(`x-amz-target: ${xAmzTarget}`);
-            req.log.info('Body:');
+            req.log.info("Body:");
             req.log.info(JSON.stringify(req.body, undefined, 2));
-            req.log.info('');
-            req.log.info('======');
+            req.log.info("");
+            req.log.info("======");
           }
 
           req.log.error(`Cognito Local unsupported feature: ${ex.message}`);
           res.status(500).json({
-            __type: 'CognitoLocal#Unsupported',
+            __type: "CognitoLocal#Unsupported",
             message: `Cognito Local unsupported feature: ${ex.message}`,
           });
           return;

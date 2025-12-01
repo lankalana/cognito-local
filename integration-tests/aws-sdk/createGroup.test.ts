@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.createGroup',
+  "CognitoIdentityServiceProvider.createGroup",
   withCognitoSdk(
     (Cognito) => {
-      it('creates a group with only the required parameters', async () => {
+      it("creates a group with only the required parameters", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -39,7 +39,7 @@ describe(
         });
       });
 
-      it('creates a group with all parameters', async () => {
+      it("creates a group with all parameters", async () => {
         const client = Cognito();
 
         const pool = await client

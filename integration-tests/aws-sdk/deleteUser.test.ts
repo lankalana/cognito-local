@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.deleteUser',
+  "CognitoIdentityServiceProvider.deleteUser",
   withCognitoSdk((Cognito) => {
-    it('deletes the current user', async () => {
+    it("deletes the current user", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -45,10 +45,10 @@ describe(
       // attempt to login
       const initAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'newPassword',
+          USERNAME: "abc",
+          PASSWORD: "newPassword",
         },
       });
 

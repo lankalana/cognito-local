@@ -11,12 +11,12 @@ export type ListUserPoolClientsTarget = Target<
   ListUserPoolClientsResponse
 >;
 
-type ListGroupServices = Pick<Services, 'cognito'>;
+type ListGroupServices = Pick<Services, "cognito">;
 
 export const ListUserPoolClients =
   ({ cognito }: ListGroupServices): ListUserPoolClientsTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
 
     // TODO: NextToken support
     // TODO: MaxResults support

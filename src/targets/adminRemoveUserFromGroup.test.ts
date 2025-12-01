@@ -10,7 +10,7 @@ import {
   type AdminRemoveUserFromGroupTarget,
 } from "./adminRemoveUserFromGroup";
 
-describe('AdminRemoveUserFromGroup target', () => {
+describe("AdminRemoveUserFromGroup target", () => {
   let adminRemoveUserFromGroup: AdminRemoveUserFromGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -22,10 +22,10 @@ describe('AdminRemoveUserFromGroup target', () => {
     });
   });
 
-  it('removes the user from a group', async () => {
+  it("removes the user from a group", async () => {
     const existingUser = TDB.user();
     const existingGroup = TDB.group({
-      members: ['other-user', existingUser.Username],
+      members: ["other-user", existingUser.Username],
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
@@ -34,7 +34,7 @@ describe('AdminRemoveUserFromGroup target', () => {
     await adminRemoveUserFromGroup(TestContext, {
       GroupName: existingGroup.GroupName,
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.removeUserFromGroup).toHaveBeenCalledWith(
@@ -52,7 +52,7 @@ describe('AdminRemoveUserFromGroup target', () => {
 
     await expect(
       adminRemoveUserFromGroup(TestContext, {
-        GroupName: 'group',
+        GroupName: "group",
         Username: existingUser.Username,
         UserPoolId: "test",
       }),

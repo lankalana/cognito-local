@@ -9,16 +9,16 @@ export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 
 export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 
-type DeleteUserServices = Pick<Services, 'cognito'>;
+type DeleteUserServices = Pick<Services, "cognito">;
 
 export const DeleteUser =
   ({ cognito }: DeleteUserServices): DeleteUserTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 

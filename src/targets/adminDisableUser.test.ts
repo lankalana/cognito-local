@@ -13,7 +13,7 @@ import {
 
 const originalDate = new Date();
 
-describe('AdminDisableUser target', () => {
+describe("AdminDisableUser target", () => {
   let adminDisableUser: AdminDisableUserTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
@@ -28,7 +28,7 @@ describe('AdminDisableUser target', () => {
     });
   });
 
-  it('enables the user', async () => {
+  it("enables the user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
@@ -38,7 +38,7 @@ describe('AdminDisableUser target', () => {
 
     await adminDisableUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {

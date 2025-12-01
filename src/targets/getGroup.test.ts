@@ -7,7 +7,7 @@ import { GroupNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
 import { GetGroup, type GetGroupTarget } from "./getGroup";
 
-describe('GetGroup target', () => {
+describe("GetGroup target", () => {
   let getGroup: GetGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -19,14 +19,14 @@ describe('GetGroup target', () => {
     });
   });
 
-  it('gets a group', async () => {
+  it("gets a group", async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     const result = await getGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
@@ -40,7 +40,7 @@ describe('GetGroup target', () => {
       GroupName: existingGroup.GroupName,
       LastModifiedDate: existingGroup.LastModifiedDate,
       RoleArn: existingGroup.RoleArn,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
   });
 

@@ -9,17 +9,17 @@ import {
   type GetUserPoolMfaConfigTarget,
 } from "./getUserPoolMfaConfig";
 
-describe('GetUserPoolMfaConfig target', () => {
+describe("GetUserPoolMfaConfig target", () => {
   let getUserPoolMfaConfig: GetUserPoolMfaConfigTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
   const userPool = TDB.userPool({
-    MfaConfiguration: 'ON',
-    SmsAuthenticationMessage: 'hello, world!',
+    MfaConfiguration: "ON",
+    SmsAuthenticationMessage: "hello, world!",
     SmsConfiguration: {
-      ExternalId: 'abc',
-      SnsCallerArn: 'arn',
-      SnsRegion: 'region',
+      ExternalId: "abc",
+      SnsCallerArn: "arn",
+      SnsRegion: "region",
     },
   });
 
@@ -32,17 +32,17 @@ describe('GetUserPoolMfaConfig target', () => {
 
   it("returns the user pool's MFA config", async () => {
     const output = await getUserPoolMfaConfig(TestContext, {
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(output).toEqual({
-      MfaConfiguration: 'ON',
+      MfaConfiguration: "ON",
       SmsMfaConfiguration: {
-        SmsAuthenticationMessage: 'hello, world!',
+        SmsAuthenticationMessage: "hello, world!",
         SmsConfiguration: {
-          ExternalId: 'abc',
-          SnsCallerArn: 'arn',
-          SnsRegion: 'region',
+          ExternalId: "abc",
+          SnsCallerArn: "arn",
+          SnsRegion: "region",
         },
       },
       SoftwareTokenMfaConfiguration: {

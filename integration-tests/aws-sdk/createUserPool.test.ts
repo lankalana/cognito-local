@@ -10,14 +10,14 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.createUserPool',
+  "CognitoIdentityServiceProvider.createUserPool",
   withCognitoSdk(
     (Cognito) => {
-      it('creates a user pool with only the required parameters', async () => {
+      it("creates a user pool with only the required parameters", async () => {
         const client = Cognito();
 
         const result = await client.createUserPool({
-          PoolName: 'test',
+          PoolName: "test",
         });
 
         expect(result).toEqual({

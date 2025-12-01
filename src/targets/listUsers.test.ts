@@ -6,7 +6,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import type { UserPoolService } from "../services";
 import { ListUsers, type ListUsersTarget } from "./listUsers";
 
-describe('ListUsers target', () => {
+describe("ListUsers target", () => {
   let listUsers: ListUsersTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -17,14 +17,14 @@ describe('ListUsers target', () => {
     });
   });
 
-  it('lists users and removes Cognito Local fields', async () => {
+  it("lists users and removes Cognito Local fields", async () => {
     const user1 = TDB.user();
     const user2 = TDB.user();
 
     mockUserPoolService.listUsers.mockResolvedValue([user1, user2]);
 
     const output = await listUsers(TestContext, {
-      UserPoolId: 'userPoolId',
+      UserPoolId: "userPoolId",
     });
 
     expect(output).toBeDefined();
@@ -48,13 +48,13 @@ describe('ListUsers target', () => {
     ]);
   });
 
-  it.todo('supports AttributesToGet to specify which attributes to return');
+  it.todo("supports AttributesToGet to specify which attributes to return");
 
-  it('supports Filter to filter users before returning', async () => {
+  it("supports Filter to filter users before returning", async () => {
     mockUserPoolService.listUsers.mockResolvedValue([]);
 
     const output = await listUsers(TestContext, {
-      UserPoolId: 'userPoolId',
+      UserPoolId: "userPoolId",
       Filter: 'username = "abc"',
     });
 
@@ -67,6 +67,6 @@ describe('ListUsers target', () => {
     );
   });
 
-  it.todo('supports Limit to specify the number of users to return');
-  it.todo('supports PaginationToken to paginate results');
+  it.todo("supports Limit to specify the number of users to return");
+  it.todo("supports PaginationToken to paginate results");
 });

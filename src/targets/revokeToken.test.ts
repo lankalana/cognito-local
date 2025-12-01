@@ -6,7 +6,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import type { CognitoService, UserPoolService } from "../services";
 import { RevokeToken, type RevokeTokenTarget } from "./revokeToken";
 
-describe('AdminInitiateAuth target', () => {
+describe("AdminInitiateAuth target", () => {
   let revokeToken: RevokeTokenTarget;
 
   let mockUserPoolService: MockedObject<UserPoolService>;
@@ -21,15 +21,15 @@ describe('AdminInitiateAuth target', () => {
     });
   });
 
-  it('remove refresh tokens from user refresh tokens', async () => {
+  it("remove refresh tokens from user refresh tokens", async () => {
     const existingUser = TDB.user();
-    existingUser.RefreshTokens.push('token');
+    existingUser.RefreshTokens.push("token");
 
     mockUserPoolService.listUsers.mockResolvedValue([existingUser]);
 
     await revokeToken(TestContext, {
-      ClientId: 'clientId',
-      Token: 'token',
+      ClientId: "clientId",
+      Token: "token",
     });
 
     expect(mockUserPoolService.saveUser).toBeCalledWith(

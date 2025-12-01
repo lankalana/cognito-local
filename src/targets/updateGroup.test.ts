@@ -10,7 +10,7 @@ import { UpdateGroup, type UpdateGroupTarget } from "./updateGroup";
 
 const originalDate = new Date();
 
-describe('UpdateGroup target', () => {
+describe("UpdateGroup target", () => {
   let updateGroup: UpdateGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
@@ -25,7 +25,7 @@ describe('UpdateGroup target', () => {
     });
   });
 
-  it('updates a group', async () => {
+  it("updates a group", async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
@@ -35,10 +35,10 @@ describe('UpdateGroup target', () => {
 
     const result = await updateGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      RoleArn: 'a new arn',
+      RoleArn: "a new arn",
       Precedence: 10,
-      Description: 'a new description',
-      UserPoolId: 'test',
+      Description: "a new description",
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
@@ -49,27 +49,27 @@ describe('UpdateGroup target', () => {
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
       ...existingGroup,
       LastModifiedDate: newDate,
-      RoleArn: 'a new arn',
+      RoleArn: "a new arn",
       Precedence: 10,
-      Description: 'a new description',
+      Description: "a new description",
     });
 
     expect(result.Group).toEqual({
       CreationDate: existingGroup.CreationDate,
-      Description: 'a new description',
+      Description: "a new description",
       GroupName: existingGroup.GroupName,
       LastModifiedDate: newDate,
       Precedence: 10,
-      RoleArn: 'a new arn',
-      UserPoolId: 'test',
+      RoleArn: "a new arn",
+      UserPoolId: "test",
     });
   });
 
-  it('can do partial updates of group attributes', async () => {
+  it("can do partial updates of group attributes", async () => {
     const existingGroup = TDB.group({
-      Description: 'old description',
+      Description: "old description",
       Precedence: 5,
-      RoleArn: 'old role arn',
+      RoleArn: "old role arn",
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
@@ -80,7 +80,7 @@ describe('UpdateGroup target', () => {
     const result = await updateGroup(TestContext, {
       GroupName: existingGroup.GroupName,
       Precedence: 10,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
@@ -101,7 +101,7 @@ describe('UpdateGroup target', () => {
       LastModifiedDate: newDate,
       Precedence: 10,
       RoleArn: existingGroup.RoleArn,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
   });
 

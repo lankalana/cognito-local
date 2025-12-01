@@ -7,7 +7,7 @@ import { UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
 import { AdminGetUser, type AdminGetUserTarget } from "./adminGetUser";
 
-describe('AdminGetUser target', () => {
+describe("AdminGetUser target", () => {
   let adminGetUser: AdminGetUserTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -18,14 +18,14 @@ describe('AdminGetUser target', () => {
     });
   });
 
-  it('gets the user', async () => {
+  it("gets the user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
 
     const result = await adminGetUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(result).toEqual({
@@ -38,7 +38,7 @@ describe('AdminGetUser target', () => {
     });
   });
 
-  it('handles trying to get an invalid user', async () => {
+  it("handles trying to get an invalid user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);

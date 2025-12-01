@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(originalDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminListGroupsForUser',
+  "CognitoIdentityServiceProvider.adminListGroupsForUser",
   withCognitoSdk(
     (Cognito) => {
-      it('lists groups for a user', async () => {
+      it("lists groups for a user", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -57,7 +57,7 @@ describe(
         expect(result.Groups).toEqual([createGroupResponse.Group]);
       });
 
-      it('lists groups for an unassigned user', async () => {
+      it("lists groups for an unassigned user", async () => {
         const client = Cognito();
 
         const pool = await client

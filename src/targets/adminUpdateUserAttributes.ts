@@ -37,7 +37,7 @@ const sendAttributeVerificationCode = async (
 
   await messages.deliver(
     ctx,
-    'UpdateUserAttribute',
+    "UpdateUserAttribute",
     null,
     userPool.options.Id,
     user,
@@ -52,7 +52,10 @@ export type AdminUpdateUserAttributesTarget = Target<
   AdminUpdateUserAttributesResponse
 >;
 
-type AdminUpdateUserAttributesServices = Pick<Services, 'clock' | 'cognito' | 'otp' | 'messages'>;
+type AdminUpdateUserAttributesServices = Pick<
+  Services,
+  "clock" | "cognito" | "otp" | "messages"
+>;
 
 export const AdminUpdateUserAttributes =
   ({
@@ -62,9 +65,9 @@ export const AdminUpdateUserAttributes =
     messages,
   }: AdminUpdateUserAttributesServices): AdminUpdateUserAttributesTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
-    if (!req.UserAttributes) throw new MissingParameterError('UserAttributes');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);

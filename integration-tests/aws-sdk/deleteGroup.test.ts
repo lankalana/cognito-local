@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.deleteGroup',
+  "CognitoIdentityServiceProvider.deleteGroup",
   withCognitoSdk((Cognito) => {
-    it('deletes a group', async () => {
+    it("deletes a group", async () => {
       const client = Cognito();
 
       const pool = await client

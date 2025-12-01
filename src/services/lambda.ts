@@ -41,44 +41,49 @@ interface EventCommonParameters {
   userPoolId: string;
 }
 
-interface CustomEmailSenderEvent extends Omit<EventCommonParameters, 'clientId'> {
+interface CustomEmailSenderEvent
+  extends Omit<EventCommonParameters, "clientId"> {
   clientId: string | undefined;
   code: string;
   clientMetadata: Record<string, string> | undefined;
   triggerSource:
-    | 'CustomEmailSender_AdminCreateUser'
-    | 'CustomEmailSender_ForgotPassword'
-    | 'CustomEmailSender_ResendCode'
-    | 'CustomEmailSender_SignUp'
-    | 'CustomEmailSender_UpdateUserAttribute'
-    | 'CustomEmailSender_VerifyUserAttribute';
+    | "CustomEmailSender_AdminCreateUser"
+    | "CustomEmailSender_ForgotPassword"
+    | "CustomEmailSender_ResendCode"
+    | "CustomEmailSender_SignUp"
+    | "CustomEmailSender_UpdateUserAttribute"
+    | "CustomEmailSender_VerifyUserAttribute";
 }
 
-export interface CustomMessageEvent extends Omit<EventCommonParameters, 'clientId'> {
+export interface CustomMessageEvent
+  extends Omit<EventCommonParameters, "clientId"> {
   clientId: string | undefined;
   clientMetadata: Record<string, string> | undefined;
   codeParameter: string;
   triggerSource:
-    | 'CustomMessage_AdminCreateUser'
-    | 'CustomMessage_Authentication'
-    | 'CustomMessage_ForgotPassword'
-    | 'CustomMessage_ResendCode'
-    | 'CustomMessage_SignUp'
-    | 'CustomMessage_UpdateUserAttribute'
-    | 'CustomMessage_VerifyUserAttribute';
+    | "CustomMessage_AdminCreateUser"
+    | "CustomMessage_Authentication"
+    | "CustomMessage_ForgotPassword"
+    | "CustomMessage_ResendCode"
+    | "CustomMessage_SignUp"
+    | "CustomMessage_UpdateUserAttribute"
+    | "CustomMessage_VerifyUserAttribute";
   usernameParameter: string;
 }
 
 interface UserMigrationEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
   password: string;
-  triggerSource: 'UserMigration_Authentication';
+  triggerSource: "UserMigration_Authentication";
   validationData: Record<string, string> | undefined;
 }
 
 interface PreSignUpEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
-  triggerSource: 'PreSignUp_AdminCreateUser' | 'PreSignUp_ExternalProvider' | 'PreSignUp_SignUp';
+  triggerSource:
+    | "PreSignUp_AdminCreateUser"
+    | "PreSignUp_ExternalProvider"
+    | "PreSignUp_SignUp";
   validationData: Record<string, string> | undefined;
 }
 
@@ -91,11 +96,11 @@ interface PreTokenGenerationEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
 
   triggerSource:
-    | 'TokenGeneration_AuthenticateDevice'
-    | 'TokenGeneration_Authentication'
-    | 'TokenGeneration_HostedAuth'
-    | 'TokenGeneration_NewPasswordChallenge'
-    | 'TokenGeneration_RefreshTokens';
+    | "TokenGeneration_AuthenticateDevice"
+    | "TokenGeneration_Authentication"
+    | "TokenGeneration_HostedAuth"
+    | "TokenGeneration_NewPasswordChallenge"
+    | "TokenGeneration_RefreshTokens";
 
   /**
    * The input object containing the current group configuration. It includes groupsToOverride, iamRolesToOverride, and
@@ -121,11 +126,14 @@ interface PreTokenGenerationEvent extends EventCommonParameters {
 
 interface PostAuthenticationEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
-  triggerSource: 'PostAuthentication_Authentication';
+  triggerSource: "PostAuthentication_Authentication";
 }
 
-interface PostConfirmationEvent extends Omit<EventCommonParameters, 'clientId'> {
-  triggerSource: 'PostConfirmation_ConfirmSignUp' | 'PostConfirmation_ConfirmForgotPassword';
+interface PostConfirmationEvent
+  extends Omit<EventCommonParameters, "clientId"> {
+  triggerSource:
+    | "PostConfirmation_ConfirmSignUp"
+    | "PostConfirmation_ConfirmForgotPassword";
   clientMetadata: Record<string, string> | undefined;
   clientId: string | null;
 }
@@ -140,13 +148,19 @@ export interface FunctionConfig {
   CustomEmailSender?: string;
 }
 
-export type CustomMessageTriggerResponse = CustomMessageTriggerEvent['response'];
-export type UserMigrationTriggerResponse = UserMigrationTriggerEvent['response'];
-export type PreSignUpTriggerResponse = PreSignUpTriggerEvent['response'];
-export type PreTokenGenerationTriggerResponse = PreTokenGenerationTriggerEvent['response'];
-export type PostAuthenticationTriggerResponse = PostAuthenticationTriggerEvent['response'];
-export type PostConfirmationTriggerResponse = PostConfirmationTriggerEvent['response'];
-export type CustomEmailSenderTriggerResponse = CustomEmailSenderTriggerEvent['response'];
+export type CustomMessageTriggerResponse =
+  CustomMessageTriggerEvent["response"];
+export type UserMigrationTriggerResponse =
+  UserMigrationTriggerEvent["response"];
+export type PreSignUpTriggerResponse = PreSignUpTriggerEvent["response"];
+export type PreTokenGenerationTriggerResponse =
+  PreTokenGenerationTriggerEvent["response"];
+export type PostAuthenticationTriggerResponse =
+  PostAuthenticationTriggerEvent["response"];
+export type PostConfirmationTriggerResponse =
+  PostConfirmationTriggerEvent["response"];
+export type CustomEmailSenderTriggerResponse =
+  CustomEmailSenderTriggerEvent["response"];
 
 export interface Lambda {
   enabled(lambda: keyof FunctionConfig): boolean;
@@ -244,7 +258,9 @@ export class LambdaService implements Lambda {
     );
     if (!result.FunctionError) {
       try {
-        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as { response: T };
+        const parsedPayload = JSON.parse(
+          this.decoder.decode(result.Payload),
+        ) as { response: T };
 
         return parsedPayload.response;
       } catch (err) {
@@ -254,8 +270,10 @@ export class LambdaService implements Lambda {
     } else {
       ctx.logger.error({ result }, result.FunctionError);
 
-      if (result.FunctionError === 'Unhandled' && result.Payload) {
-        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as {
+      if (result.FunctionError === "Unhandled" && result.Payload) {
+        const parsedPayload = JSON.parse(
+          this.decoder.decode(result.Payload),
+        ) as {
           errorMessage: string;
         };
 
@@ -280,17 +298,17 @@ export class LambdaService implements Lambda {
       | PreTokenGenerationEvent
       | UserMigrationEvent,
   ): CognitoUserPoolEvent {
-    const version = '0'; // TODO: how do we know what this is?
+    const version = "0"; // TODO: how do we know what this is?
     const callerContext = {
       awsSdkVersion,
 
       // client id can be null, even though the types don't allow it
       clientId: event.clientId as string,
     };
-    const region = 'local'; // TODO: pull from above,
+    const region = "local"; // TODO: pull from above,
 
     switch (event.triggerSource) {
-      case 'PostAuthentication_Authentication': {
+      case "PostAuthentication_Authentication": {
         return {
           version,
           callerContext,
@@ -307,8 +325,8 @@ export class LambdaService implements Lambda {
         };
       }
 
-      case 'PostConfirmation_ConfirmForgotPassword':
-      case 'PostConfirmation_ConfirmSignUp': {
+      case "PostConfirmation_ConfirmForgotPassword":
+      case "PostConfirmation_ConfirmSignUp": {
         return {
           version,
           callerContext,
@@ -324,9 +342,9 @@ export class LambdaService implements Lambda {
         };
       }
 
-      case 'PreSignUp_AdminCreateUser':
-      case 'PreSignUp_ExternalProvider':
-      case 'PreSignUp_SignUp': {
+      case "PreSignUp_AdminCreateUser":
+      case "PreSignUp_ExternalProvider":
+      case "PreSignUp_SignUp": {
         return {
           version,
           callerContext,
@@ -347,11 +365,11 @@ export class LambdaService implements Lambda {
         };
       }
 
-      case 'TokenGeneration_AuthenticateDevice':
-      case 'TokenGeneration_Authentication':
-      case 'TokenGeneration_HostedAuth':
-      case 'TokenGeneration_NewPasswordChallenge':
-      case 'TokenGeneration_RefreshTokens': {
+      case "TokenGeneration_AuthenticateDevice":
+      case "TokenGeneration_Authentication":
+      case "TokenGeneration_HostedAuth":
+      case "TokenGeneration_NewPasswordChallenge":
+      case "TokenGeneration_RefreshTokens": {
         return {
           version,
           callerContext,
@@ -370,7 +388,7 @@ export class LambdaService implements Lambda {
         };
       }
 
-      case 'UserMigration_Authentication': {
+      case "UserMigration_Authentication": {
         return {
           version,
           callerContext,
@@ -393,13 +411,13 @@ export class LambdaService implements Lambda {
         };
       }
 
-      case 'CustomMessage_SignUp':
-      case 'CustomMessage_AdminCreateUser':
-      case 'CustomMessage_ResendCode':
-      case 'CustomMessage_ForgotPassword':
-      case 'CustomMessage_UpdateUserAttribute':
-      case 'CustomMessage_VerifyUserAttribute':
-      case 'CustomMessage_Authentication': {
+      case "CustomMessage_SignUp":
+      case "CustomMessage_AdminCreateUser":
+      case "CustomMessage_ResendCode":
+      case "CustomMessage_ForgotPassword":
+      case "CustomMessage_UpdateUserAttribute":
+      case "CustomMessage_VerifyUserAttribute":
+      case "CustomMessage_Authentication": {
         return {
           version,
           callerContext,
@@ -414,19 +432,19 @@ export class LambdaService implements Lambda {
             userAttributes: event.userAttributes,
           },
           response: {
-            smsMessage: '',
-            emailMessage: '',
-            emailSubject: '',
+            smsMessage: "",
+            emailMessage: "",
+            emailSubject: "",
           },
         } as CustomMessageTriggerEvent;
       }
 
-      case 'CustomEmailSender_SignUp':
-      case 'CustomEmailSender_ResendCode':
-      case 'CustomEmailSender_ForgotPassword':
-      case 'CustomEmailSender_UpdateUserAttribute':
-      case 'CustomEmailSender_VerifyUserAttribute':
-      case 'CustomEmailSender_AdminCreateUser':
+      case "CustomEmailSender_SignUp":
+      case "CustomEmailSender_ResendCode":
+      case "CustomEmailSender_ForgotPassword":
+      case "CustomEmailSender_UpdateUserAttribute":
+      case "CustomEmailSender_VerifyUserAttribute":
+      case "CustomEmailSender_AdminCreateUser":
         return {
           version,
           region,
@@ -435,7 +453,7 @@ export class LambdaService implements Lambda {
           userName: event.username,
           callerContext,
           request: {
-            type: 'customEmailSenderRequestV1',
+            type: "customEmailSenderRequestV1",
             code: event.code,
             userAttributes: event.userAttributes,
             clientMetadata: event.clientMetadata,
@@ -443,7 +461,7 @@ export class LambdaService implements Lambda {
           response: {},
         };
       default: {
-        throw new Error('Unsupported Trigger Source');
+        throw new Error("Unsupported Trigger Source");
       }
     }
   }

@@ -6,23 +6,27 @@ import type {
 import shortUUID from "short-uuid";
 import type { Services } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
+import type { Services } from "../services/index.js";
 import { userPoolToResponseObject } from "./responses";
+import { userPoolToResponseObject } from "./responses.js";
 import type { Target } from "./Target";
-
-import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
-import { Services } from '../services/index.js';
-import { userPoolToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import type { Target } from "./Target.js";
 
 const generator = shortUUID(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 );
 
-const generator = shortUUID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
+const generator = shortUUID(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+);
 
-export type CreateUserPoolTarget = Target<CreateUserPoolRequest, CreateUserPoolResponse>;
+export type CreateUserPoolTarget = Target<
+  CreateUserPoolRequest,
+  CreateUserPoolResponse
+>;
 
-type CreateUserPoolServices = Pick<Services, 'clock' | 'cognito'>;
+type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
 
 /**
  * createSchemaAttributes combines the default list of User Pool Schema Attributes with the Schema provided by the
@@ -54,7 +58,7 @@ const createSchemaAttributes = (
   const customAttributes = requestSchema
     .filter((x) => !defaultAttributeNames.includes(x.Name))
     .map((attr) => {
-      const type = attr.AttributeDataType ?? 'String';
+      const type = attr.AttributeDataType ?? "String";
 
       return {
         Name: `custom:${attr.Name}`,

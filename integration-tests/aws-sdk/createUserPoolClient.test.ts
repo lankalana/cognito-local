@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.createUserPoolClient',
+  "CognitoIdentityServiceProvider.createUserPoolClient",
   withCognitoSdk((Cognito) => {
-    it('can create a new app client', async () => {
+    it("can create a new app client", async () => {
       const client = Cognito();
 
       const pool = await client

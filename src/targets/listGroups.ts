@@ -8,12 +8,12 @@ import type { Target } from "./Target";
 
 export type ListGroupsTarget = Target<ListGroupsRequest, ListGroupsResponse>;
 
-type ListGroupServices = Pick<Services, 'cognito'>;
+type ListGroupServices = Pick<Services, "cognito">;
 
 export const ListGroups =
   ({ cognito }: ListGroupServices): ListGroupsTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
 
     // TODO: Limit support
     // TODO: PaginationToken support

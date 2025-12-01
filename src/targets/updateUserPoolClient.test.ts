@@ -13,7 +13,7 @@ import {
 
 const originalDate = new Date();
 
-describe('UpdateUserPoolClient target', () => {
+describe("UpdateUserPoolClient target", () => {
   let updateUserPoolClient: UpdateUserPoolClientTarget;
   let mockCognitoService: MockedObject<CognitoService>;
   let mockUserPoolService: MockedObject<UserPoolService>;
@@ -30,9 +30,9 @@ describe('UpdateUserPoolClient target', () => {
     });
   });
 
-  it('updates a user pool client', async () => {
+  it("updates a user pool client", async () => {
     const existingAppClient = TDB.appClient({
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     mockCognitoService.getAppClient.mockResolvedValue(existingAppClient);
@@ -43,7 +43,7 @@ describe('UpdateUserPoolClient target', () => {
     const result = await updateUserPoolClient(TestContext, {
       ClientId: existingAppClient.ClientId,
       UserPoolId: existingAppClient.UserPoolId,
-      ClientName: 'new client name',
+      ClientName: "new client name",
       AccessTokenValidity: 50,
     });
 
@@ -70,12 +70,12 @@ describe('UpdateUserPoolClient target', () => {
     expect(result.UserPoolClient).toEqual({
       ...existingAppClient,
       AccessTokenValidity: 50,
-      ClientName: 'new client name',
+      ClientName: "new client name",
       LastModifiedDate: newDate,
       TokenValidityUnits: {
-        AccessToken: 'hours',
-        IdToken: 'minutes',
-        RefreshToken: 'days',
+        AccessToken: "hours",
+        IdToken: "minutes",
+        RefreshToken: "days",
       },
     });
   });

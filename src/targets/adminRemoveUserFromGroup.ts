@@ -8,16 +8,21 @@ export type AdminRemoveUserFromGroupTarget = Target<
   object
 >;
 
-export type AdminRemoveUserFromGroupTarget = Target<AdminRemoveUserFromGroupRequest, object>;
+export type AdminRemoveUserFromGroupTarget = Target<
+  AdminRemoveUserFromGroupRequest,
+  object
+>;
 
-type AdminRemoveUserFromGroupServices = Pick<Services, 'cognito'>;
+type AdminRemoveUserFromGroupServices = Pick<Services, "cognito">;
 
 export const AdminRemoveUserFromGroup =
-  ({ cognito }: AdminRemoveUserFromGroupServices): AdminRemoveUserFromGroupTarget =>
+  ({
+    cognito,
+  }: AdminRemoveUserFromGroupServices): AdminRemoveUserFromGroupTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.GroupName) throw new MissingParameterError('GroupName');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 

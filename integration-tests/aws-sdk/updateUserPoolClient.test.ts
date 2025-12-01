@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.updateUserPoolClient',
+  "CognitoIdentityServiceProvider.updateUserPoolClient",
   withCognitoSdk((Cognito) => {
-    it('updates a user pool client', async () => {
+    it("updates a user pool client", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -49,7 +49,7 @@ describe(
         .promise();
 
       expect(describeResponseAfterUpdate.UserPoolClient).toMatchObject({
-        ClientName: 'new client name',
+        ClientName: "new client name",
       });
     });
   }),

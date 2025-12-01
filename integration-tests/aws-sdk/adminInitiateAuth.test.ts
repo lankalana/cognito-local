@@ -5,9 +5,9 @@ import { attributeValue } from "../../src/services/userPoolService";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.adminInitiateAuth',
+  "CognitoIdentityServiceProvider.adminInitiateAuth",
   withCognitoSdk((Cognito) => {
-    it('throws for missing user', async () => {
+    it("throws for missing user", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -37,11 +37,11 @@ describe(
           })
           .promise(),
       ).rejects.toMatchObject({
-        message: 'User not authorized',
+        message: "User not authorized",
       });
     });
 
-    it('handles users with UNCONFIRMED status', async () => {
+    it("handles users with UNCONFIRMED status", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -60,9 +60,9 @@ describe(
 
       await client.signUp({
         ClientId: upc.UserPoolClient?.ClientId,
-        Password: 'def',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        Username: 'abc',
+        Password: "def",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        Username: "abc",
       });
 
       await expect(
@@ -83,7 +83,7 @@ describe(
       });
     });
 
-    it('can authenticate users with ADMIN_USER_PASSWORD_AUTH auth flow', async () => {
+    it("can authenticate users with ADMIN_USER_PASSWORD_AUTH auth flow", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -139,10 +139,10 @@ describe(
         iat: expect.any(Number),
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
-        scope: 'aws.cognito.signin.user.admin',
+        scope: "aws.cognito.signin.user.admin",
         sub: userSub,
-        token_use: 'access',
-        username: 'abc',
+        token_use: "access",
+        username: "abc",
       });
 
       expect(
@@ -151,7 +151,7 @@ describe(
         "cognito:username": "abc",
         aud: upc.UserPoolClient?.ClientId,
         auth_time: expect.any(Number),
-        email: 'example@example.com',
+        email: "example@example.com",
         email_verified: true,
         event_id: expect.stringMatching(UUID),
         exp: expect.any(Number),
@@ -159,7 +159,7 @@ describe(
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
         sub: userSub,
-        token_use: 'id',
+        token_use: "id",
       });
 
       expect(
@@ -174,7 +174,7 @@ describe(
       });
     });
 
-    it('can authenticate users with REFRESH_TOKEN_AUTH auth flow', async () => {
+    it("can authenticate users with REFRESH_TOKEN_AUTH auth flow", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -244,10 +244,10 @@ describe(
         iat: expect.any(Number),
         iss: `http://localhost:9229/${userPoolId}`,
         jti: expect.stringMatching(UUID),
-        scope: 'aws.cognito.signin.user.admin',
+        scope: "aws.cognito.signin.user.admin",
         sub: userSub,
-        token_use: 'access',
-        username: 'abc',
+        token_use: "access",
+        username: "abc",
       });
 
       expect(

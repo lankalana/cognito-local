@@ -11,7 +11,7 @@ import {
   type AdminSetUserPasswordTarget,
 } from "./adminSetUserPassword";
 
-describe('AdminSetUser target', () => {
+describe("AdminSetUser target", () => {
   let adminSetUserPassword: AdminSetUserPasswordTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
@@ -25,7 +25,7 @@ describe('AdminSetUser target', () => {
     });
   });
 
-  it('sets a new temporary password by default', async () => {
+  it("sets a new temporary password by default", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
@@ -34,19 +34,19 @@ describe('AdminSetUser target', () => {
 
     await adminSetUserPassword(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
-      Password: 'newPassword',
+      UserPoolId: "test",
+      Password: "newPassword",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...existingUser,
-      Password: 'newPassword',
+      Password: "newPassword",
       UserLastModifiedDate: newDate,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
     });
   });
 
-  it('sets a new temporary password explicitly', async () => {
+  it("sets a new temporary password explicitly", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
@@ -55,20 +55,20 @@ describe('AdminSetUser target', () => {
 
     await adminSetUserPassword(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
-      Password: 'newPassword',
+      UserPoolId: "test",
+      Password: "newPassword",
       Permanent: false,
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...existingUser,
-      Password: 'newPassword',
+      Password: "newPassword",
       UserLastModifiedDate: newDate,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
     });
   });
 
-  it('sets a permanent temporary password', async () => {
+  it("sets a permanent temporary password", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
@@ -77,20 +77,20 @@ describe('AdminSetUser target', () => {
 
     await adminSetUserPassword(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
-      Password: 'newPassword',
+      UserPoolId: "test",
+      Password: "newPassword",
       Permanent: true,
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...existingUser,
-      Password: 'newPassword',
+      Password: "newPassword",
       UserLastModifiedDate: newDate,
-      UserStatus: 'CONFIRMED',
+      UserStatus: "CONFIRMED",
     });
   });
 
-  it('handles trying to set a password for an invalid user', async () => {
+  it("handles trying to set a password for an invalid user", async () => {
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);
 
     await expect(

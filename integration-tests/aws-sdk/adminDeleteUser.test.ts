@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminDeleteUser',
+  "CognitoIdentityServiceProvider.adminDeleteUser",
   withCognitoSdk(
     (Cognito) => {
-      it('deletes a user', async () => {
+      it("deletes a user", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -71,7 +71,7 @@ describe(
         });
       });
 
-      it('deletes a user with an email address as a username', async () => {
+      it("deletes a user with an email address as a username", async () => {
         const client = Cognito();
 
         const pool = await client

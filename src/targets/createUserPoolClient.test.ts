@@ -11,7 +11,7 @@ import {
 
 const originalDate = new Date();
 
-describe('CreateUserPoolClient target', () => {
+describe("CreateUserPoolClient target", () => {
   let createUserPoolClient: CreateUserPoolClientTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -23,10 +23,10 @@ describe('CreateUserPoolClient target', () => {
     });
   });
 
-  it('creates a new app client', async () => {
+  it("creates a new app client", async () => {
     const result = await createUserPoolClient(TestContext, {
-      ClientName: 'clientName',
-      UserPoolId: 'userPoolId',
+      ClientName: "clientName",
+      UserPoolId: "userPoolId",
     });
 
     expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
@@ -48,14 +48,14 @@ describe('CreateUserPoolClient target', () => {
     expect(result).toEqual({
       UserPoolClient: {
         ClientId: expect.any(String),
-        ClientName: 'clientName',
+        ClientName: "clientName",
         CreationDate: originalDate,
         LastModifiedDate: originalDate,
-        UserPoolId: 'userPoolId',
+        UserPoolId: "userPoolId",
         TokenValidityUnits: {
-          AccessToken: 'hours',
-          IdToken: 'minutes',
-          RefreshToken: 'days',
+          AccessToken: "hours",
+          IdToken: "minutes",
+          RefreshToken: "days",
         },
       },
     });

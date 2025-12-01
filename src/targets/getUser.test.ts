@@ -2,26 +2,27 @@ import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
 import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
 import { TestContext } from "../__tests__/testContext";
+import { TestContext } from "../__tests__/testContext.js";
 import * as TDB from "../__tests__/testDataBuilder";
+import * as TDB from "../__tests__/testDataBuilder.js";
 import { InvalidParameterError, UserNotFoundError } from "../errors";
+import { InvalidParameterError, UserNotFoundError } from "../errors.js";
+import PrivateKey from "../keys/cognitoLocal.private.json" with {
+  type: "json",
+};
 import PrivateKey from "../keys/cognitoLocal.private.json";
 import type { UserPoolService } from "../services";
+import type { UserPoolService } from "../services/index.js";
 import { attributeValue } from "../services/userPoolService";
+import { attributeValue } from "../services/userPoolService.js";
 import { GetUser, type GetUserTarget } from "./getUser";
+import { GetUser, type GetUserTarget } from "./getUser.js";
 
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { InvalidParameterError, UserNotFoundError } from '../errors.js';
-import PrivateKey from '../keys/cognitoLocal.private.json' with { type: 'json' };
-import { UserPoolService } from '../services/index.js';
-import { attributeValue } from '../services/userPoolService.js';
-import { GetUser, GetUserTarget } from './getUser.js';
-
-describe('GetUser target', () => {
+describe("GetUser target", () => {
   let getUser: GetUserTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -32,7 +33,7 @@ describe('GetUser target', () => {
     });
   });
 
-  it('parses token get user by sub', async () => {
+  it("parses token get user by sub", async () => {
     const user = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -40,18 +41,18 @@ describe('GetUser target', () => {
     const output = await getUser(TestContext, {
       AccessToken: jwt.sign(
         {
-          sub: attributeValue('sub', user.Attributes),
-          event_id: '0',
-          token_use: 'access',
-          scope: 'aws.cognito.signin.user.admin',
+          sub: attributeValue("sub", user.Attributes),
+          event_id: "0",
+          token_use: "access",
+          scope: "aws.cognito.signin.user.admin",
           auth_time: new Date(),
           jti: uuid.v4(),
-          client_id: 'test',
+          client_id: "test",
           username: user.Username,
         },
         PrivateKey.pem,
         {
-          algorithm: 'RS256',
+          algorithm: "RS256",
           issuer: `http://localhost:9229/test`,
           expiresIn: "24h",
           keyid: "CognitoLocal",
@@ -81,18 +82,18 @@ describe('GetUser target', () => {
       getUser(TestContext, {
         AccessToken: jwt.sign(
           {
-            sub: '0000-0000',
-            event_id: '0',
-            token_use: 'access',
-            scope: 'aws.cognito.signin.user.admin',
+            sub: "0000-0000",
+            event_id: "0",
+            token_use: "access",
+            scope: "aws.cognito.signin.user.admin",
             auth_time: new Date(),
             jti: uuid.v4(),
-            client_id: 'test',
-            username: '0000-0000',
+            client_id: "test",
+            username: "0000-0000",
           },
           PrivateKey.pem,
           {
-            algorithm: 'RS256',
+            algorithm: "RS256",
             issuer: `http://localhost:9229/test`,
             expiresIn: "24h",
             keyid: "CognitoLocal",

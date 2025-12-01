@@ -20,14 +20,17 @@ describe("ListUserPoolClients target", () => {
     });
   });
 
-  it('lists user pool clients', async () => {
+  it("lists user pool clients", async () => {
     const appClient1 = TDB.appClient();
     const appClient2 = TDB.appClient();
 
-    mockCognitoService.listAppClients.mockResolvedValue([appClient1, appClient2]);
+    mockCognitoService.listAppClients.mockResolvedValue([
+      appClient1,
+      appClient2,
+    ]);
 
     const output = await listUserPoolClients(TestContext, {
-      UserPoolId: 'userPoolId',
+      UserPoolId: "userPoolId",
     });
 
     expect(output).toBeDefined();

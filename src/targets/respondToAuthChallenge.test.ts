@@ -20,7 +20,7 @@ import {
 
 const currentDate = new Date();
 
-describe('RespondToAuthChallenge target', () => {
+describe("RespondToAuthChallenge target", () => {
   let respondToAuthChallenge: RespondToAuthChallengeTarget;
   let mockTokenGenerator: MockedObject<TokenGenerator>;
   let mockTriggers: MockedObject<Triggers>;
@@ -52,18 +52,18 @@ describe('RespondToAuthChallenge target', () => {
 
     await expect(
       respondToAuthChallenge(TestContext, {
-        ClientId: 'clientId',
-        ChallengeName: 'SMS_MFA',
+        ClientId: "clientId",
+        ChallengeName: "SMS_MFA",
         ChallengeResponses: {
-          USERNAME: 'username',
-          SMS_MFA_CODE: '123456',
+          USERNAME: "username",
+          SMS_MFA_CODE: "123456",
         },
         Session: "Session",
       }),
     ).rejects.toBeInstanceOf(NotAuthorizedError);
   });
 
-  it('throws if ChallengeResponses missing', async () => {
+  it("throws if ChallengeResponses missing", async () => {
     await expect(
       respondToAuthChallenge(TestContext, {
         ClientId: "clientId",
@@ -76,11 +76,11 @@ describe('RespondToAuthChallenge target', () => {
     );
   });
 
-  it('throws if ChallengeResponses.USERNAME is missing', async () => {
+  it("throws if ChallengeResponses.USERNAME is missing", async () => {
     await expect(
       respondToAuthChallenge(TestContext, {
-        ClientId: 'clientId',
-        ChallengeName: 'SMS_MFA',
+        ClientId: "clientId",
+        ChallengeName: "SMS_MFA",
         ChallengeResponses: {},
       }),
     ).rejects.toEqual(
@@ -88,15 +88,15 @@ describe('RespondToAuthChallenge target', () => {
     );
   });
 
-  it('throws if Session is missing', async () => {
+  it("throws if Session is missing", async () => {
     // we don't actually do anything with the session right now, but we still want to
     // replicate Cognito's behaviour if you don't provide it
     await expect(
       respondToAuthChallenge(TestContext, {
         ClientId: userPoolClient.ClientId,
-        ChallengeName: 'SMS_MFA',
+        ChallengeName: "SMS_MFA",
         ChallengeResponses: {
-          USERNAME: 'abc',
+          USERNAME: "abc",
         },
       }),
     ).rejects.toEqual(
@@ -104,27 +104,27 @@ describe('RespondToAuthChallenge target', () => {
     );
   });
 
-  describe('ChallengeName=SMS_MFA', () => {
+  describe("ChallengeName=SMS_MFA", () => {
     const user = TDB.user({
-      MFACode: '123456',
+      MFACode: "123456",
     });
 
     beforeEach(() => {
       mockUserPoolService.getUserByUsername.mockResolvedValue(user);
     });
 
-    describe('when code matches', () => {
-      it('updates the user and removes the MFACode', async () => {
+    describe("when code matches", () => {
+      it("updates the user and removes the MFACode", async () => {
         const newDate = clock.advanceBy(1200);
 
         await respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
-          ChallengeName: 'SMS_MFA',
+          ChallengeName: "SMS_MFA",
           ChallengeResponses: {
             USERNAME: user.Username,
-            SMS_MFA_CODE: '123456',
+            SMS_MFA_CODE: "123456",
           },
-          Session: 'Session',
+          Session: "Session",
         });
 
         expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
@@ -134,32 +134,32 @@ describe('RespondToAuthChallenge target', () => {
         });
       });
 
-      it('generates tokens', async () => {
+      it("generates tokens", async () => {
         mockTokenGenerator.generate.mockResolvedValue({
-          AccessToken: 'access',
-          IdToken: 'id',
-          RefreshToken: 'refresh',
+          AccessToken: "access",
+          IdToken: "id",
+          RefreshToken: "refresh",
         });
         mockUserPoolService.listUserGroupMembership.mockResolvedValue([]);
 
         const output = await respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
-          ChallengeName: 'SMS_MFA',
+          ChallengeName: "SMS_MFA",
           ChallengeResponses: {
             USERNAME: user.Username,
-            SMS_MFA_CODE: '123456',
+            SMS_MFA_CODE: "123456",
           },
-          Session: 'Session',
+          Session: "Session",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
         });
 
         expect(output).toBeDefined();
 
-        expect(output.AuthenticationResult?.AccessToken).toEqual('access');
-        expect(output.AuthenticationResult?.IdToken).toEqual('id');
-        expect(output.AuthenticationResult?.RefreshToken).toEqual('refresh');
+        expect(output.AuthenticationResult?.AccessToken).toEqual("access");
+        expect(output.AuthenticationResult?.IdToken).toEqual("id");
+        expect(output.AuthenticationResult?.RefreshToken).toEqual("refresh");
 
         expect(mockTokenGenerator.generate).toHaveBeenCalledWith(
           TestContext,
@@ -167,7 +167,7 @@ describe('RespondToAuthChallenge target', () => {
           [],
           userPoolClient,
           {
-            client: 'metadata',
+            client: "metadata",
           },
           "Authentication",
         );
@@ -181,15 +181,15 @@ describe('RespondToAuthChallenge target', () => {
 
           await respondToAuthChallenge(TestContext, {
             ClientId: userPoolClient.ClientId,
-            ChallengeName: 'SMS_MFA',
+            ChallengeName: "SMS_MFA",
             ClientMetadata: {
-              client: 'metadata',
+              client: "metadata",
             },
             ChallengeResponses: {
               USERNAME: user.Username,
-              SMS_MFA_CODE: '123456',
+              SMS_MFA_CODE: "123456",
             },
-            Session: 'Session',
+            Session: "Session",
           });
 
           expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
@@ -209,17 +209,17 @@ describe('RespondToAuthChallenge target', () => {
       });
     });
 
-    describe('when code is incorrect', () => {
-      it('throws an error', async () => {
+    describe("when code is incorrect", () => {
+      it("throws an error", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
         await expect(
           respondToAuthChallenge(TestContext, {
             ClientId: userPoolClient.ClientId,
-            ChallengeName: 'SMS_MFA',
+            ChallengeName: "SMS_MFA",
             ChallengeResponses: {
               USERNAME: user.Username,
-              SMS_MFA_CODE: '4321',
+              SMS_MFA_CODE: "4321",
             },
             Session: "Session",
           }),
@@ -228,18 +228,18 @@ describe('RespondToAuthChallenge target', () => {
     });
   });
 
-  describe('ChallengeName=NEW_PASSWORD_REQUIRED', () => {
+  describe("ChallengeName=NEW_PASSWORD_REQUIRED", () => {
     const user = TDB.user();
 
     beforeEach(() => {
       mockUserPoolService.getUserByUsername.mockResolvedValue(user);
     });
 
-    it('throws if NEW_PASSWORD missing', async () => {
+    it("throws if NEW_PASSWORD missing", async () => {
       await expect(
         respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
-          ChallengeName: 'NEW_PASSWORD_REQUIRED',
+          ChallengeName: "NEW_PASSWORD_REQUIRED",
           ChallengeResponses: {
             USERNAME: user.Username,
           },
@@ -255,48 +255,48 @@ describe('RespondToAuthChallenge target', () => {
 
       await respondToAuthChallenge(TestContext, {
         ClientId: userPoolClient.ClientId,
-        ChallengeName: 'NEW_PASSWORD_REQUIRED',
+        ChallengeName: "NEW_PASSWORD_REQUIRED",
         ChallengeResponses: {
           USERNAME: user.Username,
-          NEW_PASSWORD: 'foo',
+          NEW_PASSWORD: "foo",
         },
-        Session: 'Session',
+        Session: "Session",
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
         ...user,
-        Password: 'foo',
+        Password: "foo",
         UserLastModifiedDate: newDate,
-        UserStatus: 'CONFIRMED',
+        UserStatus: "CONFIRMED",
       });
     });
 
-    it('generates tokens', async () => {
+    it("generates tokens", async () => {
       mockTokenGenerator.generate.mockResolvedValue({
-        AccessToken: 'access',
-        IdToken: 'id',
-        RefreshToken: 'refresh',
+        AccessToken: "access",
+        IdToken: "id",
+        RefreshToken: "refresh",
       });
       mockUserPoolService.listUserGroupMembership.mockResolvedValue([]);
 
       const output = await respondToAuthChallenge(TestContext, {
         ClientId: userPoolClient.ClientId,
-        ChallengeName: 'NEW_PASSWORD_REQUIRED',
+        ChallengeName: "NEW_PASSWORD_REQUIRED",
         ChallengeResponses: {
           USERNAME: user.Username,
-          NEW_PASSWORD: 'foo',
+          NEW_PASSWORD: "foo",
         },
-        Session: 'Session',
+        Session: "Session",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
       });
 
       expect(output).toBeDefined();
 
-      expect(output.AuthenticationResult?.AccessToken).toEqual('access');
-      expect(output.AuthenticationResult?.IdToken).toEqual('id');
-      expect(output.AuthenticationResult?.RefreshToken).toEqual('refresh');
+      expect(output.AuthenticationResult?.AccessToken).toEqual("access");
+      expect(output.AuthenticationResult?.IdToken).toEqual("id");
+      expect(output.AuthenticationResult?.RefreshToken).toEqual("refresh");
 
       expect(mockTokenGenerator.generate).toHaveBeenCalledWith(
         TestContext,
@@ -316,12 +316,12 @@ describe('RespondToAuthChallenge target', () => {
 
         await respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
-          ChallengeName: 'NEW_PASSWORD_REQUIRED',
+          ChallengeName: "NEW_PASSWORD_REQUIRED",
           ChallengeResponses: {
             USERNAME: user.Username,
-            NEW_PASSWORD: 'foo',
+            NEW_PASSWORD: "foo",
           },
-          Session: 'Session',
+          Session: "Session",
         });
 
         expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(

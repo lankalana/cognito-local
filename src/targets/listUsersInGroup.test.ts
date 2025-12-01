@@ -10,7 +10,7 @@ import {
   type ListUsersInGroupTarget,
 } from "./listUsersInGroup";
 
-describe('ListUsersInGroup target', () => {
+describe("ListUsersInGroup target", () => {
   let listUsersInGroup: ListUsersInGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -22,7 +22,7 @@ describe('ListUsersInGroup target', () => {
     });
   });
 
-  it('lists users in a group', async () => {
+  it("lists users in a group", async () => {
     const existingUser1 = TDB.user();
     const existingUser2 = TDB.user();
     const existingGroup = TDB.group({
@@ -43,7 +43,7 @@ describe('ListUsersInGroup target', () => {
 
     const result = await listUsersInGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
@@ -73,14 +73,14 @@ describe('ListUsersInGroup target', () => {
     ]);
   });
 
-  it('lists users in an empty group', async () => {
+  it("lists users in an empty group", async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     const result = await listUsersInGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(

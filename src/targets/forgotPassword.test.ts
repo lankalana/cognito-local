@@ -20,7 +20,7 @@ import { ForgotPassword, type ForgotPasswordTarget } from "./forgotPassword";
 
 const currentDate = new Date();
 
-describe('ForgotPassword target', () => {
+describe("ForgotPassword target", () => {
   let forgotPassword: ForgotPasswordTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let mockMessages: MockedObject<Messages>;
@@ -55,19 +55,19 @@ describe('ForgotPassword target', () => {
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     const result = await forgotPassword(TestContext, {
-      ClientId: 'clientId',
+      ClientId: "clientId",
       Username: user.Username,
-      ClientMetadata: { client: 'metadata' },
+      ClientMetadata: { client: "metadata" },
     });
 
     expect(mockMessages.deliver).toHaveBeenCalledWith(
       TestContext,
-      'ForgotPassword',
-      'clientId',
-      'test',
+      "ForgotPassword",
+      "clientId",
+      "test",
       user,
-      '123456',
-      { client: 'metadata' },
+      "123456",
+      { client: "metadata" },
       {
         AttributeName: "email",
         DeliveryMedium: "EMAIL",
@@ -77,27 +77,27 @@ describe('ForgotPassword target', () => {
 
     expect(result).toEqual({
       CodeDeliveryDetails: {
-        AttributeName: 'email',
-        DeliveryMedium: 'EMAIL',
-        Destination: attributeValue('email', user.Attributes),
+        AttributeName: "email",
+        DeliveryMedium: "EMAIL",
+        Destination: attributeValue("email", user.Attributes),
       },
     });
   });
 
-  it('saves the confirmation code on the user for comparison when confirming', async () => {
+  it("saves the confirmation code on the user for comparison when confirming", async () => {
     const user = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await forgotPassword(TestContext, {
-      ClientId: 'clientId',
+      ClientId: "clientId",
       Username: user.Username,
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
       UserLastModifiedDate: currentDate,
-      ConfirmationCode: '123456',
+      ConfirmationCode: "123456",
     });
   });
 });

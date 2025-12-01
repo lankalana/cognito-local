@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminSetUserPassword',
+  "CognitoIdentityServiceProvider.adminSetUserPassword",
   withCognitoSdk(
     (Cognito) => {
-      it('sets a permanent password', async () => {
+      it("sets a permanent password", async () => {
         const client = Cognito();
 
         const pool = await client
@@ -55,7 +55,7 @@ describe(
           UserCreateDate: createUserResult.User?.UserCreateDate,
           UserLastModifiedDate: createUserResult.User?.UserLastModifiedDate,
           Username: createUserResult.User?.Username,
-          UserStatus: 'CONFIRMED',
+          UserStatus: "CONFIRMED",
         });
       });
     },

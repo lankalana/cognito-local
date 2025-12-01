@@ -6,7 +6,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import type { CognitoService } from "../services";
 import { ListUserPools, type ListUserPoolsTarget } from "./listUserPools";
 
-describe('ListUserPools target', () => {
+describe("ListUserPools target", () => {
   let listUserPools: ListUserPoolsTarget;
   let mockCognitoService: MockedObject<CognitoService>;
 
@@ -17,7 +17,7 @@ describe('ListUserPools target', () => {
     });
   });
 
-  it('lists user pools', async () => {
+  it("lists user pools", async () => {
     const userPool1 = TDB.userPool();
     const userPool2 = TDB.userPool();
 

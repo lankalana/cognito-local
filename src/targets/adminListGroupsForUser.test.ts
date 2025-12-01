@@ -10,7 +10,7 @@ import {
   type AdminListGroupsForUserTarget,
 } from "./adminListGroupsForUser";
 
-describe('AdminListGroupsForUser target', () => {
+describe("AdminListGroupsForUser target", () => {
   let adminListGroupsForUser: AdminListGroupsForUserTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -28,11 +28,14 @@ describe('AdminListGroupsForUser target', () => {
     const existingGroup2 = TDB.group();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
+    mockUserPoolService.listGroups.mockResolvedValue([
+      existingGroup1,
+      existingGroup2,
+    ]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.listGroups).toHaveBeenCalledWith(TestContext);
@@ -40,7 +43,7 @@ describe('AdminListGroupsForUser target', () => {
     expect(result.Groups).toEqual([]);
   });
 
-  it('returns the groups that the user is assigned to', async () => {
+  it("returns the groups that the user is assigned to", async () => {
     const existingUser = TDB.user();
     const existingGroup1 = TDB.group();
     const existingGroup2 = TDB.group({
@@ -48,11 +51,14 @@ describe('AdminListGroupsForUser target', () => {
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
+    mockUserPoolService.listGroups.mockResolvedValue([
+      existingGroup1,
+      existingGroup2,
+    ]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.listGroups).toHaveBeenCalledWith(TestContext);
@@ -65,7 +71,7 @@ describe('AdminListGroupsForUser target', () => {
         LastModifiedDate: existingGroup2.LastModifiedDate,
         Precedence: existingGroup2.Precedence,
         RoleArn: existingGroup2.RoleArn,
-        UserPoolId: 'test',
+        UserPoolId: "test",
       },
     ]);
   });

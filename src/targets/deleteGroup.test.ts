@@ -7,7 +7,7 @@ import { GroupNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
 import { DeleteGroup, type DeleteGroupTarget } from "./deleteGroup";
 
-describe('DeleteGroup target', () => {
+describe("DeleteGroup target", () => {
   let deleteGroup: DeleteGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -19,14 +19,14 @@ describe('DeleteGroup target', () => {
     });
   });
 
-  it('deletes a group', async () => {
+  it("deletes a group", async () => {
     const existingGroup = TDB.group();
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
 
     await deleteGroup(TestContext, {
       GroupName: existingGroup.GroupName,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(

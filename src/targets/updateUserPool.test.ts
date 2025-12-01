@@ -6,7 +6,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import type { CognitoService, UserPoolService } from "../services";
 import { UpdateUserPool, type UpdateUserPoolTarget } from "./updateUserPool";
 
-describe('UpdateUserPool target', () => {
+describe("UpdateUserPool target", () => {
   let updateUserPool: UpdateUserPoolTarget;
   let mockCognitoService: MockedObject<CognitoService>;
   let mockUserPoolService: MockedObject<UserPoolService>;
@@ -20,9 +20,9 @@ describe('UpdateUserPool target', () => {
     });
   });
 
-  it('updates a user pool', async () => {
+  it("updates a user pool", async () => {
     const existingUserPool = TDB.userPool({
-      Name: 'name',
+      Name: "name",
     });
 
     const userPoolService = newMockUserPoolService(existingUserPool);
@@ -31,12 +31,12 @@ describe('UpdateUserPool target', () => {
 
     await updateUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,
-      MfaConfiguration: 'OPTIONAL',
+      MfaConfiguration: "OPTIONAL",
     });
 
     expect(userPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
       ...existingUserPool,
-      MfaConfiguration: 'OPTIONAL',
+      MfaConfiguration: "OPTIONAL",
     });
   });
 

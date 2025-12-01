@@ -10,7 +10,7 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminCreateUser',
+  "CognitoIdentityServiceProvider.adminCreateUser",
   withCognitoSdk(
     (Cognito, { messageDelivery }) => {
       describe("without any username attributes configured on the user pool", () => {

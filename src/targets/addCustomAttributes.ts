@@ -12,15 +12,19 @@ export type AddCustomAttributesTarget = Target<
   AddCustomAttributesResponse
 >;
 
-type AddCustomAttributesServices = Pick<Services, 'clock' | 'cognito'>;
+type AddCustomAttributesServices = Pick<Services, "clock" | "cognito">;
 
 export const AddCustomAttributes =
-  ({ clock, cognito }: AddCustomAttributesServices): AddCustomAttributesTarget =>
+  ({
+    clock,
+    cognito,
+  }: AddCustomAttributesServices): AddCustomAttributesTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.CustomAttributes) throw new MissingParameterError('CustomAttributes');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.CustomAttributes)
+      throw new MissingParameterError("CustomAttributes");
 
-    assertParameterLength('CustomAttributes', 1, 25, req.CustomAttributes);
+    assertParameterLength("CustomAttributes", 1, 25, req.CustomAttributes);
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
@@ -29,7 +33,7 @@ export const AddCustomAttributes =
       SchemaAttributes: [
         ...(userPool.options.SchemaAttributes ?? []),
         ...req.CustomAttributes.map(({ Name, ...attr }) => {
-          const name = `custom:${Name ?? 'null'}`;
+          const name = `custom:${Name ?? "null"}`;
 
           if (userPool.options.SchemaAttributes?.find((x) => x.Name === name)) {
             throw new InvalidParameterError(

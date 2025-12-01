@@ -10,7 +10,7 @@ import {
   type DescribeUserPoolClientTarget,
 } from "./describeUserPoolClient";
 
-describe('DescribeUserPoolClient target', () => {
+describe("DescribeUserPoolClient target", () => {
   let describeUserPoolClient: DescribeUserPoolClientTarget;
   let mockCognitoService: MockedObject<CognitoService>;
 
@@ -21,21 +21,21 @@ describe('DescribeUserPoolClient target', () => {
     });
   });
 
-  it('returns an existing app client', async () => {
+  it("returns an existing app client", async () => {
     const existingAppClient: AppClient = {
       RefreshTokenValidity: 30,
       AllowedOAuthFlowsUserPoolClient: false,
       LastModifiedDate: new Date(),
       CreationDate: new Date(),
-      UserPoolId: 'userPoolId',
-      ClientId: 'abc',
-      ClientName: 'clientName',
+      UserPoolId: "userPoolId",
+      ClientId: "abc",
+      ClientName: "clientName",
     };
     mockCognitoService.getAppClient.mockResolvedValue(existingAppClient);
 
     const result = await describeUserPoolClient(TestContext, {
-      ClientId: 'abc',
-      UserPoolId: 'userPoolId',
+      ClientId: "abc",
+      UserPoolId: "userPoolId",
     });
 
     expect(result).toEqual({
@@ -47,7 +47,7 @@ describe('DescribeUserPoolClient target', () => {
     });
   });
 
-  it('throws resource not found for an invalid app client', async () => {
+  it("throws resource not found for an invalid app client", async () => {
     mockCognitoService.getAppClient.mockResolvedValue(null);
 
     await expect(

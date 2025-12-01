@@ -9,10 +9,10 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(originalDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminRemoveUserFromGroup',
+  "CognitoIdentityServiceProvider.adminRemoveUserFromGroup",
   withCognitoSdk(
     (Cognito) => {
-      it('lists groups for a user', async () => {
+      it("lists groups for a user", async () => {
         const client = Cognito();
 
         const pool = await client

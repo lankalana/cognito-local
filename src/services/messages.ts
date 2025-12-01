@@ -6,7 +6,7 @@ import type {
 import type { Triggers } from "./triggers";
 import type { User } from "./userPoolService";
 
-const AWS_ADMIN_CLIENT_ID = 'CLIENT_ID_NOT_APPLICABLE';
+const AWS_ADMIN_CLIENT_ID = "CLIENT_ID_NOT_APPLICABLE";
 
 export interface Message {
   __code?: string; // not really part of the message, but we pass it around for convenience logging to the console
@@ -16,13 +16,13 @@ export interface Message {
 }
 
 type MessageSource =
-  | 'AdminCreateUser'
-  | 'Authentication'
-  | 'ForgotPassword'
-  | 'ResendCode'
-  | 'SignUp'
-  | 'UpdateUserAttribute'
-  | 'VerifyUserAttribute';
+  | "AdminCreateUser"
+  | "Authentication"
+  | "ForgotPassword"
+  | "ResendCode"
+  | "SignUp"
+  | "UpdateUserAttribute"
+  | "VerifyUserAttribute";
 
 export interface Messages {
   deliver(
@@ -93,7 +93,7 @@ export class MessagesService implements Messages {
     code: string,
     clientMetadata: Record<string, string> | undefined,
   ): Promise<Message> {
-    if (this.triggers.enabled('CustomMessage')) {
+    if (this.triggers.enabled("CustomMessage")) {
       const message = await this.triggers.customMessage(ctx, {
         clientId: clientId ?? AWS_ADMIN_CLIENT_ID,
         clientMetadata,
@@ -118,7 +118,7 @@ export class MessagesService implements Messages {
 
   private async customDelivery(
     ctx: Context,
-    source: Exclude<MessageSource, 'Authentication'>,
+    source: Exclude<MessageSource, "Authentication">,
     clientId: string | null,
     userPoolId: string,
     user: User,

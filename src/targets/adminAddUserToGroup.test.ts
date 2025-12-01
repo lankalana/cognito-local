@@ -13,7 +13,7 @@ import {
 
 const originalDate = new Date();
 
-describe('AdminAddUserToGroup target', () => {
+describe("AdminAddUserToGroup target", () => {
   let adminAddUserToGroup: AdminAddUserToGroupTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
@@ -27,7 +27,7 @@ describe('AdminAddUserToGroup target', () => {
     });
   });
 
-  it('adds the user to a group', async () => {
+  it("adds the user to a group", async () => {
     const existingGroup = TDB.group();
     const existingUser = TDB.user();
 
@@ -40,7 +40,7 @@ describe('AdminAddUserToGroup target', () => {
     await adminAddUserToGroup(TestContext, {
       GroupName: existingGroup.GroupName,
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.addUserToGroup).toHaveBeenCalledWith(
@@ -58,7 +58,7 @@ describe('AdminAddUserToGroup target', () => {
 
     await expect(
       adminAddUserToGroup(TestContext, {
-        GroupName: 'group',
+        GroupName: "group",
         Username: existingUser.Username,
         UserPoolId: "test",
       }),

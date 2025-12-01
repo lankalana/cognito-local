@@ -1,30 +1,36 @@
-import {
+import type {
   UpdateIdentityProviderRequest,
   UpdateIdentityProviderResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "@aws-sdk/client-cognito-identity-provider";
 
-import { IdentityProviderNotFoundError, MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { identityProviderToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import {
+  IdentityProviderNotFoundError,
+  MissingParameterError,
+} from "../errors.js";
+import type { Services } from "../services/index.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import type { Target } from "./Target.js";
 
 export type UpdateIdentityProviderTarget = Target<
   UpdateIdentityProviderRequest,
   UpdateIdentityProviderResponse
 >;
 
-type UpdateIdentityProviderServices = Pick<Services, 'clock' | 'cognito'>;
+type UpdateIdentityProviderServices = Pick<Services, "clock" | "cognito">;
 
 export const UpdateIdentityProvider =
-  ({ clock, cognito }: UpdateIdentityProviderServices): UpdateIdentityProviderTarget =>
+  ({
+    clock,
+    cognito,
+  }: UpdateIdentityProviderServices): UpdateIdentityProviderTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.ProviderName) throw new MissingParameterError('ProviderName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ProviderName) throw new MissingParameterError("ProviderName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const identityProvider = await userPool.getIdentityProviderByProviderName(
       ctx,
-      req.ProviderName
+      req.ProviderName,
     );
     if (!identityProvider) {
       throw new IdentityProviderNotFoundError();
@@ -33,7 +39,8 @@ export const UpdateIdentityProvider =
     const updatedIdentityProvider = {
       ...identityProvider,
       ProviderDetails: req.ProviderDetails ?? identityProvider.ProviderDetails,
-      AttributeMapping: req.AttributeMapping ?? identityProvider.AttributeMapping,
+      AttributeMapping:
+        req.AttributeMapping ?? identityProvider.AttributeMapping,
       IdpIdentifiers: req.IdpIdentifiers ?? identityProvider.IdpIdentifiers,
       LastModifiedDate: clock.get(),
     };
@@ -41,6 +48,8 @@ export const UpdateIdentityProvider =
     await userPool.saveIdentityProvider(ctx, updatedIdentityProvider);
 
     return {
-      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(updatedIdentityProvider),
+      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
+        updatedIdentityProvider,
+      ),
     };
   };

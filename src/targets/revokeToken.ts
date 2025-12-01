@@ -8,13 +8,13 @@ import type { Target } from "./Target";
 
 export type RevokeTokenTarget = Target<RevokeTokenRequest, RevokeTokenResponse>;
 
-type RevokeTokenServices = Pick<Services, 'cognito'>;
+type RevokeTokenServices = Pick<Services, "cognito">;
 
 export const RevokeToken =
   ({ cognito }: RevokeTokenServices): RevokeTokenTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Token) throw new MissingParameterError('Token');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Token) throw new MissingParameterError("Token");
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
 

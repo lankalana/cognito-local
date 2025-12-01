@@ -12,14 +12,21 @@ export type ConfirmForgotPasswordTarget = Target<
   ConfirmForgotPasswordResponse
 >;
 
-type ConfirmForgotPasswordServices = Pick<Services, 'cognito' | 'clock' | 'triggers'>;
+type ConfirmForgotPasswordServices = Pick<
+  Services,
+  "cognito" | "clock" | "triggers"
+>;
 
 export const ConfirmForgotPassword =
-  ({ cognito, clock, triggers }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
+  ({
+    cognito,
+    clock,
+    triggers,
+  }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Username) throw new MissingParameterError('Username');
-    if (!req.Password) throw new MissingParameterError('Password');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.Password) throw new MissingParameterError("Password");
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -41,11 +48,11 @@ export const ConfirmForgotPassword =
 
     await userPool.saveUser(ctx, updatedUser);
 
-    if (triggers.enabled('PostConfirmation')) {
+    if (triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,
-        source: 'PostConfirmation_ConfirmForgotPassword',
+        source: "PostConfirmation_ConfirmForgotPassword",
         username: updatedUser.Username,
         userPoolId: userPool.options.Id,
 

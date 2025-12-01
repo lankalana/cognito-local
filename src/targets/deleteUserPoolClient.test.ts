@@ -10,7 +10,7 @@ import {
   type DeleteUserPoolClientTarget,
 } from "./deleteUserPoolClient";
 
-describe('DeleteUserPoolClient target', () => {
+describe("DeleteUserPoolClient target", () => {
   let deleteUserPoolClient: DeleteUserPoolClientTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let mockCognitoService: MockedObject<CognitoService>;
@@ -24,16 +24,16 @@ describe('DeleteUserPoolClient target', () => {
     });
   });
 
-  it('deletes a user pool client', async () => {
+  it("deletes a user pool client", async () => {
     const existingAppClient = TDB.appClient({
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     mockCognitoService.getAppClient.mockResolvedValue(existingAppClient);
 
     await deleteUserPoolClient(TestContext, {
       ClientId: existingAppClient.ClientId,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.deleteAppClient).toHaveBeenCalledWith(
@@ -55,8 +55,8 @@ describe('DeleteUserPoolClient target', () => {
 
   it("throws if the user pool client UserPoolId doesn't match the request", async () => {
     const existingAppClient = TDB.appClient({
-      ClientId: 'clientId',
-      UserPoolId: 'pool-one',
+      ClientId: "clientId",
+      UserPoolId: "pool-one",
     });
 
     mockCognitoService.getAppClient.mockResolvedValue(existingAppClient);

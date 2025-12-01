@@ -11,13 +11,13 @@ import type { Target } from "./Target";
 export type GetUserTarget = Target<GetUserRequest, GetUserResponse>;
 
 export const GetUser =
-  ({ cognito }: Pick<Services, 'cognito'>): GetUserTarget =>
+  ({ cognito }: Pick<Services, "cognito">): GetUserTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 

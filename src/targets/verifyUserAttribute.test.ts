@@ -23,25 +23,25 @@ const clock = new ClockFake(new Date());
 
 const validToken = jwt.sign(
   {
-    sub: '0000-0000',
-    event_id: '0',
-    token_use: 'access',
-    scope: 'aws.cognito.signin.user.admin',
+    sub: "0000-0000",
+    event_id: "0",
+    token_use: "access",
+    scope: "aws.cognito.signin.user.admin",
     auth_time: new Date(),
     jti: uuid.v4(),
-    client_id: 'test',
-    username: '0000-0000',
+    client_id: "test",
+    username: "0000-0000",
   },
   PrivateKey.pem,
   {
-    algorithm: 'RS256',
+    algorithm: "RS256",
     issuer: `http://localhost:9229/test`,
     expiresIn: "24h",
     keyid: "CognitoLocal",
   },
 );
 
-describe('VerifyUserAttribute target', () => {
+describe("VerifyUserAttribute target", () => {
   let verifyUserAttribute: VerifyUserAttributeTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -138,17 +138,17 @@ describe('VerifyUserAttribute target', () => {
     },
   );
 
-  it('does nothing for other attributes', async () => {
+  it("does nothing for other attributes", async () => {
     const user = TDB.user({
-      AttributeVerificationCode: '123456',
+      AttributeVerificationCode: "123456",
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await verifyUserAttribute(TestContext, {
       AccessToken: validToken,
-      AttributeName: 'something else',
-      Code: '123456',
+      AttributeName: "something else",
+      Code: "123456",
     });
 
     expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
@@ -178,7 +178,7 @@ describe('VerifyUserAttribute target', () => {
 
   it("throws if code doesn't match the user's AttributeVerificationCode", async () => {
     const user = TDB.user({
-      AttributeVerificationCode: '5555',
+      AttributeVerificationCode: "5555",
     });
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 

@@ -10,10 +10,10 @@ import type { Target } from "./Target";
 export type GetGroupTarget = Target<GetGroupRequest, GetGroupResponse>;
 
 export const GetGroup =
-  ({ cognito }: Pick<Services, 'cognito'>): GetGroupTarget =>
+  ({ cognito }: Pick<Services, "cognito">): GetGroupTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.GroupName) throw new MissingParameterError('GroupName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const group = await userPool.getGroupByGroupName(ctx, req.GroupName);

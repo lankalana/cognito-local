@@ -32,7 +32,7 @@ const sendAttributeVerificationCode = async (
 
   await messages.deliver(
     ctx,
-    'VerifyUserAttribute',
+    "VerifyUserAttribute",
     null,
     userPool.options.Id,
     user,
@@ -47,7 +47,10 @@ export type GetUserAttributeVerificationCodeTarget = Target<
   GetUserAttributeVerificationCodeResponse
 >;
 
-type GetUserAttributeVerificationCodeServices = Pick<Services, 'cognito' | 'otp' | 'messages'>;
+type GetUserAttributeVerificationCodeServices = Pick<
+  Services,
+  "cognito" | "otp" | "messages"
+>;
 
 export const GetUserAttributeVerificationCode =
   ({
@@ -56,11 +59,11 @@ export const GetUserAttributeVerificationCode =
     messages,
   }: GetUserAttributeVerificationCodeServices): GetUserAttributeVerificationCodeTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 

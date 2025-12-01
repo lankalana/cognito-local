@@ -12,7 +12,7 @@ import {
   type AdminDeleteUserAttributesTarget,
 } from "./adminDeleteUserAttributes";
 
-describe('AdminDeleteUserAttributes target', () => {
+describe("AdminDeleteUserAttributes target", () => {
   let adminDeleteUserAttributes: AdminDeleteUserAttributesTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
@@ -36,22 +36,25 @@ describe('AdminDeleteUserAttributes target', () => {
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
-  it('saves the updated attributes on the user', async () => {
+  it("saves the updated attributes on the user", async () => {
     const user = TDB.user({
-      Attributes: [attribute('email', 'example@example.com'), attribute('custom:example', '1')],
+      Attributes: [
+        attribute("email", "example@example.com"),
+        attribute("custom:example", "1"),
+      ],
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await adminDeleteUserAttributes(TestContext, {
-      UserPoolId: 'test',
-      Username: 'abc',
-      UserAttributeNames: ['custom:example'],
+      UserPoolId: "test",
+      Username: "abc",
+      UserAttributeNames: ["custom:example"],
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
-      Attributes: [attribute('email', 'example@example.com')],
+      Attributes: [attribute("email", "example@example.com")],
       UserLastModifiedDate: clock.get(),
     });
   });

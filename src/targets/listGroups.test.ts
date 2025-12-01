@@ -6,7 +6,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import type { UserPoolService } from "../services";
 import { ListGroups, type ListGroupsTarget } from "./listGroups";
 
-describe('ListGroups target', () => {
+describe("ListGroups target", () => {
   let listGroups: ListGroupsTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
 
@@ -17,14 +17,14 @@ describe('ListGroups target', () => {
     });
   });
 
-  it('lists groups', async () => {
+  it("lists groups", async () => {
     const group1 = TDB.group();
     const group2 = TDB.group();
 
     mockUserPoolService.listGroups.mockResolvedValue([group1, group2]);
 
     const output = await listGroups(TestContext, {
-      UserPoolId: 'userPoolId',
+      UserPoolId: "userPoolId",
     });
 
     expect(output).toBeDefined();
@@ -33,17 +33,17 @@ describe('ListGroups target', () => {
         CreationDate: new Date(group1.CreationDate),
         GroupName: group1.GroupName,
         LastModifiedDate: new Date(group1.LastModifiedDate),
-        UserPoolId: 'userPoolId',
+        UserPoolId: "userPoolId",
       },
       {
         CreationDate: new Date(group2.CreationDate),
         GroupName: group2.GroupName,
         LastModifiedDate: new Date(group2.LastModifiedDate),
-        UserPoolId: 'userPoolId',
+        UserPoolId: "userPoolId",
       },
     ]);
   });
 
-  it.todo('supports Limit to specify the number of groups to return');
-  it.todo('supports PaginationToken to paginate results');
+  it.todo("supports Limit to specify the number of groups to return");
+  it.todo("supports PaginationToken to paginate results");
 });

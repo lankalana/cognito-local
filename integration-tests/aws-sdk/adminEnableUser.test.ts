@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.adminEnableUser',
+  "CognitoIdentityServiceProvider.adminEnableUser",
   withCognitoSdk((Cognito) => {
     it("updates a user's attributes", async () => {
       const client = Cognito();

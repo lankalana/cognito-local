@@ -39,7 +39,7 @@ const sendAttributeVerificationCode = async (
 
   await messages.deliver(
     ctx,
-    'UpdateUserAttribute',
+    "UpdateUserAttribute",
     null,
     userPool.options.Id,
     user,
@@ -56,17 +56,25 @@ export type UpdateUserAttributesTarget = Target<
   UpdateUserAttributesResponse
 >;
 
-type UpdateUserAttributesServices = Pick<Services, 'clock' | 'cognito' | 'otp' | 'messages'>;
+type UpdateUserAttributesServices = Pick<
+  Services,
+  "clock" | "cognito" | "otp" | "messages"
+>;
 
 export const UpdateUserAttributes =
-  ({ clock, cognito, otp, messages }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
+  ({
+    clock,
+    cognito,
+    otp,
+    messages,
+  }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
-    if (!req.UserAttributes) throw new MissingParameterError('UserAttributes');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+    if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 

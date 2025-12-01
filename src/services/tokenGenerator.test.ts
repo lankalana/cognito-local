@@ -25,20 +25,20 @@ describe("JwtTokenGenerator", () => {
   beforeEach(() => {
     mockTriggers = newMockTriggers();
     tokenGenerator = new JwtTokenGenerator(clock, mockTriggers, {
-      IssuerDomain: 'http://example.com',
+      IssuerDomain: "http://example.com",
     });
   });
 
-  describe('TokenGeneration lambda is configured', () => {
-    it('can add and override claims to the id token', async () => {
+  describe("TokenGeneration lambda is configured", () => {
+    it("can add and override claims to the id token", async () => {
       mockTriggers.enabled.mockImplementation((name) => {
-        return name === 'PreTokenGeneration';
+        return name === "PreTokenGeneration";
       });
       mockTriggers.preTokenGeneration.mockResolvedValue({
         claimsOverrideDetails: {
           claimsToAddOrOverride: {
-            newclaim: 'value',
-            email: 'something else',
+            newclaim: "value",
+            email: "something else",
           },
         },
       });
@@ -54,28 +54,28 @@ describe("JwtTokenGenerator", () => {
 
       // id token has new claim added
       expect(jwt.decode(tokens.IdToken)).toMatchObject({
-        newclaim: 'value',
-        email: 'something else',
+        newclaim: "value",
+        email: "something else",
       });
 
       // access and refresh tokens cannot be changed by the trigger
       expect(jwt.decode(tokens.AccessToken)).not.toMatchObject({
-        newclaim: 'value',
-        email: 'something else',
+        newclaim: "value",
+        email: "something else",
       });
       expect(jwt.decode(tokens.RefreshToken)).not.toMatchObject({
-        newclaim: 'value',
-        email: 'something else',
+        newclaim: "value",
+        email: "something else",
       });
     });
 
-    it('can suppress claims in the id token', async () => {
+    it("can suppress claims in the id token", async () => {
       mockTriggers.enabled.mockImplementation((name) => {
-        return name === 'PreTokenGeneration';
+        return name === "PreTokenGeneration";
       });
       mockTriggers.preTokenGeneration.mockResolvedValue({
         claimsOverrideDetails: {
-          claimsToSuppress: ['email'],
+          claimsToSuppress: ["email"],
         },
       });
 
@@ -89,26 +89,26 @@ describe("JwtTokenGenerator", () => {
       );
 
       // id token has new claim added
-      expect(jwt.decode(tokens.IdToken)).not.toHaveProperty('email');
+      expect(jwt.decode(tokens.IdToken)).not.toHaveProperty("email");
 
       // access and refresh tokens cannot be changed by the trigger
-      expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty('email');
+      expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty("email");
       expect(jwt.decode(tokens.RefreshToken)).toHaveProperty(
         "email",
         attributeValue("email", user.Attributes),
       );
     });
 
-    it('suppresses claims that are also overridden', async () => {
+    it("suppresses claims that are also overridden", async () => {
       mockTriggers.enabled.mockImplementation((name) => {
-        return name === 'PreTokenGeneration';
+        return name === "PreTokenGeneration";
       });
       mockTriggers.preTokenGeneration.mockResolvedValue({
         claimsOverrideDetails: {
           claimsToAddOrOverride: {
-            email: 'something else',
+            email: "something else",
           },
-          claimsToSuppress: ['email'],
+          claimsToSuppress: ["email"],
         },
       });
 
@@ -122,10 +122,10 @@ describe("JwtTokenGenerator", () => {
       );
 
       // id token has new claim added
-      expect(jwt.decode(tokens.IdToken)).not.toHaveProperty('email');
+      expect(jwt.decode(tokens.IdToken)).not.toHaveProperty("email");
 
       // access and refresh tokens cannot be changed by the trigger
-      expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty('email');
+      expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty("email");
       expect(jwt.decode(tokens.RefreshToken)).toHaveProperty(
         "email",
         attributeValue("email", user.Attributes),
@@ -133,32 +133,32 @@ describe("JwtTokenGenerator", () => {
     });
 
     describe.each([
-      'acr',
-      'amr',
-      'aud',
-      'at_hash',
-      'auth_time',
-      'azp',
-      'cognito:username',
-      'exp',
-      'iat',
-      'identities',
-      'iss',
-      'jti',
-      'nbf',
-      'nonce',
-      'origin_jti',
-      'sub',
-      'token_use',
-    ])('reserved claim %s', (claim) => {
-      it('cannot override a reserved claim', async () => {
+      "acr",
+      "amr",
+      "aud",
+      "at_hash",
+      "auth_time",
+      "azp",
+      "cognito:username",
+      "exp",
+      "iat",
+      "identities",
+      "iss",
+      "jti",
+      "nbf",
+      "nonce",
+      "origin_jti",
+      "sub",
+      "token_use",
+    ])("reserved claim %s", (claim) => {
+      it("cannot override a reserved claim", async () => {
         mockTriggers.enabled.mockImplementation((name) => {
-          return name === 'PreTokenGeneration';
+          return name === "PreTokenGeneration";
         });
         mockTriggers.preTokenGeneration.mockResolvedValue({
           claimsOverrideDetails: {
             claimsToAddOrOverride: {
-              [claim]: 'value',
+              [claim]: "value",
             },
           },
         });
@@ -173,14 +173,14 @@ describe("JwtTokenGenerator", () => {
         );
 
         expect(jwt.decode(tokens.IdToken)).not.toMatchObject({
-          [claim]: 'value',
+          [claim]: "value",
         });
       });
     });
   });
 
-  describe('TokenGeneration lambda is not configured', () => {
-    it('generates the default tokens', async () => {
+  describe("TokenGeneration lambda is not configured", () => {
+    it("generates the default tokens", async () => {
       mockTriggers.enabled.mockReturnValue(false);
 
       const userPoolClient = TDB.appClient();
@@ -202,30 +202,30 @@ describe("JwtTokenGenerator", () => {
         iat: Math.floor(originalDate.getTime() / 1000),
         iss: `http://example.com/${userPoolClient.UserPoolId}`,
         jti: expect.stringMatching(UUID),
-        scope: 'aws.cognito.signin.user.admin',
-        sub: attributeValue('sub', user.Attributes),
-        token_use: 'access',
+        scope: "aws.cognito.signin.user.admin",
+        sub: attributeValue("sub", user.Attributes),
+        token_use: "access",
         username: user.Username,
       });
 
       expect(jwt.decode(tokens.IdToken)).toEqual({
-        'cognito:username': user.Username,
+        "cognito:username": user.Username,
         aud: userPoolClient.ClientId,
         auth_time: expect.any(Number),
-        email: attributeValue('email', user.Attributes),
+        email: attributeValue("email", user.Attributes),
         email_verified: false,
         event_id: expect.stringMatching(UUID),
         exp: Math.floor(originalDate.getTime() / 1000) + ONE_DAY,
         iat: Math.floor(originalDate.getTime() / 1000),
         iss: `http://example.com/${userPoolClient.UserPoolId}`,
         jti: expect.stringMatching(UUID),
-        sub: attributeValue('sub', user.Attributes),
-        token_use: 'id',
+        sub: attributeValue("sub", user.Attributes),
+        token_use: "id",
       });
 
       expect(jwt.decode(tokens.RefreshToken)).toEqual({
-        'cognito:username': user.Username,
-        email: attributeValue('email', user.Attributes),
+        "cognito:username": user.Username,
+        email: attributeValue("email", user.Attributes),
         exp: Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS,
         iat: Math.floor(originalDate.getTime() / 1000),
         iss: `http://example.com/${userPoolClient.UserPoolId}`,
@@ -234,9 +234,9 @@ describe("JwtTokenGenerator", () => {
     });
   });
 
-  describe('expiration configuration', () => {
-    describe('no token validity configured', () => {
-      it('generates default expiration times', async () => {
+  describe("expiration configuration", () => {
+    describe("no token validity configured", () => {
+      it("generates default expiration times", async () => {
         mockTriggers.enabled.mockReturnValue(false);
 
         const userPoolClient = TDB.appClient({
@@ -267,8 +267,8 @@ describe("JwtTokenGenerator", () => {
       });
     });
 
-    describe('no token validity configured but has units configured', () => {
-      it('generates default expiration times', async () => {
+    describe("no token validity configured but has units configured", () => {
+      it("generates default expiration times", async () => {
         mockTriggers.enabled.mockReturnValue(false);
 
         const userPoolClient = TDB.appClient({
@@ -276,9 +276,9 @@ describe("JwtTokenGenerator", () => {
           IdTokenValidity: undefined,
           RefreshTokenValidity: undefined,
           TokenValidityUnits: {
-            AccessToken: 'seconds',
-            IdToken: 'seconds',
-            RefreshToken: 'seconds',
+            AccessToken: "seconds",
+            IdToken: "seconds",
+            RefreshToken: "seconds",
           },
         });
 
@@ -303,8 +303,8 @@ describe("JwtTokenGenerator", () => {
       });
     });
 
-    describe('token validity configured but no units configured', () => {
-      it('generates uses configured validity times with default units', async () => {
+    describe("token validity configured but no units configured", () => {
+      it("generates uses configured validity times with default units", async () => {
         mockTriggers.enabled.mockReturnValue(false);
 
         const userPoolClient = TDB.appClient({
@@ -335,8 +335,8 @@ describe("JwtTokenGenerator", () => {
       });
     });
 
-    describe('token validity and units configured', () => {
-      it('generates uses configured validity times with configured units', async () => {
+    describe("token validity and units configured", () => {
+      it("generates uses configured validity times with configured units", async () => {
         mockTriggers.enabled.mockReturnValue(false);
 
         const userPoolClient = TDB.appClient({
@@ -344,9 +344,9 @@ describe("JwtTokenGenerator", () => {
           IdTokenValidity: 20,
           RefreshTokenValidity: 30,
           TokenValidityUnits: {
-            AccessToken: 'seconds',
-            IdToken: 'minutes',
-            RefreshToken: 'hours',
+            AccessToken: "seconds",
+            IdToken: "minutes",
+            RefreshToken: "hours",
           },
         });
 
@@ -372,8 +372,8 @@ describe("JwtTokenGenerator", () => {
     });
   });
 
-  describe('groups', () => {
-    it('does not include a cognito:groups claim if the user has no groups', async () => {
+  describe("groups", () => {
+    it("does not include a cognito:groups claim if the user has no groups", async () => {
       mockTriggers.enabled.mockReturnValue(false);
 
       const userPoolClient = TDB.appClient({
@@ -381,9 +381,9 @@ describe("JwtTokenGenerator", () => {
         IdTokenValidity: 20,
         RefreshTokenValidity: 30,
         TokenValidityUnits: {
-          AccessToken: 'seconds',
-          IdToken: 'minutes',
-          RefreshToken: 'hours',
+          AccessToken: "seconds",
+          IdToken: "minutes",
+          RefreshToken: "hours",
         },
       });
 
@@ -412,16 +412,16 @@ describe("JwtTokenGenerator", () => {
         IdTokenValidity: 20,
         RefreshTokenValidity: 30,
         TokenValidityUnits: {
-          AccessToken: 'seconds',
-          IdToken: 'minutes',
-          RefreshToken: 'hours',
+          AccessToken: "seconds",
+          IdToken: "minutes",
+          RefreshToken: "hours",
         },
       });
 
       const tokens = await tokenGenerator.generate(
         TestContext,
         user,
-        ['group1', 'group2'],
+        ["group1", "group2"],
         userPoolClient,
         { client: "metadata" },
         "RefreshTokens",

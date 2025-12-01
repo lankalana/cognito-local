@@ -9,7 +9,7 @@ import {
   type DescribeUserPoolTarget,
 } from "./describeUserPool";
 
-describe('DescribeUserPool target', () => {
+describe("DescribeUserPool target", () => {
   let describeUserPool: DescribeUserPoolTarget;
   let mockCognitoService: MockedObject<CognitoService>;
 
@@ -20,7 +20,7 @@ describe('DescribeUserPool target', () => {
     });
   });
 
-  it('returns an existing user pool', async () => {
+  it("returns an existing user pool", async () => {
     const existingUserPool = TDB.userPool();
     mockCognitoService.getUserPool.mockResolvedValue(
       newMockUserPoolService(existingUserPool),
@@ -35,5 +35,5 @@ describe('DescribeUserPool target', () => {
     });
   });
 
-  it.todo('throws resource not found for an invalid user pool');
+  it.todo("throws resource not found for an invalid user pool");
 });

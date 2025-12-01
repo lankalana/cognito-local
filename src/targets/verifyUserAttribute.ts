@@ -1,8 +1,8 @@
 import type {
   VerifyUserAttributeRequest,
   VerifyUserAttributeResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-import jwt from 'jsonwebtoken';
+} from "@aws-sdk/client-cognito-identity-provider";
+import jwt from "jsonwebtoken";
 
 import {
   CodeMismatchError,
@@ -20,16 +20,19 @@ export type VerifyUserAttributeTarget = Target<
   VerifyUserAttributeResponse
 >;
 
-type VerifyUserAttributeServices = Pick<Services, 'clock' | 'cognito'>;
+type VerifyUserAttributeServices = Pick<Services, "clock" | "cognito">;
 
 export const VerifyUserAttribute =
-  ({ clock, cognito }: VerifyUserAttributeServices): VerifyUserAttributeTarget =>
+  ({
+    clock,
+    cognito,
+  }: VerifyUserAttributeServices): VerifyUserAttributeTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 
@@ -62,7 +65,7 @@ export const VerifyUserAttribute =
         UnverifiedAttributeChanges: undefined,
         AttributeVerificationCode: undefined,
       });
-    } else if (req.AttributeName === 'phone_number') {
+    } else if (req.AttributeName === "phone_number") {
       await userPool.saveUser(ctx, {
         ...user,
         Attributes: attributesAppend(

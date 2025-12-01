@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.adminConfirmSignUp',
+  "CognitoIdentityServiceProvider.adminConfirmSignUp",
   withCognitoSdk((Cognito) => {
-    it('confirms a user', async () => {
+    it("confirms a user", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -22,10 +22,10 @@ describe(
         .promise();
 
       await client.signUp({
-        UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
-        Username: 'abc',
+        UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+        Username: "abc",
         ClientId: upc.UserPoolClient?.ClientId,
-        Password: 'def',
+        Password: "def",
       });
 
       let user = await client
@@ -35,7 +35,7 @@ describe(
         })
         .promise();
 
-      expect(user.UserStatus).toEqual('UNCONFIRMED');
+      expect(user.UserStatus).toEqual("UNCONFIRMED");
 
       await client
         .adminConfirmSignUp({
@@ -51,7 +51,7 @@ describe(
         })
         .promise();
 
-      expect(user.UserStatus).toEqual('CONFIRMED');
+      expect(user.UserStatus).toEqual("CONFIRMED");
     });
   }),
 );

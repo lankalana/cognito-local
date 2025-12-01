@@ -21,7 +21,7 @@ export type SignUpTarget = Target<SignUpRequest, SignUpResponse>;
 
 type SignUpServices = Pick<
   Services,
-  'clock' | 'cognito' | 'messages' | 'otp' | 'triggers' | 'config'
+  "clock" | "cognito" | "messages" | "otp" | "triggers" | "config"
 >;
 
 const deliverWelcomeMessage = async (
@@ -50,7 +50,7 @@ const deliverWelcomeMessage = async (
 
   await messages.deliver(
     ctx,
-    'SignUp',
+    "SignUp",
     clientId,
     userPool.options.Id,
     user,
@@ -63,11 +63,18 @@ const deliverWelcomeMessage = async (
 };
 
 export const SignUp =
-  ({ clock, cognito, messages, otp, triggers, config }: SignUpServices): SignUpTarget =>
+  ({
+    clock,
+    cognito,
+    messages,
+    otp,
+    triggers,
+    config,
+  }: SignUpServices): SignUpTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Username) throw new MissingParameterError('Username');
-    if (!req.Password) throw new MissingParameterError('Password');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.Password) throw new MissingParameterError("Password");
 
     // TODO: This should behave differently depending on if PreventUserExistenceErrors
     // is enabled on the updatedUser pool. This will be the default after Feb 2020.
@@ -115,19 +122,20 @@ export const SignUp =
         });
 
       if (autoConfirmUser) {
-        userStatus = 'CONFIRMED';
+        userStatus = "CONFIRMED";
       }
-      const isEmailUsername = config.UserPoolDefaults.UsernameAttributes?.includes('email');
-      const hasEmailAttribute = attributesInclude('email', attributes);
+      const isEmailUsername =
+        config.UserPoolDefaults.UsernameAttributes?.includes("email");
+      const hasEmailAttribute = attributesInclude("email", attributes);
 
       if (isEmailUsername && !hasEmailAttribute) {
-        attributes.push({ Name: 'email', Value: req.Username });
+        attributes.push({ Name: "email", Value: req.Username });
       }
       if ((isEmailUsername || hasEmailAttribute) && autoVerifyEmail) {
-        attributes.push({ Name: 'email_verified', Value: 'true' });
+        attributes.push({ Name: "email_verified", Value: "true" });
       }
-      if (attributesInclude('phone_number', attributes) && autoVerifyPhone) {
-        attributes.push({ Name: 'phone_number_verified', Value: 'true' });
+      if (attributesInclude("phone_number", attributes) && autoVerifyPhone) {
+        attributes.push({ Name: "phone_number_verified", Value: "true" });
       }
     }
 
@@ -161,7 +169,10 @@ export const SignUp =
       ConfirmationCode: code,
     });
 
-    if (updatedUser.UserStatus === 'CONFIRMED' && triggers.enabled('PostConfirmation')) {
+    if (
+      updatedUser.UserStatus === "CONFIRMED" &&
+      triggers.enabled("PostConfirmation")
+    ) {
       await triggers.postConfirmation(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,

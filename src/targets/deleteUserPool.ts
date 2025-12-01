@@ -7,12 +7,12 @@ export type DeleteUserPoolTarget = Target<DeleteUserPoolRequest, object>;
 
 export type DeleteUserPoolTarget = Target<DeleteUserPoolRequest, object>;
 
-type DeleteUserPoolServices = Pick<Services, 'cognito'>;
+type DeleteUserPoolServices = Pick<Services, "cognito">;
 
 export const DeleteUserPool =
   ({ cognito }: DeleteUserPoolServices): DeleteUserPoolTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
 
     // TODO: from the docs "Calling this action requires developer credentials.", can we enforce this?
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);

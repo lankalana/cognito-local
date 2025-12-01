@@ -3,7 +3,7 @@ import { UUID } from "../../src/__tests__/patterns";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.adminUpdateUserAttributes',
+  "CognitoIdentityServiceProvider.adminUpdateUserAttributes",
   withCognitoSdk((Cognito) => {
     it("updates a user's attributes", async () => {
       const client = Cognito();

@@ -2,8 +2,8 @@ import type {
   DeliveryMediumType,
   InitiateAuthRequest,
   InitiateAuthResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-import { v4 } from 'uuid';
+} from "@aws-sdk/client-cognito-identity-provider";
+import { v4 } from "uuid";
 
 import {
   InvalidParameterError,
@@ -25,11 +25,14 @@ import {
 } from "../services/userPoolService";
 import type { Target } from "./Target";
 
-export type InitiateAuthTarget = Target<InitiateAuthRequest, InitiateAuthResponse>;
+export type InitiateAuthTarget = Target<
+  InitiateAuthRequest,
+  InitiateAuthResponse
+>;
 
 type InitiateAuthServices = Pick<
   Services,
-  'cognito' | 'messages' | 'otp' | 'tokenGenerator' | 'triggers'
+  "cognito" | "messages" | "otp" | "tokenGenerator" | "triggers"
 >;
 
 const verifyMfaChallenge = async (
@@ -39,7 +42,7 @@ const verifyMfaChallenge = async (
   userPool: UserPoolService,
   services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
-  if (!req.ClientId) throw new MissingParameterError('ClientId');
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
 
   if (!user.MFAOptions?.length) {
     throw new NotAuthorizedError();
@@ -49,7 +52,7 @@ const verifyMfaChallenge = async (
       x.DeliveryMedium === "SMS",
   );
   if (!smsMfaOption) {
-    throw new UnsupportedError('MFA challenge without SMS');
+    throw new UnsupportedError("MFA challenge without SMS");
   }
 
   const deliveryDestination = attributeValue(
@@ -63,7 +66,7 @@ const verifyMfaChallenge = async (
   const code = services.otp();
   await services.messages.deliver(
     ctx,
-    'Authentication',
+    "Authentication",
     req.ClientId,
     userPool.options.Id,
     user,
@@ -82,9 +85,9 @@ const verifyMfaChallenge = async (
   });
 
   return {
-    ChallengeName: 'SMS_MFA',
+    ChallengeName: "SMS_MFA",
     ChallengeParameters: {
-      CODE_DELIVERY_DELIVERY_MEDIUM: 'SMS',
+      CODE_DELIVERY_DELIVERY_MEDIUM: "SMS",
       CODE_DELIVERY_DESTINATION: deliveryDestination,
       USER_ID_FOR_SRP: user.Username,
     },
@@ -117,14 +120,14 @@ const verifyPasswordChallenge = async (
   await userPool.storeRefreshToken(ctx, tokens.RefreshToken, user);
 
   return {
-    ChallengeName: 'PASSWORD_VERIFIER',
+    ChallengeName: "PASSWORD_VERIFIER",
     ChallengeParameters: {},
     AuthenticationResult: tokens,
   };
 };
 
 const newPasswordChallenge = (user: User): InitiateAuthResponse => ({
-  ChallengeName: 'NEW_PASSWORD_REQUIRED',
+  ChallengeName: "NEW_PASSWORD_REQUIRED",
   ChallengeParameters: {
     USER_ID_FOR_SRP: user.Username,
     requiredAttributes: JSON.stringify([]),
@@ -140,7 +143,7 @@ const userPasswordAuthFlow = async (
   userPoolClient: AppClient,
   services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
-  if (!req.ClientId) throw new MissingParameterError('ClientId');
+  if (!req.ClientId) throw new MissingParameterError("ClientId");
 
   if (!req.AuthParameters) {
     throw new InvalidParameterError(
@@ -150,7 +153,7 @@ const userPasswordAuthFlow = async (
 
   let user = await userPool.getUserByUsername(ctx, req.AuthParameters.USERNAME);
 
-  if (!user && services.triggers.enabled('UserMigration')) {
+  if (!user && services.triggers.enabled("UserMigration")) {
     // https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-lambda-migrate-user.html
     //
     // Amazon Cognito invokes [the User Migration] trigger when a user does not exist in the user pool at the time
@@ -175,33 +178,34 @@ const userPasswordAuthFlow = async (
   if (!user) {
     throw new NotAuthorizedError();
   }
-  if (user.UserStatus === 'RESET_REQUIRED') {
+  if (user.UserStatus === "RESET_REQUIRED") {
     throw new PasswordResetRequiredError();
   }
-  if (user.UserStatus === 'FORCE_CHANGE_PASSWORD') {
+  if (user.UserStatus === "FORCE_CHANGE_PASSWORD") {
     return newPasswordChallenge(user);
   }
   if (user.Password !== req.AuthParameters.PASSWORD) {
     throw new InvalidPasswordError();
   }
-  if (user.UserStatus === 'UNCONFIRMED') {
+  if (user.UserStatus === "UNCONFIRMED") {
     throw new UserNotConfirmedException();
   }
 
   if (
-    (userPool.options.MfaConfiguration === 'OPTIONAL' && (user.MFAOptions ?? []).length > 0) ||
-    userPool.options.MfaConfiguration === 'ON'
+    (userPool.options.MfaConfiguration === "OPTIONAL" &&
+      (user.MFAOptions ?? []).length > 0) ||
+    userPool.options.MfaConfiguration === "ON"
   ) {
     return verifyMfaChallenge(ctx, user, req, userPool, services);
   }
 
-  if (services.triggers.enabled('PostAuthentication')) {
+  if (services.triggers.enabled("PostAuthentication")) {
     await services.triggers.postAuthentication(ctx, {
       clientId: req.ClientId,
       // As per the InitiateAuth docs, ClientMetadata is not passed to PostAuthentication when called from InitiateAuth
       // Source: https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/API_InitiateAuth.html#API_InitiateAuth_RequestSyntax
       clientMetadata: undefined,
-      source: 'PostAuthentication_Authentication',
+      source: "PostAuthentication_Authentication",
       userAttributes: user.Attributes,
       username: user.Username,
       userPoolId: userPool.options.Id,
@@ -232,7 +236,7 @@ const refreshTokenAuthFlow = async (
   }
 
   if (!req.AuthParameters.REFRESH_TOKEN) {
-    throw new InvalidParameterError('AuthParameters REFRESH_TOKEN is required');
+    throw new InvalidParameterError("AuthParameters REFRESH_TOKEN is required");
   }
 
   const user = await userPool.getUserByRefreshToken(
@@ -288,9 +292,12 @@ export const InitiateAuth =
       throw new NotAuthorizedError();
     }
 
-    if (req.AuthFlow === 'USER_PASSWORD_AUTH') {
+    if (req.AuthFlow === "USER_PASSWORD_AUTH") {
       return userPasswordAuthFlow(ctx, req, userPool, userPoolClient, services);
-    } else if (req.AuthFlow === 'REFRESH_TOKEN' || req.AuthFlow === 'REFRESH_TOKEN_AUTH') {
+    } else if (
+      req.AuthFlow === "REFRESH_TOKEN" ||
+      req.AuthFlow === "REFRESH_TOKEN_AUTH"
+    ) {
       return refreshTokenAuthFlow(ctx, req, userPool, userPoolClient, services);
     } else {
       throw new UnsupportedError(`InitAuth with AuthFlow=${req.AuthFlow}`);

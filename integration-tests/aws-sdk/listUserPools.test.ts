@@ -2,19 +2,19 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.listUserPools',
+  "CognitoIdentityServiceProvider.listUserPools",
   withCognitoSdk((Cognito) => {
-    it('lists user pools', async () => {
+    it("lists user pools", async () => {
       const client = Cognito();
 
       await client.createUserPool({
-        PoolName: 'test-1',
+        PoolName: "test-1",
       });
       await client.createUserPool({
-        PoolName: 'test-2',
+        PoolName: "test-2",
       });
       await client.createUserPool({
-        PoolName: 'test-3',
+        PoolName: "test-3",
       });
 
       const result = await client.listUserPools({

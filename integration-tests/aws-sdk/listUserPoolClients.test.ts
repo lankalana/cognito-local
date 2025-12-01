@@ -2,9 +2,9 @@ import { describe, expect, it } from "vitest";
 import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.listUserPoolClients',
+  "CognitoIdentityServiceProvider.listUserPoolClients",
   withCognitoSdk((Cognito) => {
-    it('can list app clients', async () => {
+    it("can list app clients", async () => {
       const client = Cognito();
 
       const pool = await client
@@ -38,14 +38,14 @@ describe(
       });
 
       const clientList = await client.listUserPoolClients({
-        UserPoolId: 'test',
+        UserPoolId: "test",
       });
 
       expect(clientList?.UserPoolClients).toEqual([
         {
           ClientId: result.UserPoolClient?.ClientId,
           ClientName: result.UserPoolClient?.ClientName,
-          UserPoolId: 'test',
+          UserPoolId: "test",
         },
       ]);
     });

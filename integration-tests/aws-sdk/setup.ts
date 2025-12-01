@@ -48,7 +48,7 @@ export const withCognitoSdk =
     let fakeMessageDeliveryService: FakeMessageDeliveryService;
 
     beforeEach(async () => {
-      dataDirectory = await mkdtemp('/tmp/cognito-local:');
+      dataDirectory = await mkdtemp("/tmp/cognito-local:");
       const ctx = { logger };
 
       dataStoreFactory = new StormDBDataStoreFactory(dataDirectory);
@@ -92,16 +92,19 @@ export const withCognitoSdk =
 
       const address = httpServer.address();
       if (!address) {
-        throw new Error('HttpServer has no address');
+        throw new Error("HttpServer has no address");
       }
-      const url = typeof address === 'string' ? address : `${address.address}:${address.port}`;
+      const url =
+        typeof address === "string"
+          ? address
+          : `${address.address}:${address.port}`;
 
       cognitoSdk = new CognitoIdentityProvider({
         credentials: {
-          accessKeyId: 'local',
-          secretAccessKey: 'local',
+          accessKeyId: "local",
+          secretAccessKey: "local",
         },
-        region: 'local',
+        region: "local",
         endpoint: `http://${url}`,
       });
     });

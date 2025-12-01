@@ -17,39 +17,39 @@ import {
 
 const validToken = jwt.sign(
   {
-    sub: '0000-0000',
-    event_id: '0',
-    token_use: 'access',
-    scope: 'aws.cognito.signin.user.admin',
+    sub: "0000-0000",
+    event_id: "0",
+    token_use: "access",
+    scope: "aws.cognito.signin.user.admin",
     auth_time: new Date(),
     jti: uuid.v4(),
-    client_id: 'test',
-    username: '0000-0000',
+    client_id: "test",
+    username: "0000-0000",
   },
   PrivateKey.pem,
   {
-    algorithm: 'RS256',
+    algorithm: "RS256",
     issuer: `http://localhost:9229/test`,
     expiresIn: "24h",
     keyid: "CognitoLocal",
   },
 );
 
-describe('GetUserAttributeVerificationCode target', () => {
+describe("GetUserAttributeVerificationCode target", () => {
   let getUserAttributeVerificationCode: GetUserAttributeVerificationCodeTarget;
   let mockUserPoolService: MockedObject<UserPoolService>;
   let mockMessages: MockedObject<Messages>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService({
-      Id: 'test',
-      AutoVerifiedAttributes: ['email'],
+      Id: "test",
+      AutoVerifiedAttributes: ["email"],
     });
     mockMessages = newMockMessages();
     getUserAttributeVerificationCode = GetUserAttributeVerificationCode({
       cognito: newMockCognitoService(mockUserPoolService),
       messages: mockMessages,
-      otp: () => '123456',
+      otp: () => "123456",
     });
   });
 
@@ -83,7 +83,7 @@ describe('GetUserAttributeVerificationCode target', () => {
     await expect(
       getUserAttributeVerificationCode(TestContext, {
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
         AccessToken: validToken,
         AttributeName: "email",
@@ -95,29 +95,29 @@ describe('GetUserAttributeVerificationCode target', () => {
     );
   });
 
-  it('delivers a OTP code to the user', async () => {
+  it("delivers a OTP code to the user", async () => {
     const user = TDB.user({
-      Attributes: [attribute('email', 'example@example.com')],
+      Attributes: [attribute("email", "example@example.com")],
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await getUserAttributeVerificationCode(TestContext, {
       ClientMetadata: {
-        client: 'metadata',
+        client: "metadata",
       },
       AccessToken: validToken,
-      AttributeName: 'email',
+      AttributeName: "email",
     });
 
     expect(mockMessages.deliver).toHaveBeenCalledWith(
       TestContext,
-      'VerifyUserAttribute',
+      "VerifyUserAttribute",
       null,
-      'test',
+      "test",
       user,
-      '123456',
-      { client: 'metadata' },
+      "123456",
+      { client: "metadata" },
       {
         AttributeName: "email",
         DeliveryMedium: "EMAIL",
