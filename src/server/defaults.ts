@@ -1,4 +1,4 @@
-import * as AWS from "aws-sdk";
+import { Lambda } from "@aws-sdk/client-lambda";
 import type pino from "pino";
 import {
   DateClock,
@@ -51,10 +51,7 @@ export const createDefaultServer = async (
   const triggers = new TriggersService(
     clock,
     cognitoClient,
-    new LambdaService(
-      config.TriggerFunctions,
-      new AWS.Lambda(config.LambdaClient),
-    ),
+    new LambdaService(config.TriggerFunctions, new Lambda(config.LambdaClient)),
     new CryptoService(config.KMSConfig),
   );
 

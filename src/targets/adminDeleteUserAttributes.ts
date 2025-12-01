@@ -1,8 +1,8 @@
 import type {
   AdminDeleteUserAttributesRequest,
   AdminDeleteUserAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { NotAuthorizedError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Services } from "../services";
 import { attributesRemove } from "../services/userPoolService";
 import type { Target } from "./Target";

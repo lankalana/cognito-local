@@ -17,22 +17,19 @@ describe(
         it("creates a user with only the required parameters", async () => {
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 { Name: "phone_number", Value: "0400000000" },
@@ -54,23 +51,20 @@ describe(
           const fakeMessageDelivery = messageDelivery();
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              DesiredDeliveryMediums: ["EMAIL"],
-              UserAttributes: [{ Name: "email", Value: "example@example.com" }],
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            DesiredDeliveryMediums: ["EMAIL"],
+            UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 { Name: "email", Value: "example@example.com" },
@@ -105,22 +99,19 @@ describe(
           const fakeMessageDelivery = messageDelivery();
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              MessageAction: "SUPPRESS",
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            MessageAction: "SUPPRESS",
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 {
@@ -144,23 +135,20 @@ describe(
         it("creates a user with only the required parameters", async () => {
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-              UsernameAttributes: ["email"],
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+            UsernameAttributes: ["email"],
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 { Name: "email", Value: "example@example.com" },
@@ -183,24 +171,21 @@ describe(
           const fakeMessageDelivery = messageDelivery();
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-              UsernameAttributes: ["email"],
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+            UsernameAttributes: ["email"],
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              DesiredDeliveryMediums: ["EMAIL"],
-              UserAttributes: [{ Name: "email", Value: "example@example.com" }],
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            DesiredDeliveryMediums: ["EMAIL"],
+            UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 { Name: "email", Value: "example@example.com" },
@@ -235,23 +220,20 @@ describe(
           const fakeMessageDelivery = messageDelivery();
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-              UsernameAttributes: ["email"],
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+            UsernameAttributes: ["email"],
+          });
           const userPoolId = pool.UserPool?.Id!;
 
-          const createUserResult = await client
-            .adminCreateUser({
-              MessageAction: "SUPPRESS",
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            MessageAction: "SUPPRESS",
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult).toEqual({
+            $metadata: createUserResult.$metadata,
             User: {
               Attributes: [
                 { Name: "email", Value: "example@example.com" },

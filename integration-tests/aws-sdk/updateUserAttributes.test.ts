@@ -83,65 +83,53 @@ describe(
 
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-          AutoVerifiedAttributes: ["email"],
-          UsernameAttributes: ["email"],
-          UserAttributeUpdateSettings: {
-            AttributesRequireVerificationBeforeUpdate: ["email"],
-          },
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+        AutoVerifiedAttributes: ["email"],
+        UsernameAttributes: ["email"],
+        UserAttributeUpdateSettings: {
+          AttributesRequireVerificationBeforeUpdate: ["email"],
+        },
+      });
       const userPoolId = pool.UserPool?.Id as string;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
-      await client
-        .adminCreateUser({
-          UserAttributes: [
-            { Name: "email", Value: originalEmail },
-            { Name: "email_verified", Value: "true" },
-          ],
-          Username: originalEmail,
-          UserPoolId: userPoolId,
-          TemporaryPassword: password,
-          DesiredDeliveryMediums: ["EMAIL"],
-        })
-        .promise();
+      await client.adminCreateUser({
+        UserAttributes: [
+          { Name: "email", Value: originalEmail },
+          { Name: "email_verified", Value: "true" },
+        ],
+        Username: originalEmail,
+        UserPoolId: userPoolId,
+        TemporaryPassword: password,
+        DesiredDeliveryMediums: ["EMAIL"],
+      });
 
-      await client
-        .adminSetUserPassword({
-          UserPoolId: userPoolId,
-          Username: originalEmail,
-          Password: password,
-          Permanent: true,
-        })
-        .promise();
+      await client.adminSetUserPassword({
+        UserPoolId: userPoolId,
+        Username: originalEmail,
+        Password: password,
+        Permanent: true,
+      });
 
       // login as the user
-      let initiateAuthResponse = await client
-        .initiateAuth({
-          AuthFlow: "USER_PASSWORD_AUTH",
-          AuthParameters: {
-            USERNAME: originalEmail,
-            PASSWORD: password,
-          },
-          ClientId: upc.UserPoolClient?.ClientId as string,
-        })
-        .promise();
+      let initiateAuthResponse = await client.initiateAuth({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        AuthParameters: {
+          USERNAME: originalEmail,
+          PASSWORD: password,
+        },
+        ClientId: upc.UserPoolClient?.ClientId as string,
+      });
 
-      let user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: originalEmail,
-        })
-        .promise();
+      let user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: originalEmail,
+      });
 
       expect(user.UserAttributes).toEqual([
         { Name: "email", Value: originalEmail },
@@ -150,20 +138,16 @@ describe(
       ]);
 
       // start updating the email address, but it shouldn't be saved yet
-      await client
-        .updateUserAttributes({
-          AccessToken: initiateAuthResponse.AuthenticationResult
-            ?.AccessToken as string,
-          UserAttributes: [{ Name: "email", Value: newEmail }],
-        })
-        .promise();
+      await client.updateUserAttributes({
+        AccessToken: initiateAuthResponse.AuthenticationResult
+          ?.AccessToken as string,
+        UserAttributes: [{ Name: "email", Value: newEmail }],
+      });
 
-      user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: originalEmail,
-        })
-        .promise();
+      user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: originalEmail,
+      });
 
       // email is unchanged
       expect(user.UserAttributes).toEqual([
@@ -173,50 +157,45 @@ describe(
       ]);
 
       // confirm the user can still login with their original email and not yet with the new email
-      initiateAuthResponse = await client
-        .initiateAuth({
+      initiateAuthResponse = await client.initiateAuth({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        AuthParameters: {
+          USERNAME: originalEmail,
+          PASSWORD: password,
+        },
+        ClientId: upc.UserPoolClient?.ClientId as string,
+      });
+      await expect(
+        client.initiateAuth({
           AuthFlow: "USER_PASSWORD_AUTH",
           AuthParameters: {
-            USERNAME: originalEmail,
+            USERNAME: newEmail,
             PASSWORD: password,
           },
           ClientId: upc.UserPoolClient?.ClientId as string,
-        })
-        .promise();
-      await expect(
-        client
-          .initiateAuth({
-            AuthFlow: "USER_PASSWORD_AUTH",
-            AuthParameters: {
-              USERNAME: newEmail,
-              PASSWORD: password,
-            },
-            ClientId: upc.UserPoolClient?.ClientId as string,
-          })
-          .promise(),
+        }),
       ).rejects.toThrow("User not authorized");
 
       // now verify the attribute with the confirmation code
-      const lastMessage = messageDelivery().collectedMessages.at(-1);
+      const messages = messageDelivery().collectedMessages;
+      const lastMessage = messages.length
+        ? messages[messages.length - 1]
+        : undefined;
       const code = lastMessage?.message?.__code;
       expect(code).toBeDefined();
 
-      await client
-        .verifyUserAttribute({
-          AccessToken: initiateAuthResponse.AuthenticationResult
-            ?.AccessToken as string,
-          AttributeName: "email",
-          Code: code!,
-        })
-        .promise();
+      await client.verifyUserAttribute({
+        AccessToken: initiateAuthResponse.AuthenticationResult
+          ?.AccessToken as string,
+        AttributeName: "email",
+        Code: code!,
+      });
 
       // get the user by their new email
-      user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: newEmail,
-        })
-        .promise();
+      user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: newEmail,
+      });
 
       // email is updated and verified
       expect(user.UserAttributes).toEqual([
@@ -226,39 +205,33 @@ describe(
       ]);
 
       // can login with the new email
-      await client
-        .initiateAuth({
-          AuthFlow: "USER_PASSWORD_AUTH",
-          AuthParameters: {
-            USERNAME: newEmail,
-            PASSWORD: password,
-          },
-          ClientId: upc.UserPoolClient?.ClientId as string,
-        })
-        .promise();
+      await client.initiateAuth({
+        AuthFlow: "USER_PASSWORD_AUTH",
+        AuthParameters: {
+          USERNAME: newEmail,
+          PASSWORD: password,
+        },
+        ClientId: upc.UserPoolClient?.ClientId as string,
+      });
 
       // old email doesn't exist anymore
       await expect(
-        client
-          .adminGetUser({
-            UserPoolId: userPoolId,
-            Username: originalEmail,
-          })
-          .promise(),
+        client.adminGetUser({
+          UserPoolId: userPoolId,
+          Username: originalEmail,
+        }),
       ).rejects.toThrow("User does not exist.");
 
       // cannot login with the old email either
       await expect(
-        client
-          .initiateAuth({
-            AuthFlow: "USER_PASSWORD_AUTH",
-            AuthParameters: {
-              USERNAME: originalEmail,
-              PASSWORD: password,
-            },
-            ClientId: upc.UserPoolClient?.ClientId as string,
-          })
-          .promise(),
+        client.initiateAuth({
+          AuthFlow: "USER_PASSWORD_AUTH",
+          AuthParameters: {
+            USERNAME: originalEmail,
+            PASSWORD: password,
+          },
+          ClientId: upc.UserPoolClient?.ClientId as string,
+        }),
       ).rejects.toThrow("User not authorized");
     });
   }),

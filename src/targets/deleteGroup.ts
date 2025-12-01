@@ -1,9 +1,7 @@
-import type { DeleteGroupRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError } from "../errors";
+import type { DeleteGroupRequest } from "@aws-sdk/client-cognito-identity-provider";
+import { GroupNotFoundError, MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
-
-export type DeleteGroupTarget = Target<DeleteGroupRequest, object>;
 
 export type DeleteGroupTarget = Target<DeleteGroupRequest, object>;
 

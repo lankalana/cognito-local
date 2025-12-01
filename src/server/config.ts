@@ -1,15 +1,11 @@
+import type { KMSClientConfig } from "@aws-sdk/client-kms";
+import type { LambdaClientConfig } from "@aws-sdk/client-lambda";
 import mergeWith from "lodash.mergewith";
-import type { Context } from "../services/context";
 import type { Context } from "../services/context.js";
-import type { KMSConfig } from "../services/crypto";
 import type { KMSConfig } from "../services/crypto.js";
-import type { DataStoreFactory } from "../services/dataStore/factory";
 import type { DataStoreFactory } from "../services/dataStore/factory.js";
-import type { FunctionConfig } from "../services/lambda";
 import type { FunctionConfig } from "../services/lambda.js";
-import type { TokenConfig } from "../services/tokenGenerator";
 import type { TokenConfig } from "../services/tokenGenerator.js";
-import type { UserPool } from "../services/userPoolService";
 import type { UserPool } from "../services/userPoolService.js";
 import type { ServerOptions } from "./server";
 
@@ -22,7 +18,7 @@ export interface Config {
   LambdaClient: LambdaClientConfig;
   TriggerFunctions: FunctionConfig;
   UserPoolDefaults: UserPoolDefaults;
-  KMSConfig?: AWS.KMS.ClientConfiguration & KMSConfig;
+  KMSConfig?: KMSClientConfig & KMSConfig;
   ServerConfig: ServerOptions;
   TokenConfig: TokenConfig;
 }

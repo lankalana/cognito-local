@@ -1,12 +1,11 @@
 import type {
-  AttributeListType,
   AttributeType,
   IdentityProviderType,
   MFAOptionType,
   SchemaAttributeType,
   UserPoolType,
   UserStatusType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import { InvalidParameterError } from "../errors";
 import type { AppClient } from "./appClient";
 import type { Clock } from "./clock";
@@ -28,7 +27,7 @@ export const attribute = (
 export const attributesIncludeMatch = (
   attributeName: string,
   attributeValue: string,
-  attributes: AttributeListType | undefined,
+  attributes: AttributeType[] | undefined,
 ) =>
   !!(attributes ?? []).find(
     (x) => x.Name === attributeName && x.Value === attributeValue,
@@ -36,16 +35,16 @@ export const attributesIncludeMatch = (
 
 export const attributesInclude = (
   attributeName: string,
-  attributes: AttributeListType | undefined,
+  attributes: AttributeType[] | undefined,
 ) => !!(attributes ?? []).find((x) => x.Name === attributeName);
 
 export const attributeValue = (
   attributeName: string | undefined,
-  attributes: AttributeListType | undefined,
+  attributes: AttributeType[] | undefined,
 ) => (attributes ?? []).find((x) => x.Name === attributeName)?.Value;
 
 export const attributesToRecord = (
-  attributes: AttributeListType | undefined,
+  attributes: AttributeType[] | undefined,
 ): Record<string, string> =>
   (attributes ?? []).reduce(
     (acc, attr) => {
@@ -59,7 +58,7 @@ export const attributesToRecord = (
 
 export const attributesFromRecord = (
   attributes: Record<string, string>,
-): AttributeListType =>
+): AttributeType[] =>
   Object.entries(attributes)
     .map(([Name, Value]) => ({ Name, Value }))
     .sort((a, b) => a.Name.localeCompare(b.Name));
@@ -88,9 +87,9 @@ export const attributesRemove = (
   attributes?.filter((x) => x.Name && !toRemove.includes(x.Name)) ?? [];
 
 export const customAttributes = (
-  attributes: AttributeListType | undefined,
-): AttributeListType =>
-  (attributes ?? []).filter((attr) => attr.Name.startsWith("custom:"));
+  attributes: AttributeType[] | undefined,
+): AttributeType[] =>
+  (attributes ?? []).filter((attr) => attr.Name?.startsWith("custom:"));
 
 export interface User {
   Attributes: AttributeType[];
@@ -115,7 +114,7 @@ export interface User {
    * but have not yet been verified. This is used to track changes that require user verification
    * before they can be applied to the user.
    */
-  UnverifiedAttributeChanges?: AttributeListType;
+  UnverifiedAttributeChanges?: AttributeType[];
 }
 
 export interface Group {
@@ -187,6 +186,7 @@ export interface UserPoolService {
     refreshToken: string,
   ): Promise<User | null>;
   listGroups(ctx: Context): Promise<readonly Group[]>;
+  listIdentityProviders(ctx: Context): Promise<readonly IdentityProvider[]>;
   listUsers(
     ctx: Context,
     filter?: string | undefined,
@@ -274,8 +274,11 @@ export class UserPoolServiceImpl implements UserPoolService {
     identityProvider: IdentityProvider,
   ): Promise<void> {
     ctx.logger.debug(
-      { groupName: group.GroupName },
-      "UserPoolServiceImpl.deleteGroup",
+      {
+        userPoolId: identityProvider.UserPoolId,
+        idendityProviderName: identityProvider.ProviderName,
+      },
+      "UserPoolServiceImpl.deleteIdentityProvider",
     );
     await this.dataStore.delete(ctx, [
       "IdentityProviders",
@@ -305,9 +308,18 @@ export class UserPoolServiceImpl implements UserPoolService {
 
   public async getIdentityProviderByIdentifier(
     ctx: Context,
-    username: string,
-  ): Promise<User | null> {
-    ctx.logger.debug({ username }, "UserPoolServiceImpl.getUserByUsername");
+    identifier: string,
+  ): Promise<IdentityProvider | null> {
+    ctx.logger.debug(
+      { identifier },
+      "UserPoolServiceImpl.getIdentityProviderByIdentifier",
+    );
+    const identityProviders = await this.listIdentityProviders(ctx);
+    const identityProvider = identityProviders.find(
+      (identityProvider) =>
+        Array.isArray(identityProvider.IdpIdentifiers) &&
+        identityProvider.IdpIdentifiers.includes(identifier),
+    );
 
     return identityProvider ?? null;
   }
@@ -535,13 +547,19 @@ export class UserPoolServiceImpl implements UserPoolService {
     await this.dataStore.set<Group>(ctx, ["Groups", group.GroupName], group);
   }
 
-  async listUserGroupMembership(
+  async saveIdentityProvider(
     ctx: Context,
-    user: User,
-  ): Promise<readonly string[]> {
+    identityProvider: IdentityProvider,
+  ): Promise<void> {
     ctx.logger.debug(
-      { username: user.Username },
-      "UserPoolServiceImpl.listUserGroupMembership",
+      { identityProvider },
+      "UserPoolServiceImpl.saveIdentityProvider",
+    );
+
+    await this.dataStore.set<IdentityProvider>(
+      ctx,
+      ["IdentityProviders", identityProvider.ProviderName],
+      identityProvider,
     );
   }
 
@@ -625,9 +643,9 @@ export class UserPoolServiceFactoryImpl implements UserPoolServiceFactory {
 }
 
 export const validatePermittedAttributeChanges = (
-  requestAttributes: AttributeListType,
-  schemaAttributes: SchemaAttributesListType,
-): AttributeListType => {
+  requestAttributes: AttributeType[],
+  schemaAttributes: SchemaAttributeType[],
+): AttributeType[] => {
   for (const attr of requestAttributes) {
     const attrSchema = schemaAttributes.find((x) => x.Name === attr.Name);
     if (!attrSchema) {
@@ -664,8 +682,8 @@ export const validatePermittedAttributeChanges = (
 };
 
 export const defaultVerifiedAttributesIfModified = (
-  attributes: AttributeListType,
-): AttributeListType => {
+  attributes: AttributeType[],
+): AttributeType[] => {
   const attributesToSet = [...attributes];
   if (
     attributesInclude("email", attributes) &&
@@ -683,7 +701,7 @@ export const defaultVerifiedAttributesIfModified = (
 };
 
 export const hasUnverifiedContactAttributes = (
-  userAttributesToSet: AttributeListType | undefined,
+  userAttributesToSet: AttributeType[] | undefined,
 ): boolean =>
   attributeValue("email_verified", userAttributesToSet) === "false" ||
   attributeValue("phone_number_verified", userAttributesToSet) === "false";
@@ -694,14 +712,17 @@ export const hasUnverifiedContactAttributes = (
  * - Delayed attributes that require verification before they can be set
  */
 export const splitImmediateAndDelayedAttributes = (
-  userAttributesToSet: AttributeListType,
+  userAttributesToSet: AttributeType[],
   attributesRequireVerificationBeforeUpdate: readonly string[] | undefined,
-): [AttributeListType, AttributeListType] => {
-  const immediateAttributes: AttributeListType = [];
-  const delayedAttributes: AttributeListType = [];
+): [AttributeType[], AttributeType[]] => {
+  const immediateAttributes: AttributeType[] = [];
+  const delayedAttributes: AttributeType[] = [];
 
   for (const attr of userAttributesToSet) {
-    if (attributesRequireVerificationBeforeUpdate?.includes(attr.Name)) {
+    if (
+      attr.Name &&
+      attributesRequireVerificationBeforeUpdate?.includes(attr.Name)
+    ) {
       delayedAttributes.push(attr);
     } else {
       immediateAttributes.push(attr);

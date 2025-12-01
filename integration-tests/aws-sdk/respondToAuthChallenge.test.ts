@@ -7,29 +7,23 @@ describe(
     it("handles NEW_PASSWORD_REQUIRED challenge", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
-      await client
-        .adminCreateUser({
-          DesiredDeliveryMediums: ["EMAIL"],
-          TemporaryPassword: "def",
-          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
-          Username: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      await client.adminCreateUser({
+        DesiredDeliveryMediums: ["EMAIL"],
+        TemporaryPassword: "def",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        Username: "abc",
+        UserPoolId: userPoolId,
+      });
 
       const initiateAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,

@@ -1,8 +1,8 @@
 import type {
   AdminSetUserPasswordRequest,
   AdminSetUserPasswordResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { UserNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, UserNotFoundError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
 

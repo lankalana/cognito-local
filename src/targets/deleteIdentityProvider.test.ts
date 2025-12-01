@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
 import { TestContext } from "../__tests__/testContext.js";
@@ -11,7 +12,7 @@ import {
 
 describe("DeleteIdentityProvider target", () => {
   let deleteIdentityProvider: DeleteIdentityProviderTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();

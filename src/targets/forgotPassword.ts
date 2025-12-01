@@ -1,20 +1,15 @@
 import type {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { UnsupportedError, UserNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
 import {
   MissingParameterError,
   UnsupportedError,
   UserNotFoundError,
 } from "../errors.js";
-import type { Services } from "../services";
 import type { Services } from "../services/index.js";
-import type { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
 import type { DeliveryDetails } from "../services/messageDelivery/messageDelivery.js";
-import { attributeValue } from "../services/userPoolService";
 import { attributeValue } from "../services/userPoolService.js";
-import type { Target } from "./Target";
 import type { Target } from "./Target.js";
 
 export type ForgotPasswordTarget = Target<

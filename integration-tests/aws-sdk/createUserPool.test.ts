@@ -21,10 +21,11 @@ describe(
         });
 
         expect(result).toEqual({
+          $metadata: result.$metadata,
           UserPool: {
             ...USER_POOL_AWS_DEFAULTS,
             Arn: expect.stringMatching(
-              /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
+              /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
             ),
             CreationDate: roundedDate,
             Id: expect.stringMatching(/^local_[\w\d]{8}$/),

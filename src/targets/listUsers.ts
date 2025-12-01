@@ -1,7 +1,8 @@
 import type {
   ListUsersRequest,
   ListUsersResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import { userToResponseObject } from "./responses";
 import type { Target } from "./Target";

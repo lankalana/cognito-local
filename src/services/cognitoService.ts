@@ -2,24 +2,12 @@ import type { Dirent } from "node:fs";
 import fs from "node:fs/promises";
 import * as path from "node:path";
 import mergeWith from "lodash.mergewith";
-import { ResourceNotFoundError } from "../errors";
 import { ResourceNotFoundError } from "../errors.js";
-import type { UserPoolDefaults } from "../server/config";
 import type { UserPoolDefaults } from "../server/config.js";
-import type { AppClient } from "./appClient";
 import type { AppClient } from "./appClient.js";
-import { Clock } from "./clock.js";
-import type { Context } from "./context";
 import type { Context } from "./context.js";
-import type { DataStore } from "./dataStore/dataStore";
 import type { DataStore } from "./dataStore/dataStore.js";
-import type { DataStoreFactory } from "./dataStore/factory";
 import type { DataStoreFactory } from "./dataStore/factory.js";
-import type {
-  UserPool,
-  UserPoolService,
-  UserPoolServiceFactory,
-} from "./userPoolService";
 import type {
   UserPool,
   UserPoolService,

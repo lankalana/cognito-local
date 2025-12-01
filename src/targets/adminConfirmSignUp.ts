@@ -1,8 +1,9 @@
-import type {
-  AdminConfirmSignUpRequest,
-  AdminConfirmSignUpResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { NotAuthorizedError } from "../errors";
+import {
+  type AdminConfirmSignUpRequest,
+  type AdminConfirmSignUpResponse,
+  UserStatusType,
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import type { Target } from "./Target";

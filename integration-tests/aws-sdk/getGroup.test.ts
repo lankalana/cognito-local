@@ -15,29 +15,23 @@ describe(
       it("get a group", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
-        await client
-          .createGroup({
-            Description: "Description",
-            GroupName: "abc",
-            Precedence: 1,
-            RoleArn: "arn",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.createGroup({
+          Description: "Description",
+          GroupName: "abc",
+          Precedence: 1,
+          RoleArn: "arn",
+          UserPoolId: userPoolId,
+        });
 
-        const getGroupResponse = await client
-          .getGroup({
-            GroupName: "abc",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const getGroupResponse = await client.getGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        });
 
         expect(getGroupResponse.Group).toEqual({
           CreationDate: roundedDate,

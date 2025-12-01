@@ -10,32 +10,26 @@ describe(
     it("throws for missing user", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
       await expect(
-        client
-          .adminInitiateAuth({
-            UserPoolId: userPoolId,
-            ClientId: upc.UserPoolClient?.ClientId!,
-            AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
-            AuthParameters: {
-              USERNAME: "example@example.com",
-              PASSWORD: "def",
-            },
-          })
-          .promise(),
+        client.adminInitiateAuth({
+          UserPoolId: userPoolId,
+          ClientId: upc.UserPoolClient?.ClientId!,
+          AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+          AuthParameters: {
+            USERNAME: "example@example.com",
+            PASSWORD: "def",
+          },
+        }),
       ).rejects.toMatchObject({
         message: "User not authorized",
       });
@@ -44,19 +38,15 @@ describe(
     it("handles users with UNCONFIRMED status", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
       await client.signUp({
         ClientId: upc.UserPoolClient?.ClientId,
@@ -66,17 +56,15 @@ describe(
       });
 
       await expect(
-        client
-          .adminInitiateAuth({
-            UserPoolId: userPoolId,
-            ClientId: upc.UserPoolClient?.ClientId!,
-            AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
-            AuthParameters: {
-              USERNAME: "abc",
-              PASSWORD: "def",
-            },
-          })
-          .promise(),
+        client.adminInitiateAuth({
+          UserPoolId: userPoolId,
+          ClientId: upc.UserPoolClient?.ClientId!,
+          AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+          AuthParameters: {
+            USERNAME: "abc",
+            PASSWORD: "def",
+          },
+        }),
       ).rejects.toMatchObject({
         name: "UserNotConfirmedException",
         message: "User is not confirmed.",
@@ -86,48 +74,40 @@ describe(
     it("can authenticate users with ADMIN_USER_PASSWORD_AUTH auth flow", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
-      const createUserResponse = await client
-        .adminCreateUser({
-          DesiredDeliveryMediums: ["EMAIL"],
-          TemporaryPassword: "def",
-          UserAttributes: [
-            { Name: "email", Value: "example@example.com" },
-            { Name: "email_verified", Value: "true" },
-          ],
-          Username: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const createUserResponse = await client.adminCreateUser({
+        DesiredDeliveryMediums: ["EMAIL"],
+        TemporaryPassword: "def",
+        UserAttributes: [
+          { Name: "email", Value: "example@example.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        Username: "abc",
+        UserPoolId: userPoolId,
+      });
       const userSub = attributeValue(
         "sub",
         createUserResponse.User?.Attributes,
       );
 
-      const response = await client
-        .adminInitiateAuth({
-          UserPoolId: userPoolId,
-          ClientId: upc.UserPoolClient?.ClientId!,
-          AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
-          AuthParameters: {
-            USERNAME: "abc",
-            PASSWORD: "def",
-          },
-        })
-        .promise();
+      const response = await client.adminInitiateAuth({
+        UserPoolId: userPoolId,
+        ClientId: upc.UserPoolClient?.ClientId!,
+        AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+        AuthParameters: {
+          USERNAME: "abc",
+          PASSWORD: "def",
+        },
+      });
 
       expect(
         jwt.decode(response.AuthenticationResult?.AccessToken as string),
@@ -177,60 +157,50 @@ describe(
     it("can authenticate users with REFRESH_TOKEN_AUTH auth flow", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
-      const createUserResponse = await client
-        .adminCreateUser({
-          DesiredDeliveryMediums: ["EMAIL"],
-          TemporaryPassword: "def",
-          UserAttributes: [
-            { Name: "email", Value: "example@example.com" },
-            { Name: "email_verified", Value: "true" },
-          ],
-          Username: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const createUserResponse = await client.adminCreateUser({
+        DesiredDeliveryMediums: ["EMAIL"],
+        TemporaryPassword: "def",
+        UserAttributes: [
+          { Name: "email", Value: "example@example.com" },
+          { Name: "email_verified", Value: "true" },
+        ],
+        Username: "abc",
+        UserPoolId: userPoolId,
+      });
       const userSub = attributeValue(
         "sub",
         createUserResponse.User?.Attributes,
       );
 
-      const initialLoginResponse = await client
-        .adminInitiateAuth({
-          UserPoolId: userPoolId,
-          ClientId: upc.UserPoolClient?.ClientId!,
-          AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
-          AuthParameters: {
-            USERNAME: "abc",
-            PASSWORD: "def",
-          },
-        })
-        .promise();
+      const initialLoginResponse = await client.adminInitiateAuth({
+        UserPoolId: userPoolId,
+        ClientId: upc.UserPoolClient?.ClientId!,
+        AuthFlow: "ADMIN_USER_PASSWORD_AUTH",
+        AuthParameters: {
+          USERNAME: "abc",
+          PASSWORD: "def",
+        },
+      });
 
-      const refreshTokenLoginResponse = await client
-        .adminInitiateAuth({
-          UserPoolId: userPoolId,
-          ClientId: upc.UserPoolClient?.ClientId!,
-          AuthFlow: "REFRESH_TOKEN_AUTH",
-          AuthParameters: {
-            REFRESH_TOKEN: initialLoginResponse.AuthenticationResult
-              ?.RefreshToken as string,
-          },
-        })
-        .promise();
+      const refreshTokenLoginResponse = await client.adminInitiateAuth({
+        UserPoolId: userPoolId,
+        ClientId: upc.UserPoolClient?.ClientId!,
+        AuthFlow: "REFRESH_TOKEN_AUTH",
+        AuthParameters: {
+          REFRESH_TOKEN: initialLoginResponse.AuthenticationResult
+            ?.RefreshToken as string,
+        },
+      });
 
       expect(
         jwt.decode(

@@ -1,4 +1,7 @@
-import type { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type {
+  AttributeType,
+  UsernameAttributeType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { ClockFake } from "../__tests__/clockFake";
 import {
@@ -16,6 +19,7 @@ import {
   attributesToRecord,
   type Group,
   type User,
+  type UserPool,
   type UserPoolService,
   UserPoolServiceFactoryImpl,
   UserPoolServiceImpl,
@@ -527,7 +531,7 @@ describe("User Pool Service", () => {
   });
 
   describe("attributes", () => {
-    const attributes: AttributeListType = [
+    const attributes: AttributeType[] = [
       { Name: "email", Value: "example@example.com" },
       { Name: "sub", Value: "uuid" },
     ];

@@ -1,22 +1,16 @@
 import type {
   CreateUserPoolRequest,
   CreateUserPoolResponse,
-  SchemaAttributesListType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+  SchemaAttributeType,
+} from "@aws-sdk/client-cognito-identity-provider";
 import shortUUID from "short-uuid";
-import type { Services } from "../services";
-import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService.js";
 import type { Services } from "../services/index.js";
-import { userPoolToResponseObject } from "./responses";
 import { userPoolToResponseObject } from "./responses.js";
-import type { Target } from "./Target";
 import type { Target } from "./Target.js";
 
-const generator = shortUUID(
-  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-);
-
+const REGION = "local";
+const ACCOUNT_ID = "000000000000";
 const generator = shortUUID(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 );
@@ -37,9 +31,9 @@ type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
  * @param requestSchema Schema provided by the caller
  */
 const createSchemaAttributes = (
-  defaultAttributes: SchemaAttributesListType,
-  requestSchema: SchemaAttributesListType,
-): SchemaAttributesListType => {
+  defaultAttributes: SchemaAttributeType[],
+  requestSchema: SchemaAttributeType[],
+): SchemaAttributeType[] => {
   const overrides = Object.fromEntries(
     requestSchema.map((x) => [x.Name as string, x]),
   );
@@ -84,7 +78,7 @@ export const CreateUserPool =
   ({ cognito, clock }: CreateUserPoolServices): CreateUserPoolTarget =>
   async (ctx, req) => {
     const now = clock.get();
-    const userPoolId = `${REGION}_${generator.new().slice(0, 8)}`;
+    const userPoolId = `${REGION}_${generator.generate().slice(0, 8)}`;
     const userPool = await cognito.createUserPool(ctx, {
       AccountRecoverySetting: req.AccountRecoverySetting,
       AdminCreateUserConfig: req.AdminCreateUserConfig,

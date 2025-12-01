@@ -1,3 +1,4 @@
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
 import { TestContext } from "../__tests__/testContext.js";
@@ -10,7 +11,7 @@ import {
 
 describe("ListIdentityProviders target", () => {
   let listIdentityProviders: ListIdentityProvidersTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -23,10 +24,9 @@ describe("ListIdentityProviders target", () => {
     const identityProvider1 = TDB.identityProvider();
     const identityProvider2 = TDB.identityProvider();
 
-    mockUserPoolService.listIdentityProviders.mockResolvedValue([
-      identityProvider1,
-      identityProvider2,
-    ]);
+    mockUserPoolService.listIdentityProviders.mockReturnValue(
+      Promise.resolve([identityProvider1, identityProvider2]),
+    );
 
     const output = await listIdentityProviders(TestContext, {
       UserPoolId: "userPoolId",

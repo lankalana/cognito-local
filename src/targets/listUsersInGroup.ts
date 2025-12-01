@@ -1,18 +1,14 @@
 import type {
   ListUsersInGroupRequest,
   ListUsersInGroupResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError, UserNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
 import {
   GroupNotFoundError,
   MissingParameterError,
   UserNotFoundError,
 } from "../errors.js";
-import type { Services } from "../services";
 import type { Services } from "../services/index.js";
-import { userToResponseObject } from "./responses";
 import { userToResponseObject } from "./responses.js";
-import type { Target } from "./Target";
 import type { Target } from "./Target.js";
 
 export type ListUsersInGroupTarget = Target<

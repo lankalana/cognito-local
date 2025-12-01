@@ -1,23 +1,13 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
 import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
-import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
-import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
-import { TestContext } from "../__tests__/testContext";
 import { TestContext } from "../__tests__/testContext.js";
-import * as TDB from "../__tests__/testDataBuilder";
 import * as TDB from "../__tests__/testDataBuilder.js";
-import { InvalidParameterError, NotAuthorizedError } from "../errors";
 import { InvalidParameterError, NotAuthorizedError } from "../errors.js";
-import PrivateKey from "../keys/cognitoLocal.private.json" with {
-  type: "json",
-};
 import PrivateKey from "../keys/cognitoLocal.private.json";
-import type { UserPoolService } from "../services";
 import type { UserPoolService } from "../services/index.js";
-import { DeleteUser, type DeleteUserTarget } from "./deleteUser";
 import { DeleteUser, type DeleteUserTarget } from "./deleteUser.js";
 
 describe("DeleteUser target", () => {

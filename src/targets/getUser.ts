@@ -1,9 +1,13 @@
 import type {
   GetUserRequest,
   GetUserResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { InvalidParameterError, UserNotFoundError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import type { Services } from "../services";
 import type { Token } from "../services/tokenGenerator";
 import type { Target } from "./Target";

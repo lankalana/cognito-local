@@ -1,3 +1,8 @@
+import {
+  type InvocationResponse,
+  InvocationType,
+  type LambdaClient,
+} from "@aws-sdk/client-lambda";
 import type {
   CreateAuthChallengeTriggerEvent,
   CustomEmailSenderTriggerEvent,
@@ -11,9 +16,7 @@ import type {
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
 } from "aws-lambda";
-import type { Lambda as LambdaClient } from "aws-sdk";
-import type { InvocationResponse } from "aws-sdk/clients/lambda";
-import { version as awsSdkVersion } from "aws-sdk/package.json";
+import { awsSdkVersion } from "../constants";
 import {
   InvalidLambdaResponseError,
   UnexpectedLambdaExceptionError,
@@ -243,7 +246,9 @@ export class LambdaService implements Lambda {
     );
     let result: InvocationResponse;
     try {
-      result = await this.lambdaClient.invoke({
+      // TS can't seem to infer that lambdaClient has an invoke method
+      // biome-ignore lint/suspicious/noExplicitAny: see above
+      result = await (this.lambdaClient as any).invoke({
         FunctionName: functionName,
         InvocationType: InvocationType.RequestResponse,
         Payload: JSON.stringify(lambdaEvent),

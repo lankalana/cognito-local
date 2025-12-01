@@ -1,8 +1,9 @@
 import type {
   AddCustomAttributesRequest,
   AddCustomAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { InvalidParameterError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { AttributeDataType } from "@aws-sdk/client-cognito-identity-provider";
+import { InvalidParameterError, MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
 import { assertParameterLength } from "./utils/assertions";

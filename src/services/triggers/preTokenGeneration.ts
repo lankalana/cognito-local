@@ -1,4 +1,4 @@
-import type { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import type { Lambda, PreTokenGenerationTriggerResponse } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
 import type { Trigger } from "./trigger";

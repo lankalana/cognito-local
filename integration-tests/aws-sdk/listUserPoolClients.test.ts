@@ -7,27 +7,22 @@ describe(
     it("can list app clients", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const result = await client
-        .createUserPoolClient({
-          ClientName: "test",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const result = await client.createUserPoolClient({
+        ClientName: "test",
+        UserPoolId: userPoolId,
+      });
 
-      const clientList = await client
-        .listUserPoolClients({
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const _clientList = await client.listUserPoolClients({
+        UserPoolId: userPoolId,
+      });
 
-      expect(clientList).toEqual({
+      expect(_clientList).toEqual({
+        $metadata: result.$metadata,
         UserPoolClients: [
           {
             ClientId: result.UserPoolClient?.ClientId,
@@ -38,14 +33,14 @@ describe(
       });
 
       const clientList = await client.listUserPoolClients({
-        UserPoolId: "test",
+        UserPoolId: userPoolId,
       });
 
       expect(clientList?.UserPoolClients).toEqual([
         {
           ClientId: result.UserPoolClient?.ClientId,
           ClientName: result.UserPoolClient?.ClientName,
-          UserPoolId: "test",
+          UserPoolId: userPoolId,
         },
       ]);
     });

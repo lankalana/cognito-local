@@ -280,6 +280,7 @@ const refreshTokenAuthFlow = async (
 export const InitiateAuth =
   (services: InitiateAuthServices): InitiateAuthTarget =>
   async (ctx, req) => {
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
     const userPool = await services.cognito.getUserPoolForClientId(
       ctx,
       req.ClientId,

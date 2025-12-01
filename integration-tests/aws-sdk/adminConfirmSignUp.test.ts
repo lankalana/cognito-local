@@ -7,19 +7,15 @@ describe(
     it("confirms a user", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const upc = await client
-        .createUserPoolClient({
-          UserPoolId: userPoolId,
-          ClientName: "test",
-        })
-        .promise();
+      const upc = await client.createUserPoolClient({
+        UserPoolId: userPoolId,
+        ClientName: "test",
+      });
 
       await client.signUp({
         UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
@@ -28,28 +24,22 @@ describe(
         Password: "def",
       });
 
-      let user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: "abc",
-        })
-        .promise();
+      let user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: "abc",
+      });
 
       expect(user.UserStatus).toEqual("UNCONFIRMED");
 
-      await client
-        .adminConfirmSignUp({
-          UserPoolId: userPoolId,
-          Username: "abc",
-        })
-        .promise();
+      await client.adminConfirmSignUp({
+        UserPoolId: userPoolId,
+        Username: "abc",
+      });
 
-      user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: "abc",
-        })
-        .promise();
+      user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: "abc",
+      });
 
       expect(user.UserStatus).toEqual("CONFIRMED");
     });

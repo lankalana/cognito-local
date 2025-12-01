@@ -15,45 +15,34 @@ describe(
       it("lists groups", async () => {
         const client = Cognito();
 
-        const pool1 = await client
-          .createUserPool({
-            PoolName: "test 1",
-          })
-          .promise();
+        const pool1 = await client.createUserPool({
+          PoolName: "test 1",
+        });
         const userPool1Id = pool1.UserPool?.Id!;
-        const pool2 = await client
-          .createUserPool({
-            PoolName: "test 2",
-          })
-          .promise();
+        const pool2 = await client.createUserPool({
+          PoolName: "test 2",
+        });
         const userPool2Id = pool2.UserPool?.Id!;
 
-        await client
-          .createGroup({
-            GroupName: "abc",
-            UserPoolId: userPool1Id,
-          })
-          .promise();
-        await client
-          .createGroup({
-            GroupName: "def",
-            UserPoolId: userPool1Id,
-          })
-          .promise();
-        await client
-          .createGroup({
-            GroupName: "ghi",
-            UserPoolId: userPool2Id,
-          })
-          .promise();
+        await client.createGroup({
+          GroupName: "abc",
+          UserPoolId: userPool1Id,
+        });
+        await client.createGroup({
+          GroupName: "def",
+          UserPoolId: userPool1Id,
+        });
+        await client.createGroup({
+          GroupName: "ghi",
+          UserPoolId: userPool2Id,
+        });
 
-        const result1 = await client
-          .listGroups({
-            UserPoolId: userPool1Id,
-          })
-          .promise();
+        const result1 = await client.listGroups({
+          UserPoolId: userPool1Id,
+        });
 
         expect(result1).toEqual({
+          $metadata: result1.$metadata,
           Groups: [
             {
               CreationDate: roundedDate,
@@ -70,13 +59,12 @@ describe(
           ],
         });
 
-        const result2 = await client
-          .listGroups({
-            UserPoolId: userPool2Id,
-          })
-          .promise();
+        const result2 = await client.listGroups({
+          UserPoolId: userPool2Id,
+        });
 
         expect(result2).toEqual({
+          $metadata: result2.$metadata,
           Groups: [
             {
               CreationDate: roundedDate,
@@ -92,26 +80,13 @@ describe(
             CreationDate: roundedDate,
             GroupName: "abc",
             LastModifiedDate: roundedDate,
-            UserPoolId: "test1",
+            UserPoolId: userPool1Id,
           },
           {
             CreationDate: roundedDate,
             GroupName: "def",
             LastModifiedDate: roundedDate,
-            UserPoolId: "test1",
-          },
-        ]);
-
-        const result2 = await client.listGroups({
-          UserPoolId: "test2",
-        });
-
-        expect(result2?.Groups).toEqual([
-          {
-            CreationDate: roundedDate,
-            GroupName: "ghi",
-            LastModifiedDate: roundedDate,
-            UserPoolId: "test2",
+            UserPoolId: userPool1Id,
           },
         ]);
       });
@@ -119,20 +94,17 @@ describe(
       it("returns an empty collection when there are no groups", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
-        const result = await client
-          .listGroups({
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const result = await client.listGroups({
+          UserPoolId: userPoolId,
+        });
 
         expect(result).toEqual({
+          $metadata: result.$metadata,
           Groups: [],
         });
 

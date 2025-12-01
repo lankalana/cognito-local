@@ -1,9 +1,13 @@
 import type {
   DeleteUserAttributesRequest,
   DeleteUserAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  NotAuthorizedError,
+} from "../errors";
 import type { Services } from "../services";
 import type { Token } from "../services/tokenGenerator";
 import { attributesRemove } from "../services/userPoolService";

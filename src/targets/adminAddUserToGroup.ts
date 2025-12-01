@@ -1,12 +1,11 @@
-import type { AdminAddUserToGroupRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import type { AdminAddUserToGroupRequest } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  GroupNotFoundError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
-
-export type AdminAddUserToGroupTarget = Target<
-  AdminAddUserToGroupRequest,
-  object
->;
 
 export type AdminAddUserToGroupTarget = Target<
   AdminAddUserToGroupRequest,

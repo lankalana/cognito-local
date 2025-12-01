@@ -1,8 +1,12 @@
 import type {
   AdminUpdateUserAttributesRequest,
   AdminUpdateUserAttributesResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { InvalidParameterError, NotAuthorizedError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  NotAuthorizedError,
+} from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import type { Context } from "../services/context";

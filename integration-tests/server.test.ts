@@ -1,7 +1,8 @@
+import pino from "pino";
+import { sink } from "pino-test";
 import supertest from "supertest";
 import { describe, expect, it, vi } from "vitest";
 import { createServer } from "../src";
-import { MockLogger } from "../src/__tests__/mockLogger";
 import {
   CodeMismatchError,
   CognitoError,
@@ -15,7 +16,7 @@ describe("HTTP server", () => {
   describe("/", () => {
     it("errors with missing x-azm-target header", async () => {
       const router = vi.fn();
-      const server = createServer(router, MockLogger as any, {});
+      const server = createServer(router, pino(sink()), {});
 
       const response = await supertest(server.application).post("/");
 
@@ -25,7 +26,7 @@ describe("HTTP server", () => {
 
     it("errors with an poorly formatted x-azm-target header", async () => {
       const router = vi.fn();
-      const server = createServer(router, MockLogger as any, {});
+      const server = createServer(router, pino(sink()), {});
 
       const response = await supertest(server.application)
         .post("/")
@@ -44,7 +45,7 @@ describe("HTTP server", () => {
         });
         const router = (target: string) =>
           target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, MockLogger as any, {});
+        const server = createServer(router, pino(sink()), {});
 
         const response = await supertest(server.application)
           .post("/")
@@ -60,7 +61,7 @@ describe("HTTP server", () => {
           .mockRejectedValue(new UnsupportedError("integration test"));
         const router = (target: string) =>
           target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, MockLogger as any, {});
+        const server = createServer(router, pino(sink()), {});
 
         const response = await supertest(server.application)
           .post("/")
@@ -86,7 +87,7 @@ describe("HTTP server", () => {
           const route = vi.fn().mockRejectedValue(error);
           const router = (target: string) =>
             target === "valid" ? route : () => Promise.reject();
-          const server = createServer(router, MockLogger as any, {});
+          const server = createServer(router, pino(sink()), {});
 
           const response = await supertest(server.application)
             .post("/")
@@ -104,7 +105,7 @@ describe("HTTP server", () => {
 
   describe("jwks endpoint", () => {
     it("responds with our public key", async () => {
-      const server = createServer(vi.fn(), MockLogger as any, {});
+      const server = createServer(vi.fn(), pino(sink()), {});
 
       const response = await supertest(server.application).get(
         "/any-user-pool/.well-known/jwks.json",
@@ -128,7 +129,7 @@ describe("HTTP server", () => {
 
   describe("OpenId Configuration Endpoint", () => {
     it("responds with open id configuration", async () => {
-      const server = createServer(vi.fn(), MockLogger as any, {});
+      const server = createServer(vi.fn(), pino(sink()), {});
 
       const response = await supertest(server.application).get(
         "/any-user-pool/.well-known/openid-configuration",

@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
 import type { Logger } from "pino";
-import Pino from "pino-http";
+import pinoHttp from "pino-http";
 import * as uuid from "uuid";
 import { CognitoError, UnsupportedError } from "../errors";
 import PublicKey from "../keys/cognitoLocal.public.json";

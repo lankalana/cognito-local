@@ -15,44 +15,34 @@ describe(
       it("lists groups for a user", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
-        const createGroupResponse = await client
-          .createGroup({
-            GroupName: "group-1",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const createGroupResponse = await client.createGroup({
+          GroupName: "group-1",
+          UserPoolId: userPoolId,
+        });
 
-        await client
-          .adminCreateUser({
-            DesiredDeliveryMediums: ["EMAIL"],
-            TemporaryPassword: "def",
-            UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
-            Username: "user-1",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.adminCreateUser({
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "def",
+          UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
+          Username: "user-1",
+          UserPoolId: userPoolId,
+        });
 
-        await client
-          .adminAddUserToGroup({
-            Username: "user-1",
-            GroupName: "group-1",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.adminAddUserToGroup({
+          Username: "user-1",
+          GroupName: "group-1",
+          UserPoolId: userPoolId,
+        });
 
-        const result = await client
-          .adminListGroupsForUser({
-            UserPoolId: userPoolId,
-            Username: "user-1",
-          })
-          .promise();
+        const result = await client.adminListGroupsForUser({
+          UserPoolId: userPoolId,
+          Username: "user-1",
+        });
 
         expect(result.Groups).toEqual([createGroupResponse.Group]);
       });
@@ -60,36 +50,28 @@ describe(
       it("lists groups for an unassigned user", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
-        await client
-          .createGroup({
-            GroupName: "group-2",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.createGroup({
+          GroupName: "group-2",
+          UserPoolId: userPoolId,
+        });
 
-        await client
-          .adminCreateUser({
-            DesiredDeliveryMediums: ["EMAIL"],
-            TemporaryPassword: "def",
-            UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
-            Username: "user-1",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.adminCreateUser({
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "def",
+          UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
+          Username: "user-1",
+          UserPoolId: userPoolId,
+        });
 
-        const result = await client
-          .adminListGroupsForUser({
-            UserPoolId: userPoolId,
-            Username: "user-1",
-          })
-          .promise();
+        const result = await client.adminListGroupsForUser({
+          UserPoolId: userPoolId,
+          Username: "user-1",
+        });
 
         expect(result.Groups).toHaveLength(0);
       });

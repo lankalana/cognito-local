@@ -1,6 +1,13 @@
 import jwt from "jsonwebtoken";
 import * as uuid from "uuid";
-import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
@@ -53,97 +60,97 @@ describe("VerifyUserAttribute target", () => {
     });
   });
 
-  it.each(["email", "phone_number"] as const)(
-    "verifies the user's %s",
-    async (attr) => {
-      const user = TDB.user({
-        Attributes: [
-          {
-            Name: attr,
-            Value: "new value",
-          },
-          {
-            Name: `${attr}_verified`,
-            Value: "false",
-          },
-        ],
-        AttributeVerificationCode: "123456",
-      });
+  it.each([
+    "email",
+    "phone_number",
+  ] as const)("verifies the user's %s", async (attr) => {
+    const user = TDB.user({
+      Attributes: [
+        {
+          Name: attr,
+          Value: "new value",
+        },
+        {
+          Name: `${attr}_verified`,
+          Value: "false",
+        },
+      ],
+      AttributeVerificationCode: "123456",
+    });
 
-      mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+    mockUserPoolService.getUserByUsername = vi.fn().mockResolvedValue(user);
 
-      await verifyUserAttribute(TestContext, {
-        AccessToken: validToken,
-        AttributeName: attr,
-        Code: "123456",
-      });
+    await verifyUserAttribute(TestContext, {
+      AccessToken: validToken,
+      AttributeName: attr,
+      Code: "123456",
+    });
 
-      expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
-        ...user,
-        Attributes: attributesAppend(
-          user.Attributes,
-          attribute(`${attr}_verified`, "true"),
-        ),
-        UserLastModifiedDate: clock.get(),
-        AttributeVerificationCode: undefined,
-      });
-    },
-  );
+    expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+      ...user,
+      Attributes: attributesAppend(
+        user.Attributes,
+        attribute(`${attr}_verified`, "true"),
+      ),
+      UserLastModifiedDate: clock.get(),
+      AttributeVerificationCode: undefined,
+    });
+  });
 
-  it.each(["email", "phone_number"] as const)(
-    "verifies and applies the user's %s when it's not been applied yet due to AttributesRequireVerificationBeforeUpdate",
-    async (attr) => {
-      const user = TDB.user({
-        Attributes: [
-          {
-            Name: attr,
-            Value: "original value",
-          },
-          {
-            Name: `${attr}_verified`,
-            Value: "true",
-          },
-        ],
-        UnverifiedAttributeChanges: [
-          {
-            Name: attr,
-            Value: "new value",
-          },
-          {
-            Name: `${attr}_verified`,
-            Value: "false",
-          },
-        ],
-        AttributeVerificationCode: "123456",
-      });
+  it.each([
+    "email",
+    "phone_number",
+  ] as const)("verifies and applies the user's %s when it's not been applied yet due to AttributesRequireVerificationBeforeUpdate", async (attr) => {
+    const user = TDB.user({
+      Attributes: [
+        {
+          Name: attr,
+          Value: "original value",
+        },
+        {
+          Name: `${attr}_verified`,
+          Value: "true",
+        },
+      ],
+      UnverifiedAttributeChanges: [
+        {
+          Name: attr,
+          Value: "new value",
+        },
+        {
+          Name: `${attr}_verified`,
+          Value: "false",
+        },
+      ],
+      AttributeVerificationCode: "123456",
+    });
 
-      mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+    mockUserPoolService.getUserByUsername = vi.fn().mockResolvedValue(user);
 
-      await verifyUserAttribute(TestContext, {
-        AccessToken: validToken,
-        AttributeName: attr,
-        Code: "123456",
-      });
+    await verifyUserAttribute(TestContext, {
+      AccessToken: validToken,
+      AttributeName: attr,
+      Code: "123456",
+    });
 
-      expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
-        ...user,
-        Attributes: [
-          attribute(attr, "new value"),
-          attribute(`${attr}_verified`, "true"),
-        ],
-        UnverifiedAttributeChanges: undefined,
-        UserLastModifiedDate: clock.get(),
-        AttributeVerificationCode: undefined,
-      });
-    },
-  );
+    expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+      ...user,
+      Attributes: [
+        attribute(attr, "new value"),
+        attribute(`${attr}_verified`, "true"),
+      ],
+      UnverifiedAttributeChanges: undefined,
+      UserLastModifiedDate: clock.get(),
+      AttributeVerificationCode: undefined,
+    });
+  });
 
   it("does nothing for other attributes", async () => {
     const user = TDB.user({
       AttributeVerificationCode: "123456",
     });
 
-    mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+    mockUserPoolService.getUserByUsername = vi.fn().mockResolvedValue(user);
 
     await verifyUserAttribute(TestContext, {
       AccessToken: validToken,
@@ -165,7 +172,7 @@ describe("VerifyUserAttribute target", () => {
   });
 
   it("throws if user doesn't exist", async () => {
-    mockUserPoolService.getUserByUsername.mockResolvedValue(null);
+    mockUserPoolService.getUserByUsername = vi.fn().mockResolvedValue(null);
 
     await expect(
       verifyUserAttribute(TestContext, {
@@ -180,7 +187,7 @@ describe("VerifyUserAttribute target", () => {
     const user = TDB.user({
       AttributeVerificationCode: "5555",
     });
-    mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+    mockUserPoolService.getUserByUsername = vi.fn().mockResolvedValue(user);
 
     await expect(
       verifyUserAttribute(TestContext, {

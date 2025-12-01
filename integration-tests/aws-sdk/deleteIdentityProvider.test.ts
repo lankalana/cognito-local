@@ -1,3 +1,4 @@
+import { describe, it } from "vitest";
 import { ClockFake } from "../../src/__tests__/clockFake.js";
 import { withCognitoSdk } from "./setup.js";
 
@@ -11,7 +12,7 @@ describe(
   "CognitoIdentityServiceProvider.deleteIdentityProvider",
   withCognitoSdk(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (Cognito) => {
+    (_Cognito) => {
       it.todo("deletes an identity provider");
     },
     {

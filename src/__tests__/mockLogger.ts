@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import type { LogService } from "../services/LogService";
+import type { LogService } from "../services/LogService.js";
 
 export const MockLogger = {
   info: vi.fn(),

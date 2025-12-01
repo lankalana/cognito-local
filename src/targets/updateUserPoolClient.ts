@@ -1,8 +1,8 @@
 import type {
   UpdateUserPoolClientRequest,
   UpdateUserPoolClientResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { ResourceNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, ResourceNotFoundError } from "../errors";
 import type { Services } from "../services";
 import type { AppClient } from "../services/appClient";
 import { appClientToResponseObject } from "./responses";

@@ -1,3 +1,11 @@
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
 import { ClockFake } from "../__tests__/clockFake.js";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
@@ -14,7 +22,7 @@ const originalDate = new Date();
 
 describe("UpdateGroup target", () => {
   let updateIdentityProvider: UpdateIdentityProviderTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -30,8 +38,8 @@ describe("UpdateGroup target", () => {
   it("updates an identity provider", async () => {
     const existingIdentityProvider = TDB.identityProvider();
 
-    mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider,
+    mockUserPoolService.getIdentityProviderByProviderName.mockReturnValue(
+      Promise.resolve(existingIdentityProvider),
     );
 
     const newDate = new Date();
@@ -77,9 +85,9 @@ describe("UpdateGroup target", () => {
       IdpIdentifiers: ["old identifier"],
     });
 
-    mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider,
-    );
+    mockUserPoolService.getIdentityProviderByProviderName = vi
+      .fn()
+      .mockReturnValue(existingIdentityProvider);
 
     const newDate = new Date();
     clock.advanceTo(new Date());
@@ -116,8 +124,8 @@ describe("UpdateGroup target", () => {
   });
 
   it("throws if the identity provider doesn't exist", async () => {
-    mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      null,
+    mockUserPoolService.getIdentityProviderByProviderName.mockReturnValue(
+      Promise.resolve(null),
     );
 
     await expect(

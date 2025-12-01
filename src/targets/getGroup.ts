@@ -1,8 +1,8 @@
 import type {
   GetGroupRequest,
   GetGroupResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { GroupNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { GroupNotFoundError, MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import { groupToResponseObject } from "./responses";
 import type { Target } from "./Target";

@@ -1,5 +1,6 @@
 import { IdentityProviderTypeType } from "@aws-sdk/client-cognito-identity-provider";
 
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { ClockFake } from "../__tests__/clockFake.js";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
@@ -14,7 +15,7 @@ const originalDate = new Date();
 
 describe("CreateIdentityProvider target", () => {
   let createIdentityProvider: CreateIdentityProviderTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();

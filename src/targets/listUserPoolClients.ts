@@ -1,7 +1,8 @@
 import type {
   ListUserPoolClientsRequest,
   ListUserPoolClientsResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import { appClientToResponseObject } from "./responses";
 import type { Target } from "./Target";
@@ -24,6 +25,6 @@ export const ListUserPoolClients =
     const clients = await cognito.listAppClients(ctx, req.UserPoolId);
 
     return {
-      UserPoolClients: clients.map(appClientToResponseListObject),
+      UserPoolClients: clients.map(appClientToResponseObject),
     };
   };

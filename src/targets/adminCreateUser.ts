@@ -38,7 +38,7 @@ type AdminCreateUserServices = Pick<
 >;
 
 const selectAppropriateDeliveryMethod = (
-  desiredDeliveryMediums: DeliveryMediumListType,
+  desiredDeliveryMediums: DeliveryMediumType[],
   user: User,
 ): DeliveryDetails | null => {
   if (desiredDeliveryMediums.includes("SMS")) {
@@ -125,7 +125,9 @@ export const AdminCreateUser =
     const now = clock.get();
 
     const temporaryPassword =
-      req.TemporaryPassword ?? process.env.CODE ?? generator.new().slice(0, 6);
+      req.TemporaryPassword ??
+      process.env.CODE ??
+      generator.generate().slice(0, 6);
 
     let username = req.Username;
     if (userPool.options.UsernameAttributes?.includes("email")) {
@@ -147,7 +149,9 @@ export const AdminCreateUser =
     const user: User = {
       Username: username,
       Password: temporaryPassword,
-      Attributes: attributes.sort((a, b) => a.Name.localeCompare(b.Name)),
+      Attributes: attributes.sort((a, b) =>
+        a.Name && b.Name ? a.Name.localeCompare(b.Name) : 0,
+      ),
       Enabled: true,
       UserStatus: "FORCE_CHANGE_PASSWORD",
       ConfirmationCode: undefined,

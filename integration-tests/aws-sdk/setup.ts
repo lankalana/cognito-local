@@ -1,12 +1,11 @@
 import fs from "node:fs";
 import type http from "node:http";
 import { promisify } from "node:util";
-import * as AWS from "aws-sdk";
-import type { Logger } from "pino";
+import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
+import { type Logger, pino } from "pino";
 import { afterEach, beforeEach, vi } from "vitest";
 import { createServer } from "../../src";
 import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
-import { MockLogger } from "../../src/__tests__/mockLogger";
 import { DefaultConfig } from "../../src/server/config";
 import { Router } from "../../src/server/Router";
 import {
@@ -25,6 +24,8 @@ import { UserPoolServiceFactoryImpl } from "../../src/services/userPoolService";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const rm = promisify(fs.rm);
+
+const sink = () => ({ write: () => {} });
 
 export const withCognitoSdk =
   (

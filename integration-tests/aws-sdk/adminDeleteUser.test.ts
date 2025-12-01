@@ -15,29 +15,23 @@ describe(
       it("deletes a user", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
         // create the user
-        const createUserResult = await client
-          .adminCreateUser({
-            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-            Username: "abc",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const createUserResult = await client.adminCreateUser({
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+          Username: "abc",
+          UserPoolId: userPoolId,
+        });
 
         // verify they exist
-        const beforeUserResult = await client
-          .adminGetUser({
-            Username: "abc",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const beforeUserResult = await client.adminGetUser({
+          Username: "abc",
+          UserPoolId: userPoolId,
+        });
 
         expect(beforeUserResult).toEqual({
           $metadata: beforeUserResult.$metadata,
@@ -50,21 +44,17 @@ describe(
         });
 
         // delete the user
-        await client
-          .adminDeleteUser({
-            Username: "abc",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.adminDeleteUser({
+          Username: "abc",
+          UserPoolId: userPoolId,
+        });
 
         // verify they don't exist anymore
         await expect(
-          client
-            .adminGetUser({
-              Username: "abc",
-              UserPoolId: userPoolId,
-            })
-            .promise(),
+          client.adminGetUser({
+            Username: "abc",
+            UserPoolId: userPoolId,
+          }),
         ).rejects.toMatchObject({
           name: "UserNotFoundException",
           message: "User does not exist.",
@@ -74,32 +64,26 @@ describe(
       it("deletes a user with an email address as a username", async () => {
         const client = Cognito();
 
-        const pool = await client
-          .createUserPool({
-            PoolName: "test",
-          })
-          .promise();
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
         const userPoolId = pool.UserPool?.Id!;
 
         // create the user
-        const createUserResult = await client
-          .adminCreateUser({
-            UserAttributes: [
-              { Name: "email", Value: "example@example.com" },
-              { Name: "phone_number", Value: "0400000000" },
-            ],
-            Username: "example@example.com",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const createUserResult = await client.adminCreateUser({
+          UserAttributes: [
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
+          ],
+          Username: "example@example.com",
+          UserPoolId: userPoolId,
+        });
 
         // verify they exist
-        const beforeUserResult = await client
-          .adminGetUser({
-            Username: "example@example.com",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        const beforeUserResult = await client.adminGetUser({
+          Username: "example@example.com",
+          UserPoolId: userPoolId,
+        });
 
         expect(beforeUserResult).toEqual({
           $metadata: beforeUserResult.$metadata,
@@ -112,21 +96,17 @@ describe(
         });
 
         // delete the user
-        await client
-          .adminDeleteUser({
-            Username: "example@example.com",
-            UserPoolId: userPoolId,
-          })
-          .promise();
+        await client.adminDeleteUser({
+          Username: "example@example.com",
+          UserPoolId: userPoolId,
+        });
 
         // verify they don't exist anymore
         await expect(
-          client
-            .adminGetUser({
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise(),
+          client.adminGetUser({
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          }),
         ).rejects.toMatchObject({
           name: "UserNotFoundException",
           message: "User does not exist.",

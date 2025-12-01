@@ -1,8 +1,8 @@
 import type {
   RevokeTokenRequest,
   RevokeTokenResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { NotAuthorizedError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
 
@@ -22,7 +22,8 @@ export const RevokeToken =
     const user = users.find(
       (user) =>
         Array.isArray(user.RefreshTokens) &&
-        user.RefreshTokens.includes(req.Token),
+        // biome-ignore lint/style/noNonNullAssertion: TypeScript requirement
+        user.RefreshTokens.includes(req.Token!),
     );
 
     if (!user) {

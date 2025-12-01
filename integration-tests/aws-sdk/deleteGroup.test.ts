@@ -7,45 +7,35 @@ describe(
     it("deletes a group", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      await client
-        .createGroup({
-          GroupName: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      await client.createGroup({
+        GroupName: "abc",
+        UserPoolId: userPoolId,
+      });
 
-      const getGroupResponse = await client
-        .getGroup({
-          GroupName: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const getGroupResponse = await client.getGroup({
+        GroupName: "abc",
+        UserPoolId: userPoolId,
+      });
 
       expect(getGroupResponse.Group).toBeDefined();
 
-      await client
-        .deleteGroup({
-          GroupName: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      await client.deleteGroup({
+        GroupName: "abc",
+        UserPoolId: userPoolId,
+      });
 
       await expect(
-        client
-          .getGroup({
-            GroupName: "abc",
-            UserPoolId: userPoolId,
-          })
-          .promise(),
+        client.getGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        }),
       ).rejects.toMatchObject({
-        code: "ResourceNotFoundException",
+        __type: "ResourceNotFoundException",
       });
     });
   }),

@@ -9,7 +9,10 @@ import {
 } from "../src/services";
 import { CognitoServiceFactoryImpl } from "../src/services/cognitoService";
 import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
-import { UserPoolServiceFactoryImpl } from "../src/services/userPoolService";
+import {
+  type User,
+  UserPoolServiceFactoryImpl,
+} from "../src/services/userPoolService";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const readFile = promisify(fs.readFile);

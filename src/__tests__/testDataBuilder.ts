@@ -1,7 +1,12 @@
 import { v4 } from "uuid";
 import type { AppClient } from "../services/appClient";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import type { Group, User, UserPool } from "../services/userPoolService";
+import type {
+  Group,
+  IdentityProvider,
+  User,
+  UserPool,
+} from "../services/userPoolService";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;
@@ -81,7 +86,8 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     AdminCreateUserConfig: partial?.AdminCreateUserConfig ?? undefined,
     AliasAttributes: partial?.AliasAttributes ?? undefined,
     Arn:
-      partial?.Arn ?? `arn:aws:cognito-idp:local:local:userpool/${userPoolId}`,
+      partial?.Arn ??
+      `arn:aws:cognito-idp:local:000000000000:userpool/${userPoolId}`,
     AutoVerifiedAttributes: partial?.AutoVerifiedAttributes ?? undefined,
     CreationDate: partial?.CreationDate ?? new Date(),
     CustomDomain: partial?.CustomDomain ?? undefined,

@@ -8,30 +8,24 @@ describe(
     it("updates a user's attributes", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      await client
-        .adminCreateUser({
-          UserAttributes: [
-            { Name: "email", Value: "example@example.com" },
-            { Name: "phone_number", Value: "0400000000" },
-          ],
-          Username: "abc",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      await client.adminCreateUser({
+        UserAttributes: [
+          { Name: "email", Value: "example@example.com" },
+          { Name: "phone_number", Value: "0400000000" },
+        ],
+        Username: "abc",
+        UserPoolId: userPoolId,
+      });
 
-      let user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: "abc",
-        })
-        .promise();
+      let user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: "abc",
+      });
 
       expect(user.UserAttributes).toEqual([
         { Name: "email", Value: "example@example.com" },
@@ -39,20 +33,16 @@ describe(
         { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
 
-      await client
-        .adminUpdateUserAttributes({
-          UserPoolId: userPoolId,
-          Username: "abc",
-          UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
-        })
-        .promise();
+      await client.adminUpdateUserAttributes({
+        UserPoolId: userPoolId,
+        Username: "abc",
+        UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
+      });
 
-      user = await client
-        .adminGetUser({
-          UserPoolId: userPoolId,
-          Username: "abc",
-        })
-        .promise();
+      user = await client.adminGetUser({
+        UserPoolId: userPoolId,
+        Username: "abc",
+      });
 
       expect(user.UserAttributes).toEqual([
         { Name: "email", Value: "example2@example.com" },

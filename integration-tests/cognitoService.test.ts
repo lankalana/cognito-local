@@ -1,4 +1,4 @@
-import fs from "node:fs";
+import fs, { existsSync } from "node:fs";
 import { promisify } from "node:util";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TestContext } from "../src/__tests__/testContext";

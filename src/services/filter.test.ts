@@ -3,14 +3,15 @@ import { InvalidParameterError } from "../errors";
 import { FilterConfig } from "./filter";
 
 describe("FilterConfig", () => {
-  it.each(["abc", 'attr1 != "value"', "attr1 = value"])(
-    "throws if an invalid filter is used: %s",
-    (input) => {
-      expect(() => new FilterConfig({}).parse(input)).toThrowError(
-        new InvalidParameterError("Error while parsing filter"),
-      );
-    },
-  );
+  it.each([
+    "abc",
+    'attr1 != "value"',
+    "attr1 = value",
+  ])("throws if an invalid filter is used: %s", (input) => {
+    expect(() => new FilterConfig({}).parse(input)).toThrowError(
+      new InvalidParameterError("Error while parsing filter"),
+    );
+  });
 
   it("throws if an unsupported attributeName is used", () => {
     expect(() =>

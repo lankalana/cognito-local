@@ -1,7 +1,8 @@
 import type {
   CreateUserPoolClientRequest,
   CreateUserPoolClientResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError } from "../errors";
 import type { Services } from "../services";
 import { type AppClient, newId } from "../services/appClient";
 import { appClientToResponseObject } from "./responses";

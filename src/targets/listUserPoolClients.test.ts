@@ -8,6 +8,7 @@ import {
   ListUserPoolClients,
   type ListUserPoolClientsTarget,
 } from "./listUserPoolClients";
+import { appClientToResponseObject } from "./responses";
 
 describe("ListUserPoolClients target", () => {
   let mockCognitoService: MockedObject<CognitoService>;
@@ -35,8 +36,8 @@ describe("ListUserPoolClients target", () => {
 
     expect(output).toBeDefined();
     expect(output.UserPoolClients).toEqual([
-      appClientToResponseListObject(appClient1),
-      appClientToResponseListObject(appClient2),
+      appClientToResponseObject(appClient1),
+      appClientToResponseObject(appClient2),
     ]);
   });
 });

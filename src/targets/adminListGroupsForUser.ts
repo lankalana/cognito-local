@@ -1,8 +1,8 @@
 import type {
   AdminListGroupsForUserRequest,
   AdminListGroupsForUserResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { UserNotFoundError } from "../errors";
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, UserNotFoundError } from "../errors";
 import type { Services } from "../services";
 import { groupToResponseObject } from "./responses";
 import type { Target } from "./Target";
@@ -28,6 +28,7 @@ export const AdminListGroupsForUser =
 
     const groups = await userPool.listGroups(ctx);
     const usersGroups = groups.filter((x) =>
+      // biome-ignore lint/style/noNonNullAssertion: TypeScript requirement
       x.members?.includes(req.Username!),
     );
 

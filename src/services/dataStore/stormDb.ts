@@ -32,7 +32,7 @@ export class StormDBDataStore implements DataStore {
     return (
       (await (Array.isArray(key) ? key : [key])
         .reduce((acc, k) => acc.get([k]), this.db)
-        .value()) ??
+        ?.value()) ??
       defaultValue ??
       null
     );

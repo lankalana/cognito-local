@@ -7,21 +7,18 @@ describe(
     it("can create a new app client", async () => {
       const client = Cognito();
 
-      const pool = await client
-        .createUserPool({
-          PoolName: "test",
-        })
-        .promise();
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
       const userPoolId = pool.UserPool?.Id!;
 
-      const result = await client
-        .createUserPoolClient({
-          ClientName: "test",
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const result = await client.createUserPoolClient({
+        ClientName: "test",
+        UserPoolId: userPoolId,
+      });
 
       expect(result).toEqual({
+        $metadata: result.$metadata,
         UserPoolClient: {
           ClientId: expect.stringMatching(/^[a-z0-9]{25}$/),
           ClientName: "test",
@@ -36,14 +33,13 @@ describe(
         },
       });
 
-      const createdClient = await client
-        .describeUserPoolClient({
-          ClientId: result.UserPoolClient?.ClientId!,
-          UserPoolId: userPoolId,
-        })
-        .promise();
+      const createdClient = await client.describeUserPoolClient({
+        ClientId: result.UserPoolClient?.ClientId!,
+        UserPoolId: userPoolId,
+      });
 
       expect(createdClient).toEqual({
+        $metadata: createdClient.$metadata,
         UserPoolClient: result.UserPoolClient,
       });
 

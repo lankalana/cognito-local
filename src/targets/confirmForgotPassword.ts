@@ -1,8 +1,13 @@
-import type {
-  ConfirmForgotPasswordRequest,
-  ConfirmForgotPasswordResponse,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
-import { CodeMismatchError, UserNotFoundError } from "../errors";
+import {
+  type ConfirmForgotPasswordRequest,
+  type ConfirmForgotPasswordResponse,
+  UserStatusType,
+} from "@aws-sdk/client-cognito-identity-provider";
+import {
+  CodeMismatchError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
 import type { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import type { Target } from "./Target";

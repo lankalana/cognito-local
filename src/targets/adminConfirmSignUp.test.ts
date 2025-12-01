@@ -1,3 +1,4 @@
+import { UserStatusType } from "@aws-sdk/client-cognito-identity-provider";
 import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";

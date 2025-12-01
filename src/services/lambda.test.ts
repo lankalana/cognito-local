@@ -1,5 +1,4 @@
-import type * as AWS from "aws-sdk";
-import { version } from "aws-sdk/package.json";
+import type { Lambda } from "@aws-sdk/client-lambda";
 import {
   beforeEach,
   describe,
@@ -9,6 +8,7 @@ import {
   vi,
 } from "vitest";
 import { TestContext } from "../__tests__/testContext";
+import { awsSdkVersion } from "../constants";
 import {
   InvalidLambdaResponseError,
   UserLambdaValidationError,
@@ -16,7 +16,8 @@ import {
 import { LambdaService } from "./lambda";
 
 describe("Lambda function invoker", () => {
-  let mockLambdaClient: MockedObject<AWS.Lambda>;
+  let mockLambdaClient: MockedObject<Lambda>;
+  const encoder = new TextEncoder();
 
   beforeEach(() => {
     mockLambdaClient = {

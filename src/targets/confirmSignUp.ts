@@ -1,6 +1,6 @@
-import type {
-  ConfirmSignUpRequest,
-  ConfirmSignUpResponse,
+import {
+  type ConfirmSignUpRequest,
+  type ConfirmSignUpResponse,
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
 

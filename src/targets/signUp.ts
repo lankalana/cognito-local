@@ -2,9 +2,13 @@ import type {
   SignUpRequest,
   SignUpResponse,
   UserStatusType,
-} from "aws-sdk/clients/cognitoidentityserviceprovider";
+} from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
-import { InvalidParameterError, UsernameExistsError } from "../errors";
+import {
+  InvalidParameterError,
+  MissingParameterError,
+  UsernameExistsError,
+} from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import type { Context } from "../services/context";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";

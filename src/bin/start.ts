@@ -1,12 +1,9 @@
 #!/usr/bin/env node
 
 import * as https from "node:https";
-import Pino, { pino } from "pino";
-import PinoPretty from "pino-pretty";
+import { pino } from "pino";
 import PinoPretty from "pino-pretty";
 import { createDefaultServer } from "../server";
-
-import { createDefaultServer } from "../server/index.js";
 
 const logger = pino(
   {

@@ -1,4 +1,4 @@
-import type { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
 import { NotAuthorizedError, ResourceNotFoundError } from "../../errors";
 import type { Clock } from "../clock";

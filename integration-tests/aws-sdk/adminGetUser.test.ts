@@ -18,21 +18,17 @@ describe(
         it("gets a user", async () => {
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+          });
           const userPoolId = pool.UserPool?.Id!;
 
           // create the user
-          const createUserResult = await client
-            .adminCreateUser({
-              UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-              Username: "abc",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+            Username: "abc",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult.User?.Username).toEqual("abc");
           expect(
@@ -40,14 +36,13 @@ describe(
           ).toEqual(expect.stringMatching(UUID));
 
           // verify they exist
-          const result = await client
-            .adminGetUser({
-              Username: "abc",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const result = await client.adminGetUser({
+            Username: "abc",
+            UserPoolId: userPoolId,
+          });
 
           expect(result).toEqual({
+            $metadata: result.$metadata,
             Enabled: true,
             UserAttributes: createUserResult.User?.Attributes,
             UserCreateDate: createUserResult.User?.UserCreateDate,
@@ -62,22 +57,18 @@ describe(
         it("gets a user", async () => {
           const client = Cognito();
 
-          const pool = await client
-            .createUserPool({
-              PoolName: "test",
-              UsernameAttributes: ["email"],
-            })
-            .promise();
+          const pool = await client.createUserPool({
+            PoolName: "test",
+            UsernameAttributes: ["email"],
+          });
           const userPoolId = pool.UserPool?.Id!;
 
           // create the user
-          const createUserResult = await client
-            .adminCreateUser({
-              UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          const createUserResult = await client.adminCreateUser({
+            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(createUserResult.User?.Username).toEqual(
             expect.stringMatching(UUID),
@@ -87,14 +78,13 @@ describe(
           ).toEqual(expect.stringMatching(UUID));
 
           // verify they exist by email
-          let result = await client
-            .adminGetUser({
-              Username: "example@example.com",
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          let result = await client.adminGetUser({
+            Username: "example@example.com",
+            UserPoolId: userPoolId,
+          });
 
           expect(result).toEqual({
+            $metadata: result.$metadata,
             Enabled: true,
             UserAttributes: createUserResult.User?.Attributes,
             UserCreateDate: createUserResult.User?.UserCreateDate,
@@ -104,17 +94,13 @@ describe(
           });
 
           // verify they exist by sub
-          result = await client
-            .adminGetUser({
-              Username: attributeValue(
-                "sub",
-                createUserResult.User?.Attributes,
-              )!,
-              UserPoolId: userPoolId,
-            })
-            .promise();
+          result = await client.adminGetUser({
+            Username: attributeValue("sub", createUserResult.User?.Attributes)!,
+            UserPoolId: userPoolId,
+          });
 
           expect(result).toEqual({
+            $metadata: result.$metadata,
             Enabled: true,
             UserAttributes: createUserResult.User?.Attributes,
             UserCreateDate: createUserResult.User?.UserCreateDate,
