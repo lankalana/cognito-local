@@ -1,20 +1,24 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CodeMismatchError, UserNotFoundError } from '../errors.js';
-import { Triggers, UserPoolService } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { ConfirmForgotPassword, ConfirmForgotPasswordTarget } from './confirmForgotPassword.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { CodeMismatchError, UserNotFoundError } from "../errors";
+import type { Triggers, UserPoolService } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import {
+  ConfirmForgotPassword,
+  type ConfirmForgotPasswordTarget,
+} from "./confirmForgotPassword";
 
 const currentDate = new Date();
 
 describe('ConfirmForgotPassword target', () => {
   let confirmForgotPassword: ConfirmForgotPasswordTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockTriggers: jest.Mocked<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockTriggers: MockedObject<Triggers>;
 
   let clock: ClockFake;
 
@@ -35,11 +39,11 @@ describe('ConfirmForgotPassword target', () => {
 
     await expect(
       confirmForgotPassword(TestContext, {
-        ClientId: 'clientId',
-        Username: 'janice',
-        ConfirmationCode: '123456',
-        Password: 'newPassword',
-      })
+        ClientId: "clientId",
+        Username: "janice",
+        ConfirmationCode: "123456",
+        Password: "newPassword",
+      }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
@@ -53,11 +57,11 @@ describe('ConfirmForgotPassword target', () => {
 
     await expect(
       confirmForgotPassword(TestContext, {
-        ClientId: 'clientId',
-        Username: 'janice',
-        ConfirmationCode: '123456',
-        Password: 'newPassword',
-      })
+        ClientId: "clientId",
+        Username: "janice",
+        ConfirmationCode: "123456",
+        Password: "newPassword",
+      }),
     ).rejects.toBeInstanceOf(CodeMismatchError);
   });
 
@@ -110,19 +114,22 @@ describe('ConfirmForgotPassword target', () => {
           Password: 'newPassword',
         });
 
-        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
-          clientId: 'clientId',
-          clientMetadata: {
-            client: 'metadata',
+        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
+          TestContext,
+          {
+            clientId: "clientId",
+            clientMetadata: {
+              client: "metadata",
+            },
+            source: "PostConfirmation_ConfirmForgotPassword",
+            userAttributes: attributesAppend(
+              user.Attributes,
+              attribute("cognito:user_status", "CONFIRMED"),
+            ),
+            userPoolId: "test",
+            username: user.Username,
           },
-          source: 'PostConfirmation_ConfirmForgotPassword',
-          userAttributes: attributesAppend(
-            user.Attributes,
-            attribute('cognito:user_status', 'CONFIRMED')
-          ),
-          userPoolId: 'test',
-          username: user.Username,
-        });
+        );
       });
     });
 

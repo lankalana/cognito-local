@@ -1,8 +1,7 @@
-import { v4 } from 'uuid';
-
-import { AppClient } from '../services/appClient.js';
-import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
-import { Group, IdentityProvider, User, UserPool } from '../services/userPoolService.js';
+import { v4 } from "uuid";
+import type { AppClient } from "../services/appClient";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import type { Group, User, UserPool } from "../services/userPoolService";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;
@@ -55,20 +54,21 @@ export const identityProvider = (partial?: Partial<IdentityProvider>): IdentityP
 
 export const user = (partial?: Partial<User>): User => ({
   Attributes: partial?.Attributes ?? [
-    { Name: 'sub', Value: v4() },
-    { Name: 'email', Value: `${id('example')}@example.com` },
+    { Name: "email", Value: `${id("example")}@example.com` },
+    { Name: "sub", Value: v4() },
   ],
   AttributeVerificationCode: partial?.AttributeVerificationCode ?? undefined,
   ConfirmationCode: partial?.ConfirmationCode ?? undefined,
   Enabled: partial?.Enabled ?? true,
   MFACode: partial?.MFACode ?? undefined,
   MFAOptions: partial?.MFAOptions ?? undefined,
-  Password: partial?.Password ?? 'Password123!',
+  Password: partial?.Password ?? "Password123!",
+  RefreshTokens: partial?.RefreshTokens ?? [],
+  UnverifiedAttributeChanges: partial?.UnverifiedAttributeChanges,
   UserCreateDate: partial?.UserCreateDate ?? new Date(),
   UserLastModifiedDate: partial?.UserLastModifiedDate ?? new Date(),
-  Username: partial?.Username ?? id('User'),
-  UserStatus: partial?.UserStatus ?? 'CONFIRMED',
-  RefreshTokens: [],
+  UserStatus: partial?.UserStatus ?? "CONFIRMED",
+  Username: partial?.Username ?? id("User"),
 });
 
 export const userPool = (partial?: Partial<UserPool>): UserPool => {

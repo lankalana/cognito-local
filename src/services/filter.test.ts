@@ -1,22 +1,25 @@
-import { InvalidParameterError } from '../errors.js';
-import { FilterConfig } from './filter.js';
+import { describe, expect, it } from "vitest";
+import { InvalidParameterError } from "../errors";
+import { FilterConfig } from "./filter";
 
 describe('FilterConfig', () => {
   it.each(['abc', 'attr1 != "value"', 'attr1 = value'])(
     'throws if an invalid filter is used: %s',
     (input) => {
       expect(() => new FilterConfig({}).parse(input)).toThrowError(
-        new InvalidParameterError('Error while parsing filter')
+        new InvalidParameterError("Error while parsing filter"),
       );
-    }
+    },
   );
 
   it('throws if an unsupported attributeName is used', () => {
     expect(() =>
       new FilterConfig<{ FirstName: string }>({
         first_name: FilterConfig.caseSensitive((x) => x.FirstName),
-      }).parse('invalid = "value"')
-    ).toThrowError(new InvalidParameterError('Invalid search attribute: invalid'));
+      }).parse('invalid = "value"'),
+    ).toThrowError(
+      new InvalidParameterError("Invalid search attribute: invalid"),
+    );
   });
 
   it('returns an always-true expression if the filter is empty', () => {
@@ -41,7 +44,7 @@ describe('FilterConfig', () => {
           }).parse(`first_name = "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
 
       it.each`
@@ -64,7 +67,7 @@ describe('FilterConfig', () => {
           }).parse(`status = "${input}"`);
 
           expect(expr({ Enabled: value })).toBe(result);
-        }
+        },
       );
     });
 
@@ -83,7 +86,7 @@ describe('FilterConfig', () => {
           }).parse(`first_name = "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
   });
@@ -107,7 +110,7 @@ describe('FilterConfig', () => {
           }).parse(`first_name ^= "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
 
@@ -129,7 +132,7 @@ describe('FilterConfig', () => {
           }).parse(`first_name ^= "${input}"`);
 
           expect(expr({ FirstName: value })).toBe(result);
-        }
+        },
       );
     });
   });

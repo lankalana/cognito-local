@@ -1,11 +1,9 @@
-import {
+import type {
   GetUserPoolMfaConfigRequest,
   GetUserPoolMfaConfigResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 export type GetUserPoolMfaConfigTarget = Target<
   GetUserPoolMfaConfigRequest,

@@ -1,18 +1,22 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { InvalidParameterError } from '../errors.js';
-import { CognitoService } from '../services/index.js';
-import { AddCustomAttributes, AddCustomAttributesTarget } from './addCustomAttributes.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { InvalidParameterError } from "../errors";
+import type { CognitoService } from "../services";
+import {
+  AddCustomAttributes,
+  type AddCustomAttributesTarget,
+} from "./addCustomAttributes";
 
 const originalDate = new Date();
 
 describe('AddCustomAttributes target', () => {
   let addCustomAttributes: AddCustomAttributesTarget;
   let clock: ClockFake;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     clock = new ClockFake(originalDate);
@@ -43,21 +47,24 @@ describe('AddCustomAttributes target', () => {
       ],
     });
 
-    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
-      ...userPool,
-      SchemaAttributes: [
-        ...(userPool.SchemaAttributes ?? []),
-        {
-          Name: 'custom:test',
-          AttributeDataType: 'String',
-          DeveloperOnlyAttribute: false,
-          Mutable: true,
-          Required: false,
-          StringAttributeConstraints: {},
-        },
-      ],
-      LastModifiedDate: newDate,
-    });
+    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(
+      TestContext,
+      {
+        ...userPool,
+        SchemaAttributes: [
+          ...(userPool.SchemaAttributes ?? []),
+          {
+            Name: "custom:test",
+            AttributeDataType: "String",
+            DeveloperOnlyAttribute: false,
+            Mutable: true,
+            Required: false,
+            StringAttributeConstraints: {},
+          },
+        ],
+        LastModifiedDate: newDate,
+      },
+    );
   });
 
   it('can create a custom attribute with no name', async () => {
@@ -78,21 +85,24 @@ describe('AddCustomAttributes target', () => {
       ],
     });
 
-    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
-      ...userPool,
-      SchemaAttributes: [
-        ...(userPool.SchemaAttributes ?? []),
-        {
-          Name: 'custom:null',
-          AttributeDataType: 'String',
-          DeveloperOnlyAttribute: false,
-          Mutable: true,
-          Required: false,
-          StringAttributeConstraints: {},
-        },
-      ],
-      LastModifiedDate: newDate,
-    });
+    expect(mockUserPoolService.updateOptions).toHaveBeenCalledWith(
+      TestContext,
+      {
+        ...userPool,
+        SchemaAttributes: [
+          ...(userPool.SchemaAttributes ?? []),
+          {
+            Name: "custom:null",
+            AttributeDataType: "String",
+            DeveloperOnlyAttribute: false,
+            Mutable: true,
+            Required: false,
+            StringAttributeConstraints: {},
+          },
+        ],
+        LastModifiedDate: newDate,
+      },
+    );
   });
 
   it('throws if an attribute with the name already exists', async () => {
@@ -121,9 +131,11 @@ describe('AddCustomAttributes target', () => {
             Name: 'test',
           },
         ],
-      })
+      }),
     ).rejects.toEqual(
-      new InvalidParameterError('custom:test: Existing attribute already has name custom:test.')
+      new InvalidParameterError(
+        "custom:test: Existing attribute already has name custom:test.",
+      ),
     );
 
     expect(mockUserPoolService.updateOptions).not.toHaveBeenCalled();

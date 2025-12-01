@@ -1,22 +1,30 @@
-import { CognitoIdentityProvider } from '@aws-sdk/client-cognito-identity-provider';
-import { mkdtemp, rmdir } from 'fs/promises';
-import http from 'http';
-import { type Logger, pino } from 'pino';
-import { sink } from 'pino-test';
+import fs from "node:fs";
+import type http from "node:http";
+import { promisify } from "node:util";
+import * as AWS from "aws-sdk";
+import type { Logger } from "pino";
+import { afterEach, beforeEach, vi } from "vitest";
+import { createServer } from "../../src";
+import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
+import { MockLogger } from "../../src/__tests__/mockLogger";
+import { DefaultConfig } from "../../src/server/config";
+import { Router } from "../../src/server/Router";
+import {
+  type Clock,
+  DateClock,
+  MessagesService,
+  TriggersService,
+} from "../../src/services";
+import { CognitoServiceFactoryImpl } from "../../src/services/cognitoService";
+import { CryptoService } from "../../src/services/crypto";
+import type { DataStoreFactory } from "../../src/services/dataStore/factory";
+import { StormDBDataStoreFactory } from "../../src/services/dataStore/stormDb";
+import { otp } from "../../src/services/otp";
+import { JwtTokenGenerator } from "../../src/services/tokenGenerator";
+import { UserPoolServiceFactoryImpl } from "../../src/services/userPoolService";
 
-import { FakeMessageDeliveryService } from '../../src/__tests__/FakeMessageDeliveryService.js';
-import { createServer } from '../../src/index.js';
-import { DefaultConfig } from '../../src/server/config.js';
-import { Router } from '../../src/server/Router.js';
-import { CognitoServiceFactoryImpl } from '../../src/services/cognitoService.js';
-import { CryptoService } from '../../src/services/crypto.js';
-import { NoOpCache } from '../../src/services/dataStore/cache.js';
-import { DataStoreFactory } from '../../src/services/dataStore/factory.js';
-import { StormDBDataStoreFactory } from '../../src/services/dataStore/stormDb.js';
-import { Clock, DateClock, MessagesService, TriggersService } from '../../src/services/index.js';
-import { otp } from '../../src/services/otp.js';
-import { JwtTokenGenerator } from '../../src/services/tokenGenerator.js';
-import { UserPoolServiceFactoryImpl } from '../../src/services/userPoolService.js';
+const mkdtemp = promisify(fs.mkdtemp);
+const rm = promisify(fs.rm);
 
 export const withCognitoSdk =
   (
@@ -25,12 +33,12 @@ export const withCognitoSdk =
       services: {
         readonly dataStoreFactory: () => DataStoreFactory;
         readonly messageDelivery: () => FakeMessageDeliveryService;
-      }
+      },
     ) => void,
     {
       logger = pino(sink()) as Logger,
       clock = new DateClock(),
-    }: { logger?: Logger; clock?: Clock } = {}
+    }: { logger?: Logger; clock?: Clock } = {},
   ) =>
   () => {
     let dataDirectory: string;
@@ -43,22 +51,21 @@ export const withCognitoSdk =
       dataDirectory = await mkdtemp('/tmp/cognito-local:');
       const ctx = { logger };
 
-      dataStoreFactory = new StormDBDataStoreFactory(dataDirectory, new NoOpCache());
+      dataStoreFactory = new StormDBDataStoreFactory(dataDirectory);
       const cognitoServiceFactory = new CognitoServiceFactoryImpl(
         dataDirectory,
-        clock,
         dataStoreFactory,
-        new UserPoolServiceFactoryImpl(clock, dataStoreFactory)
+        new UserPoolServiceFactoryImpl(clock, dataStoreFactory),
       );
       const cognitoClient = await cognitoServiceFactory.create(ctx, {});
       const triggers = new TriggersService(
         clock,
         cognitoClient,
         {
-          enabled: jest.fn().mockReturnValue(false),
-          invoke: jest.fn(),
+          enabled: vi.fn().mockReturnValue(false),
+          invoke: vi.fn(),
         },
-        new CryptoService({ KMSKeyId: '', KMSKeyAlias: '' })
+        new CryptoService({ KMSKeyId: "", KMSKeyAlias: "" }),
       );
 
       fakeMessageDeliveryService = new FakeMessageDeliveryService();
@@ -69,13 +76,19 @@ export const withCognitoSdk =
         messages: new MessagesService(triggers, fakeMessageDeliveryService),
         otp,
         triggers,
-        tokenGenerator: new JwtTokenGenerator(clock, triggers, DefaultConfig.TokenConfig),
+        tokenGenerator: new JwtTokenGenerator(
+          clock,
+          triggers,
+          DefaultConfig.TokenConfig,
+        ),
       });
-      const server = createServer(router, ctx.logger);
-      httpServer = await server.start({
-        hostname: '127.0.0.1',
+      const server = createServer(router, ctx.logger, {
+        development: false,
+        hostname: "127.0.0.1",
+        https: false,
         port: 0,
       });
+      httpServer = await server.start();
 
       const address = httpServer.address();
       if (!address) {
@@ -98,11 +111,13 @@ export const withCognitoSdk =
       messageDelivery: () => fakeMessageDeliveryService,
     });
 
-    afterEach((done) => {
-      httpServer.close(() => {
-        rmdir(dataDirectory, {
-          recursive: true,
-        }).then(done, done);
+    afterEach(() => {
+      return new Promise<void>((resolve, reject) => {
+        httpServer.close(() => {
+          rm(dataDirectory, {
+            recursive: true,
+          }).then(resolve, reject);
+        });
       });
     });
   };

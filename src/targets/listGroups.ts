@@ -1,9 +1,10 @@
-import { ListGroupsRequest, ListGroupsResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { groupToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import type {
+  ListGroupsRequest,
+  ListGroupsResponse,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import { groupToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 export type ListGroupsTarget = Target<ListGroupsRequest, ListGroupsResponse>;
 

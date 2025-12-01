@@ -1,15 +1,19 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import { UserPoolService } from '../services/index.js';
-import { CreateUserPoolClient, CreateUserPoolClientTarget } from './createUserPoolClient.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import type { UserPoolService } from "../services";
+import {
+  CreateUserPoolClient,
+  type CreateUserPoolClientTarget,
+} from "./createUserPoolClient";
 
 const originalDate = new Date();
 
 describe('CreateUserPoolClient target', () => {
   let createUserPoolClient: CreateUserPoolClientTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -25,18 +29,21 @@ describe('CreateUserPoolClient target', () => {
       UserPoolId: 'userPoolId',
     });
 
-    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(TestContext, {
-      ClientId: expect.any(String),
-      ClientName: 'clientName',
-      CreationDate: originalDate,
-      LastModifiedDate: originalDate,
-      UserPoolId: 'userPoolId',
-      TokenValidityUnits: {
-        AccessToken: 'hours',
-        IdToken: 'minutes',
-        RefreshToken: 'days',
+    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
+      TestContext,
+      {
+        ClientId: expect.any(String),
+        ClientName: "clientName",
+        CreationDate: originalDate,
+        LastModifiedDate: originalDate,
+        UserPoolId: "userPoolId",
+        TokenValidityUnits: {
+          AccessToken: "hours",
+          IdToken: "minutes",
+          RefreshToken: "days",
+        },
       },
-    });
+    );
 
     expect(result).toEqual({
       UserPoolClient: {

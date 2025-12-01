@@ -1,10 +1,11 @@
-import { CreateGroupRequest, CreateGroupResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Group } from '../services/userPoolService.js';
-import { groupToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import type {
+  CreateGroupRequest,
+  CreateGroupResponse,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import type { Group } from "../services/userPoolService";
+import { groupToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 export type CreateGroupTarget = Target<CreateGroupRequest, CreateGroupResponse>;
 

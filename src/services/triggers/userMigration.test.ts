@@ -1,17 +1,18 @@
-import { newMockCognitoService } from "../../__tests__/mockCognitoService.js";
-import { newMockLambda } from "../../__tests__/mockLambda.js";
-import { newMockUserPoolService } from "../../__tests__/mockUserPoolService.js";
-import { UUID } from "../../__tests__/patterns.js";
-import { TestContext } from "../../__tests__/testContext.js";
-import { NotAuthorizedError } from "../../errors.js";
-import { DateClock } from "../clock.js";
-import { Lambda } from "../lambda.js";
-import { UserPoolService } from "../userPoolService.js";
-import { UserMigration, UserMigrationTrigger } from "./userMigration.js";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../../__tests__/mockCognitoService";
+import { newMockLambda } from "../../__tests__/mockLambda";
+import { newMockUserPoolService } from "../../__tests__/mockUserPoolService";
+import { UUID } from "../../__tests__/patterns";
+import { TestContext } from "../../__tests__/testContext";
+import { NotAuthorizedError } from "../../errors";
+import { DateClock } from "../clock";
+import type { Lambda } from "../lambda";
+import type { UserPoolService } from "../userPoolService";
+import { UserMigration, type UserMigrationTrigger } from "./userMigration";
 
 describe("UserMigration trigger", () => {
-  let mockLambda: jest.Mocked<Lambda>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockLambda: MockedObject<Lambda>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let userMigration: UserMigrationTrigger;
 
   beforeEach(() => {

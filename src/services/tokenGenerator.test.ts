@@ -1,13 +1,13 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { UUID } from '../__tests__/patterns.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { JwtTokenGenerator, TokenGenerator } from './tokenGenerator.js';
-import { Triggers } from './triggers/index.js';
-import { attributeValue } from './userPoolService.js';
+import jwt from "jsonwebtoken";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { UUID } from "../__tests__/patterns";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { JwtTokenGenerator, type TokenGenerator } from "./tokenGenerator";
+import type { Triggers } from "./triggers";
+import { attributeValue } from "./userPoolService";
 
 const originalDate = new Date(2022, 4, 30, 17, 30, 0, 0);
 const ONE_MINUTE = 60;
@@ -15,8 +15,8 @@ const ONE_HOUR = ONE_MINUTE * 60;
 const ONE_DAY = ONE_HOUR * 24;
 const SEVEN_DAYS = ONE_DAY * 7;
 
-describe('JwtTokenGenerator', () => {
-  let mockTriggers: jest.Mocked<Triggers>;
+describe("JwtTokenGenerator", () => {
+  let mockTriggers: MockedObject<Triggers>;
   let tokenGenerator: TokenGenerator;
 
   const user = TDB.user();
@@ -48,8 +48,8 @@ describe('JwtTokenGenerator', () => {
         user,
         [],
         TDB.appClient(),
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
       // id token has new claim added
@@ -84,8 +84,8 @@ describe('JwtTokenGenerator', () => {
         user,
         [],
         TDB.appClient(),
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
       // id token has new claim added
@@ -94,8 +94,8 @@ describe('JwtTokenGenerator', () => {
       // access and refresh tokens cannot be changed by the trigger
       expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty('email');
       expect(jwt.decode(tokens.RefreshToken)).toHaveProperty(
-        'email',
-        attributeValue('email', user.Attributes)
+        "email",
+        attributeValue("email", user.Attributes),
       );
     });
 
@@ -117,8 +117,8 @@ describe('JwtTokenGenerator', () => {
         user,
         [],
         TDB.appClient(),
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
       // id token has new claim added
@@ -127,8 +127,8 @@ describe('JwtTokenGenerator', () => {
       // access and refresh tokens cannot be changed by the trigger
       expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty('email');
       expect(jwt.decode(tokens.RefreshToken)).toHaveProperty(
-        'email',
-        attributeValue('email', user.Attributes)
+        "email",
+        attributeValue("email", user.Attributes),
       );
     });
 
@@ -168,8 +168,8 @@ describe('JwtTokenGenerator', () => {
           user,
           [],
           TDB.appClient(),
-          { client: 'metadata' },
-          'RefreshTokens'
+          { client: "metadata" },
+          "RefreshTokens",
         );
 
         expect(jwt.decode(tokens.IdToken)).not.toMatchObject({
@@ -190,8 +190,8 @@ describe('JwtTokenGenerator', () => {
         user,
         [],
         userPoolClient,
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
       expect(jwt.decode(tokens.AccessToken)).toEqual({
@@ -251,18 +251,18 @@ describe('JwtTokenGenerator', () => {
           user,
           [],
           userPoolClient,
-          { client: 'metadata' },
-          'RefreshTokens'
+          { client: "metadata" },
+          "RefreshTokens",
         );
 
-        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + ONE_DAY
+        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + ONE_DAY,
         );
-        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + ONE_DAY
+        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + ONE_DAY,
         );
-        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS
+        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS,
         );
       });
     });
@@ -287,18 +287,18 @@ describe('JwtTokenGenerator', () => {
           user,
           [],
           userPoolClient,
-          { client: 'metadata' },
-          'RefreshTokens'
+          { client: "metadata" },
+          "RefreshTokens",
         );
 
-        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + ONE_DAY
+        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + ONE_DAY,
         );
-        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + ONE_DAY
+        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + ONE_DAY,
         );
-        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS
+        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + SEVEN_DAYS,
         );
       });
     });
@@ -319,18 +319,18 @@ describe('JwtTokenGenerator', () => {
           user,
           [],
           userPoolClient,
-          { client: 'metadata' },
-          'RefreshTokens'
+          { client: "metadata" },
+          "RefreshTokens",
         );
 
-        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 10 * ONE_HOUR
+        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 10 * ONE_HOUR,
         );
-        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 20 * ONE_HOUR
+        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 20 * ONE_HOUR,
         );
-        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 30 * ONE_DAY
+        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 30 * ONE_DAY,
         );
       });
     });
@@ -355,18 +355,18 @@ describe('JwtTokenGenerator', () => {
           user,
           [],
           userPoolClient,
-          { client: 'metadata' },
-          'RefreshTokens'
+          { client: "metadata" },
+          "RefreshTokens",
         );
 
-        expect((jwt.decode(tokens.AccessToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 10
+        expect((jwt.decode(tokens.AccessToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 10,
         );
-        expect((jwt.decode(tokens.IdToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 20 * ONE_MINUTE
+        expect((jwt.decode(tokens.IdToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 20 * ONE_MINUTE,
         );
-        expect((jwt.decode(tokens.RefreshToken) as JwtPayload).exp).toEqual(
-          Math.floor(originalDate.getTime() / 1000) + 30 * ONE_HOUR
+        expect((jwt.decode(tokens.RefreshToken) as any).exp).toEqual(
+          Math.floor(originalDate.getTime() / 1000) + 30 * ONE_HOUR,
         );
       });
     });
@@ -392,12 +392,16 @@ describe('JwtTokenGenerator', () => {
         user,
         [],
         userPoolClient,
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
-      expect((jwt.decode(tokens.AccessToken) as JwtPayload)['cognito:groups']).toBeUndefined();
-      expect((jwt.decode(tokens.IdToken) as JwtPayload)['cognito:groups']).toBeUndefined();
+      expect(
+        (jwt.decode(tokens.AccessToken) as any)["cognito:groups"],
+      ).toBeUndefined();
+      expect(
+        (jwt.decode(tokens.IdToken) as any)["cognito:groups"],
+      ).toBeUndefined();
     });
 
     it("includes a cognito:groups claim with the user's groups", async () => {
@@ -419,17 +423,16 @@ describe('JwtTokenGenerator', () => {
         user,
         ['group1', 'group2'],
         userPoolClient,
-        { client: 'metadata' },
-        'RefreshTokens'
+        { client: "metadata" },
+        "RefreshTokens",
       );
 
-      expect((jwt.decode(tokens.AccessToken) as JwtPayload)['cognito:groups']).toEqual([
-        'group1',
-        'group2',
-      ]);
-      expect((jwt.decode(tokens.IdToken) as JwtPayload)['cognito:groups']).toEqual([
-        'group1',
-        'group2',
+      expect((jwt.decode(tokens.AccessToken) as any)["cognito:groups"]).toEqual(
+        ["group1", "group2"],
+      );
+      expect((jwt.decode(tokens.IdToken) as any)["cognito:groups"]).toEqual([
+        "group1",
+        "group2",
       ]);
     });
   });

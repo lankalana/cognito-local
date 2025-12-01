@@ -1,19 +1,19 @@
-import jwt from 'jsonwebtoken';
-import * as uuid from 'uuid';
-
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockMessages } from '../__tests__/mockMessages.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { InvalidParameterError, UserNotFoundError } from '../errors.js';
-import PrivateKey from '../keys/cognitoLocal.private.json' with { type: 'json' };
-import { Messages, UserPoolService } from '../services/index.js';
-import { attribute, attributeValue } from '../services/userPoolService.js';
+import jwt from "jsonwebtoken";
+import * as uuid from "uuid";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockMessages } from "../__tests__/mockMessages";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { InvalidParameterError, UserNotFoundError } from "../errors";
+import PrivateKey from "../keys/cognitoLocal.private.json";
+import type { Messages, UserPoolService } from "../services";
+import { attribute, attributeValue } from "../services/userPoolService";
 import {
   GetUserAttributeVerificationCode,
-  GetUserAttributeVerificationCodeTarget,
-} from './getUserAttributeVerificationCode.js';
+  type GetUserAttributeVerificationCodeTarget,
+} from "./getUserAttributeVerificationCode";
 
 const validToken = jwt.sign(
   {
@@ -30,15 +30,15 @@ const validToken = jwt.sign(
   {
     algorithm: 'RS256',
     issuer: `http://localhost:9229/test`,
-    expiresIn: '24h',
-    keyid: 'CognitoLocal',
-  }
+    expiresIn: "24h",
+    keyid: "CognitoLocal",
+  },
 );
 
 describe('GetUserAttributeVerificationCode target', () => {
   let getUserAttributeVerificationCode: GetUserAttributeVerificationCodeTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockMessages: jest.Mocked<Messages>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockMessages: MockedObject<Messages>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService({
@@ -56,9 +56,9 @@ describe('GetUserAttributeVerificationCode target', () => {
   it("throws if token isn't valid", async () => {
     await expect(
       getUserAttributeVerificationCode(TestContext, {
-        AccessToken: 'blah',
-        AttributeName: 'email',
-      })
+        AccessToken: "blah",
+        AttributeName: "email",
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -68,8 +68,8 @@ describe('GetUserAttributeVerificationCode target', () => {
     await expect(
       getUserAttributeVerificationCode(TestContext, {
         AccessToken: validToken,
-        AttributeName: 'email',
-      })
+        AttributeName: "email",
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 
@@ -86,10 +86,12 @@ describe('GetUserAttributeVerificationCode target', () => {
           client: 'metadata',
         },
         AccessToken: validToken,
-        AttributeName: 'email',
-      })
+        AttributeName: "email",
+      }),
     ).rejects.toEqual(
-      new InvalidParameterError('User has no attribute matching desired auto verified attributes')
+      new InvalidParameterError(
+        "User has no attribute matching desired auto verified attributes",
+      ),
     );
   });
 
@@ -117,17 +119,17 @@ describe('GetUserAttributeVerificationCode target', () => {
       '123456',
       { client: 'metadata' },
       {
-        AttributeName: 'email',
-        DeliveryMedium: 'EMAIL',
-        Destination: attributeValue('email', user.Attributes),
-      }
+        AttributeName: "email",
+        DeliveryMedium: "EMAIL",
+        Destination: attributeValue("email", user.Attributes),
+      },
     );
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
       TestContext,
       expect.objectContaining({
-        AttributeVerificationCode: '123456',
-      })
+        AttributeVerificationCode: "123456",
+      }),
     );
   });
 });

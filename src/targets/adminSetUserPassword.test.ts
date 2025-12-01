@@ -1,15 +1,19 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { AdminSetUserPassword, AdminSetUserPasswordTarget } from './adminSetUserPassword.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import {
+  AdminSetUserPassword,
+  type AdminSetUserPasswordTarget,
+} from "./adminSetUserPassword";
 
 describe('AdminSetUser target', () => {
   let adminSetUserPassword: AdminSetUserPasswordTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -91,10 +95,10 @@ describe('AdminSetUser target', () => {
 
     await expect(
       adminSetUserPassword(TestContext, {
-        Password: 'Password',
-        Username: 'Username',
-        UserPoolId: 'test',
-      })
-    ).rejects.toEqual(new UserNotFoundError('User does not exist'));
+        Password: "Password",
+        Username: "Username",
+        UserPoolId: "test",
+      }),
+    ).rejects.toEqual(new UserNotFoundError("User does not exist"));
   });
 });

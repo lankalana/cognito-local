@@ -1,14 +1,15 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { GroupNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { GetGroup, GetGroupTarget } from './getGroup.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { GroupNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import { GetGroup, type GetGroupTarget } from "./getGroup";
 
 describe('GetGroup target', () => {
   let getGroup: GetGroupTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -30,7 +31,7 @@ describe('GetGroup target', () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(result.Group).toEqual({
@@ -48,9 +49,9 @@ describe('GetGroup target', () => {
 
     await expect(
       getGroup(TestContext, {
-        GroupName: 'group',
-        UserPoolId: 'test',
-      })
+        GroupName: "group",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

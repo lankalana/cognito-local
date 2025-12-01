@@ -1,5 +1,6 @@
-import { UUID } from '../../src/__tests__/patterns.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { UUID } from "../../src/__tests__/patterns";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.deleteUserAttributes',
@@ -52,9 +53,9 @@ describe(
       });
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'custom:example', Value: '1' },
+        { Name: "custom:example", Value: "1" },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
 
       await client.deleteUserAttributes({
@@ -68,9 +69,9 @@ describe(
       });
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
     });
-  })
+  }),
 );

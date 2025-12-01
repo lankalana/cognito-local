@@ -1,4 +1,5 @@
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.updateGroup',
@@ -6,37 +7,52 @@ describe(
     it('updates a group', async () => {
       const client = Cognito();
 
-      await client.createGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-        Description: 'original description',
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
 
-      const getGroupResponse = await client.getGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-      });
+      await client
+        .createGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+          Description: "original description",
+        })
+        .promise();
+
+      const getGroupResponse = await client
+        .getGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
 
       expect(getGroupResponse.Group).toMatchObject({
-        GroupName: 'abc',
-        Description: 'original description',
+        GroupName: "abc",
+        Description: "original description",
       });
 
-      await client.updateGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-        Description: 'new description',
-      });
+      await client
+        .updateGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+          Description: "new description",
+        })
+        .promise();
 
-      const getGroupResponseAfterUpdate = await client.getGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-      });
+      const getGroupResponseAfterUpdate = await client
+        .getGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
 
       expect(getGroupResponseAfterUpdate.Group).toMatchObject({
         GroupName: 'abc',
         Description: 'new description',
       });
     });
-  })
+  }),
 );

@@ -1,10 +1,11 @@
-import { DeleteUserRequest } from '@aws-sdk/client-cognito-identity-provider';
-import jwt from 'jsonwebtoken';
+import type { DeleteUserRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import jwt from "jsonwebtoken";
+import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import type { Services } from "../services";
+import type { Token } from "../services/tokenGenerator";
+import type { Target } from "./Target";
 
-import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Token } from '../services/tokenGenerator.js';
-import { Target } from './Target.js';
+export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 
 export type DeleteUserTarget = Target<DeleteUserRequest, object>;
 
@@ -21,7 +22,10 @@ export const DeleteUser =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
+    const userPool = await cognito.getUserPoolForClientId(
+      ctx,
+      decodedToken.client_id,
+    );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();

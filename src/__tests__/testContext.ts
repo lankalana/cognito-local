@@ -1,6 +1,11 @@
-import { Context } from '../services/context.js';
-import { MockLogger } from './mockLogger.js';
+import pino from "pino";
+import type { Context } from "../services/context";
+import { MockLogger } from "./mockLogger";
 
 export const TestContext: Context = {
-  logger: MockLogger,
+  logger: process.env.DEBUG
+    ? pino({
+        level: "debug",
+      })
+    : MockLogger,
 };

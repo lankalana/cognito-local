@@ -1,10 +1,11 @@
-import { newMockLambda } from "../../__tests__/mockLambda.js";
-import { TestContext } from "../../__tests__/testContext.js";
-import { Lambda } from "../lambda.js";
-import { PreSignUp, PreSignUpTrigger } from "./preSignUp.js";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockLambda } from "../../__tests__/mockLambda";
+import { TestContext } from "../../__tests__/testContext";
+import type { Lambda } from "../lambda";
+import { PreSignUp, type PreSignUpTrigger } from "./preSignUp";
 
 describe("PreSignUp trigger", () => {
-  let mockLambda: jest.Mocked<Lambda>;
+  let mockLambda: MockedObject<Lambda>;
   let preSignUp: PreSignUpTrigger;
 
   beforeEach(() => {

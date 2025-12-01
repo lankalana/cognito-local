@@ -1,17 +1,22 @@
-import {
+import type {
   CreateUserPoolRequest,
   CreateUserPoolResponse,
-  SchemaAttributeType,
-} from '@aws-sdk/client-cognito-identity-provider';
-import shortUUID from 'short-uuid';
+  SchemaAttributesListType,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import shortUUID from "short-uuid";
+import type { Services } from "../services";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import { userPoolToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
 import { Services } from '../services/index.js';
 import { userPoolToResponseObject } from './responses.js';
 import { Target } from './Target.js';
 
-const REGION = 'local';
-const ACCOUNT_ID = 'local';
+const generator = shortUUID(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+);
 
 const generator = shortUUID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
 
@@ -28,10 +33,12 @@ type CreateUserPoolServices = Pick<Services, 'clock' | 'cognito'>;
  * @param requestSchema Schema provided by the caller
  */
 const createSchemaAttributes = (
-  defaultAttributes: SchemaAttributeType[],
-  requestSchema: SchemaAttributeType[]
-): SchemaAttributeType[] => {
-  const overrides = Object.fromEntries(requestSchema.map((x) => [x.Name as string, x]));
+  defaultAttributes: SchemaAttributesListType,
+  requestSchema: SchemaAttributesListType,
+): SchemaAttributesListType => {
+  const overrides = Object.fromEntries(
+    requestSchema.map((x) => [x.Name as string, x]),
+  );
   const defaultAttributeNames = defaultAttributes.map((x) => x.Name);
   const overriddenAttributes = defaultAttributes.map((attr) => {
     if (!attr.Name) {
@@ -56,9 +63,13 @@ const createSchemaAttributes = (
         Mutable: attr.Mutable ?? true,
         Required: attr.Required ?? false,
         StringAttributeConstraints:
-          type === 'String' ? (attr.StringAttributeConstraints ?? {}) : undefined,
+          type === "String"
+            ? (attr.StringAttributeConstraints ?? {})
+            : undefined,
         NumberAttributeConstraints:
-          type === 'Number' ? (attr.NumberAttributeConstraints ?? {}) : undefined,
+          type === "Number"
+            ? (attr.NumberAttributeConstraints ?? {})
+            : undefined,
       };
     });
 
@@ -89,15 +100,16 @@ export const CreateUserPool =
       Policies: req.Policies,
       SchemaAttributes: createSchemaAttributes(
         USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? [],
-        req.Schema ?? []
+        req.Schema ?? [],
       ),
       SmsAuthenticationMessage: req.SmsAuthenticationMessage,
       SmsConfiguration: req.SmsConfiguration,
       SmsVerificationMessage: req.SmsVerificationMessage,
-      UsernameAttributes: req.UsernameAttributes,
-      UsernameConfiguration: req.UsernameConfiguration,
+      UserAttributeUpdateSettings: req.UserAttributeUpdateSettings,
       UserPoolAddOns: req.UserPoolAddOns,
       UserPoolTags: req.UserPoolTags,
+      UsernameAttributes: req.UsernameAttributes,
+      UsernameConfiguration: req.UsernameConfiguration,
       VerificationMessageTemplate: req.VerificationMessageTemplate,
     });
 

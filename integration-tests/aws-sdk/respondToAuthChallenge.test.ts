@@ -1,4 +1,5 @@
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.respondToAuthChallenge',
@@ -6,18 +7,29 @@ describe(
     it('handles NEW_PASSWORD_REQUIRED challenge', async () => {
       const client = Cognito();
 
-      const upc = await client.createUserPoolClient({
-        UserPoolId: 'test',
-        ClientName: 'test',
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
 
-      await client.adminCreateUser({
-        DesiredDeliveryMediums: ['EMAIL'],
-        TemporaryPassword: 'def',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        Username: 'abc',
-        UserPoolId: 'test',
-      });
+      const upc = await client
+        .createUserPoolClient({
+          UserPoolId: userPoolId,
+          ClientName: "test",
+        })
+        .promise();
+
+      await client
+        .adminCreateUser({
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "def",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          Username: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
 
       const initiateAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
@@ -48,5 +60,5 @@ describe(
         ChallengeParameters: {},
       });
     });
-  })
+  }),
 );

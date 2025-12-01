@@ -1,11 +1,7 @@
-import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
-import {
-  CustomMessageEvent,
-  CustomMessageTriggerResponse,
-  Lambda,
-} from "../lambda.js";
-import { attributesToRecord } from "../userPoolService.js";
-import { Trigger } from "./trigger.js";
+import type { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { CustomMessageTriggerResponse, Lambda } from "../lambda";
+import { attributesToRecord } from "../userPoolService";
+import type { Trigger } from "./trigger";
 
 const AWS_USERNAME_PARAMETER = "{username}";
 const AWS_CODE_PARAMETER = "{####}";

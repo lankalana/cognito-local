@@ -1,14 +1,18 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { AdminListGroupsForUser, AdminListGroupsForUserTarget } from './adminListGroupsForUser.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import {
+  AdminListGroupsForUser,
+  type AdminListGroupsForUserTarget,
+} from "./adminListGroupsForUser";
 
 describe('AdminListGroupsForUser target', () => {
   let adminListGroupsForUser: AdminListGroupsForUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -71,9 +75,9 @@ describe('AdminListGroupsForUser target', () => {
 
     await expect(
       adminListGroupsForUser(TestContext, {
-        Username: 'user',
-        UserPoolId: 'test',
-      })
+        Username: "user",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

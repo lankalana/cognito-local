@@ -1,5 +1,4 @@
-import { InvocationResponse, InvocationType, Lambda as LambdaClient } from '@aws-sdk/client-lambda';
-import {
+import type {
   CreateAuthChallengeTriggerEvent,
   CustomEmailSenderTriggerEvent,
   CustomMessageTriggerEvent,
@@ -11,15 +10,16 @@ import {
   PreTokenGenerationTriggerEvent,
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
-} from 'aws-lambda';
-
-import { awsSdkVersion } from '../constants.js';
+} from "aws-lambda";
+import type { Lambda as LambdaClient } from "aws-sdk";
+import type { InvocationResponse } from "aws-sdk/clients/lambda";
+import { version as awsSdkVersion } from "aws-sdk/package.json";
 import {
   InvalidLambdaResponseError,
   UnexpectedLambdaExceptionError,
   UserLambdaValidationError,
-} from '../errors.js';
-import { Context } from './context.js';
+} from "../errors";
+import type { Context } from "./context";
 
 type CognitoUserPoolEvent =
   | CreateAuthChallengeTriggerEvent
@@ -152,38 +152,38 @@ export interface Lambda {
   enabled(lambda: keyof FunctionConfig): boolean;
   invoke(
     ctx: Context,
-    lambda: 'CustomMessage',
-    event: CustomMessageEvent
+    lambda: "CustomMessage",
+    event: CustomMessageEvent,
   ): Promise<CustomMessageTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'UserMigration',
-    event: UserMigrationEvent
+    lambda: "UserMigration",
+    event: UserMigrationEvent,
   ): Promise<UserMigrationTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'PreSignUp',
-    event: PreSignUpEvent
+    lambda: "PreSignUp",
+    event: PreSignUpEvent,
   ): Promise<PreSignUpTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'PreTokenGeneration',
-    event: PreTokenGenerationEvent
+    lambda: "PreTokenGeneration",
+    event: PreTokenGenerationEvent,
   ): Promise<PreTokenGenerationTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'PostAuthentication',
-    event: PostAuthenticationEvent
+    lambda: "PostAuthentication",
+    event: PostAuthenticationEvent,
   ): Promise<PostAuthenticationTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'PostConfirmation',
-    event: PostConfirmationEvent
+    lambda: "PostConfirmation",
+    event: PostConfirmationEvent,
   ): Promise<PostConfirmationTriggerResponse>;
   invoke(
     ctx: Context,
-    lambda: 'CustomEmailSender',
-    event: CustomEmailSenderEvent
+    lambda: "CustomEmailSender",
+    event: CustomEmailSenderEvent,
   ): Promise<CustomEmailSenderTriggerResponse>;
 }
 
@@ -211,8 +211,8 @@ export class LambdaService implements Lambda {
       | PostConfirmationEvent
       | PreSignUpEvent
       | PreTokenGenerationEvent
-      | UserMigrationEvent
-  ): Promise<T> {
+      | UserMigrationEvent,
+  ) {
     const functionName = this.config[trigger];
     if (!functionName) {
       throw new Error(`${trigger} trigger not configured`);
@@ -225,7 +225,7 @@ export class LambdaService implements Lambda {
         functionName,
         event: JSON.stringify(lambdaEvent, undefined, 2),
       },
-      `Invoking "${functionName}" with event`
+      `Invoking "${functionName}" with event`,
     );
     let result: InvocationResponse;
     try {
@@ -240,7 +240,7 @@ export class LambdaService implements Lambda {
     }
 
     ctx.logger.debug(
-      `Lambda completed with StatusCode=${result.StatusCode} and FunctionError=${result.FunctionError}`
+      `Lambda completed with StatusCode=${result.StatusCode} and FunctionError=${result.FunctionError}`,
     );
     if (!result.FunctionError) {
       try {
@@ -261,7 +261,7 @@ export class LambdaService implements Lambda {
 
         if (parsedPayload.errorMessage) {
           throw new UserLambdaValidationError(
-            `${functionName} failed with error ${parsedPayload.errorMessage}.`
+            `${functionName} failed with error ${parsedPayload.errorMessage}.`,
           );
         }
       }
@@ -278,7 +278,7 @@ export class LambdaService implements Lambda {
       | PostConfirmationEvent
       | PreSignUpEvent
       | PreTokenGenerationEvent
-      | UserMigrationEvent
+      | UserMigrationEvent,
   ): CognitoUserPoolEvent {
     const version = '0'; // TODO: how do we know what this is?
     const callerContext = {

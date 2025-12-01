@@ -1,26 +1,26 @@
-import { Clock } from "../clock.js";
-import { CognitoService } from "../cognitoService.js";
-import { CryptoService } from "../crypto.js";
-import { Lambda } from "../lambda.js";
+import type { Clock } from "../clock";
+import type { CognitoService } from "../cognitoService";
+import type { CryptoService } from "../crypto";
+import type { Lambda } from "../lambda";
 import {
   CustomEmailSender,
-  CustomEmailSenderTrigger,
-} from "./customEmailSender.js";
-import { CustomMessage, CustomMessageTrigger } from "./customMessage.js";
+  type CustomEmailSenderTrigger,
+} from "./customEmailSender";
+import { CustomMessage, type CustomMessageTrigger } from "./customMessage";
 import {
   PostAuthentication,
-  PostAuthenticationTrigger,
-} from "./postAuthentication.js";
+  type PostAuthenticationTrigger,
+} from "./postAuthentication";
 import {
   PostConfirmation,
-  PostConfirmationTrigger,
-} from "./postConfirmation.js";
-import { PreSignUp, PreSignUpTrigger } from "./preSignUp.js";
+  type PostConfirmationTrigger,
+} from "./postConfirmation";
+import { PreSignUp, type PreSignUpTrigger } from "./preSignUp";
 import {
   PreTokenGeneration,
-  PreTokenGenerationTrigger,
-} from "./preTokenGeneration.js";
-import { UserMigration, UserMigrationTrigger } from "./userMigration.js";
+  type PreTokenGenerationTrigger,
+} from "./preTokenGeneration";
+import { UserMigration, type UserMigrationTrigger } from "./userMigration";
 
 type SupportedTriggers =
   | "CustomEmailSender"

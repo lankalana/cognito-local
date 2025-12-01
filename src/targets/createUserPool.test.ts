@@ -1,17 +1,18 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
-import { CognitoService } from '../services/index.js';
-import { CreateUserPool, CreateUserPoolTarget } from './createUserPool.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService } from "../services";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import { CreateUserPool, type CreateUserPoolTarget } from "./createUserPool";
 
 const originalDate = new Date();
 
 describe('CreateUserPool target', () => {
   let createUserPool: CreateUserPoolTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     mockCognitoService = newMockCognitoService(newMockUserPoolService());
@@ -29,14 +30,19 @@ describe('CreateUserPool target', () => {
       PoolName: 'test-pool',
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
-      Arn: expect.stringMatching(/^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/),
-      CreationDate: originalDate,
-      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-      LastModifiedDate: originalDate,
-      Name: 'test-pool',
-      SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
-    });
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
+      TestContext,
+      {
+        Arn: expect.stringMatching(
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
+        ),
+        CreationDate: originalDate,
+        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+        LastModifiedDate: originalDate,
+        Name: "test-pool",
+        SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
+      },
+    );
 
     expect(result).toEqual({
       UserPool: createdUserPool,
@@ -57,24 +63,29 @@ describe('CreateUserPool target', () => {
       ],
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
-      Arn: expect.stringMatching(/^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/),
-      CreationDate: originalDate,
-      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-      LastModifiedDate: originalDate,
-      Name: 'test-pool',
-      SchemaAttributes: [
-        ...(USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []),
-        {
-          Name: 'custom:my_attribute',
-          AttributeDataType: 'String',
-          DeveloperOnlyAttribute: false,
-          Mutable: true,
-          Required: false,
-          StringAttributeConstraints: {},
-        },
-      ],
-    });
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
+      TestContext,
+      {
+        Arn: expect.stringMatching(
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
+        ),
+        CreationDate: originalDate,
+        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+        LastModifiedDate: originalDate,
+        Name: "test-pool",
+        SchemaAttributes: [
+          ...(USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []),
+          {
+            Name: "custom:my_attribute",
+            AttributeDataType: "String",
+            DeveloperOnlyAttribute: false,
+            Mutable: true,
+            Required: false,
+            StringAttributeConstraints: {},
+          },
+        ],
+      },
+    );
 
     expect(result).toEqual({
       UserPool: createdUserPool,
@@ -96,22 +107,27 @@ describe('CreateUserPool target', () => {
       ],
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
-      Arn: expect.stringMatching(/^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/),
-      CreationDate: originalDate,
-      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-      LastModifiedDate: originalDate,
-      Name: 'test-pool',
-      SchemaAttributes: [
-        {
-          Name: 'sub',
-          AttributeDataType: 'String',
-          DeveloperOnlyAttribute: false,
-          Mutable: false,
-          Required: true,
-          StringAttributeConstraints: {
-            MinLength: '1',
-            MaxLength: '2048',
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
+      TestContext,
+      {
+        Arn: expect.stringMatching(
+          /^arn:aws:cognito-idp:local:local:userpool\/local_[\w\d]{8}$/,
+        ),
+        CreationDate: originalDate,
+        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+        LastModifiedDate: originalDate,
+        Name: "test-pool",
+        SchemaAttributes: [
+          {
+            Name: "sub",
+            AttributeDataType: "String",
+            DeveloperOnlyAttribute: false,
+            Mutable: false,
+            Required: true,
+            StringAttributeConstraints: {
+              MinLength: "1",
+              MaxLength: "2048",
+            },
           },
         },
         {
@@ -313,9 +329,30 @@ describe('CreateUserPool target', () => {
           NumberAttributeConstraints: {
             MinValue: '0',
           },
-        },
-      ],
-    });
+          {
+            Name: "address",
+            AttributeDataType: "String",
+            DeveloperOnlyAttribute: false,
+            Mutable: true,
+            Required: false,
+            StringAttributeConstraints: {
+              MinLength: "0",
+              MaxLength: "2048",
+            },
+          },
+          {
+            Name: "updated_at",
+            AttributeDataType: "Number",
+            DeveloperOnlyAttribute: false,
+            Mutable: true,
+            Required: false,
+            NumberAttributeConstraints: {
+              MinValue: "0",
+            },
+          },
+        ],
+      },
+    );
 
     expect(result).toEqual({
       UserPool: createdUserPool,

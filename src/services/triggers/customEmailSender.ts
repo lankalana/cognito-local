@@ -1,8 +1,8 @@
-import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
-import { CryptoService } from "../crypto.js";
-import { CustomEmailSenderTriggerResponse, Lambda } from "../lambda.js";
-import { attributesToRecord } from "../userPoolService.js";
-import { Trigger } from "./trigger.js";
+import type { AttributeListType } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { CryptoService } from "../crypto";
+import type { CustomEmailSenderTriggerResponse, Lambda } from "../lambda";
+import { attributesToRecord } from "../userPoolService";
+import type { Trigger } from "./trigger";
 
 export type CustomEmailSenderTrigger = Trigger<
   {

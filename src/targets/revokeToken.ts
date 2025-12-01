@@ -1,8 +1,10 @@
-import { RevokeTokenRequest, RevokeTokenResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+import type {
+  RevokeTokenRequest,
+  RevokeTokenResponse,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { NotAuthorizedError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 export type RevokeTokenTarget = Target<RevokeTokenRequest, RevokeTokenResponse>;
 
@@ -18,7 +20,9 @@ export const RevokeToken =
 
     const users = await userPool.listUsers(ctx);
     const user = users.find(
-      (user) => Array.isArray(user.RefreshTokens) && user.RefreshTokens.includes(req.Token!)
+      (user) =>
+        Array.isArray(user.RefreshTokens) &&
+        user.RefreshTokens.includes(req.Token),
     );
 
     if (!user) {

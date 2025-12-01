@@ -1,18 +1,17 @@
-import {
+import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-import jwt from 'jsonwebtoken';
-
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import jwt from "jsonwebtoken";
 import {
   InvalidParameterError,
   InvalidPasswordError,
   MissingParameterError,
   NotAuthorizedError,
-} from '../errors.js';
-import { Services } from '../services/index.js';
-import { Token } from '../services/tokenGenerator.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Services } from "../services";
+import type { Token } from "../services/tokenGenerator";
+import type { Target } from "./Target";
 
 export type ChangePasswordTarget = Target<ChangePasswordRequest, ChangePasswordResponse>;
 
@@ -30,7 +29,10 @@ export const ChangePassword =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
+    const userPool = await cognito.getUserPoolForClientId(
+      ctx,
+      decodedToken.client_id,
+    );
     const user = await userPool.getUserByUsername(ctx, decodedToken.username);
     if (!user) {
       throw new NotAuthorizedError();

@@ -1,6 +1,6 @@
-import { Context } from "../context.js";
-import { Message } from "../messages.js";
-import { User } from "../userPoolService.js";
+import type { Context } from "../context";
+import type { Message } from "../messages";
+import type { User } from "../userPoolService";
 
 export interface MessageSender {
   sendEmail(

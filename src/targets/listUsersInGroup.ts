@@ -1,7 +1,11 @@
-import {
+import type {
   ListUsersInGroupRequest,
   ListUsersInGroupResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import type { Services } from "../services";
+import { userToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from '../errors.js';
 import { Services } from '../services/index.js';
@@ -31,7 +35,7 @@ export const ListUsersInGroup =
           }
 
           return userToResponseObject(user);
-        }) ?? []
+        }) ?? [],
       ),
     };
   };

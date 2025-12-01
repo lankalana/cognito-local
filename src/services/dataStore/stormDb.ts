@@ -1,12 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import fs from "fs";
+import fs from "node:fs";
+import { promisify } from "node:util";
 import StormDB from "stormdb";
-import { promisify } from "util";
-import { Context } from "../context.js";
-import { DataStoreCache } from "./cache.js";
-import { DataStore } from "./dataStore.js";
-import { DataStoreFactory } from "./factory.js";
+import type { Context } from "../context";
+import type { DataStore } from "./dataStore";
+import type { DataStoreFactory } from "./factory";
 
 export class StormDBDataStore implements DataStore {
   private readonly db: StormDB;
@@ -17,7 +14,7 @@ export class StormDBDataStore implements DataStore {
 
   async delete(ctx: Context, key: string | string[]) {
     ctx.logger.debug({ key }, "DataStore.delete");
-    (key instanceof Array ? key : [key])
+    (Array.isArray(key) ? key : [key])
       .reduce((acc, k) => acc.get([k]), this.db)
       .delete(false);
 
@@ -33,7 +30,7 @@ export class StormDBDataStore implements DataStore {
   async get<T>(ctx: Context, key: string | string[], defaultValue?: T) {
     ctx.logger.debug({ key }, "DataStore.get");
     return (
-      (await (key instanceof Array ? key : [key])
+      (await (Array.isArray(key) ? key : [key])
         .reduce((acc, k) => acc.get([k]), this.db)
         .value()) ??
       defaultValue ??
@@ -43,7 +40,7 @@ export class StormDBDataStore implements DataStore {
 
   async set<T>(ctx: Context, key: string | string[], value: T) {
     ctx.logger.debug({ key, value }, "DataStore.set");
-    this.db.setValue(value, key instanceof Array ? key : [key]);
+    this.db.setValue(value, Array.isArray(key) ? key : [key]);
     ctx.logger.debug({ store: this.db.value() }, "DataStore.save");
     await this.db.save();
   }
@@ -101,11 +98,9 @@ const createStormDBInstance = (directory: string, id: string): StormDB => {
 
 export class StormDBDataStoreFactory implements DataStoreFactory {
   private readonly directory: string;
-  private readonly cache: DataStoreCache;
 
-  public constructor(directory: string, dataStoreCache: DataStoreCache) {
+  public constructor(directory: string) {
     this.directory = directory;
-    this.cache = dataStoreCache;
   }
 
   public async create(
@@ -116,12 +111,6 @@ export class StormDBDataStoreFactory implements DataStoreFactory {
     ctx.logger.debug({ id }, "createDataStore");
     await mkdir(this.directory, { recursive: true });
 
-    const cachedDb = this.cache.get(id);
-    if (cachedDb) {
-      ctx.logger.debug({ id }, "Using cached data store");
-      return cachedDb;
-    }
-
     ctx.logger.debug({ id }, "Creating new data store");
     const db = createStormDBInstance(this.directory, id);
 
@@ -130,10 +119,6 @@ export class StormDBDataStoreFactory implements DataStoreFactory {
     ctx.logger.debug({ store: db.value() }, "DataStore.save");
     await db.save();
 
-    const dataStore = new StormDBDataStore(db);
-
-    this.cache.set(id, dataStore);
-
-    return dataStore;
+    return new StormDBDataStore(db);
   }
 }

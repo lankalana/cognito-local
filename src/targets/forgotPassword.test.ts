@@ -1,26 +1,35 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockMessages } from '../__tests__/mockMessages.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { Messages, UserPoolService } from '../services/index.js';
-import { attributeValue } from '../services/userPoolService.js';
-import { ForgotPassword, ForgotPasswordTarget } from './forgotPassword.js';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockMessages } from "../__tests__/mockMessages";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { Messages, UserPoolService } from "../services";
+import { attributeValue } from "../services/userPoolService";
+import { ForgotPassword, type ForgotPasswordTarget } from "./forgotPassword";
 
 const currentDate = new Date();
 
 describe('ForgotPassword target', () => {
   let forgotPassword: ForgotPasswordTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockMessages: jest.Mocked<Messages>;
-  let mockOtp: jest.MockedFunction<() => string>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockMessages: MockedObject<Messages>;
+  let mockOtp: Mock<() => string>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
     mockMessages = newMockMessages();
-    mockOtp = jest.fn().mockReturnValue('123456');
+    mockOtp = vi.fn().mockReturnValue("123456");
     forgotPassword = ForgotPassword({
       cognito: newMockCognitoService(mockUserPoolService),
       clock: new ClockFake(currentDate),
@@ -34,9 +43,9 @@ describe('ForgotPassword target', () => {
 
     await expect(
       forgotPassword(TestContext, {
-        ClientId: 'clientId',
-        Username: '0000-0000',
-      })
+        ClientId: "clientId",
+        Username: "0000-0000",
+      }),
     ).rejects.toBeInstanceOf(UserNotFoundError);
   });
 
@@ -60,10 +69,10 @@ describe('ForgotPassword target', () => {
       '123456',
       { client: 'metadata' },
       {
-        AttributeName: 'email',
-        DeliveryMedium: 'EMAIL',
-        Destination: attributeValue('email', user.Attributes),
-      }
+        AttributeName: "email",
+        DeliveryMedium: "EMAIL",
+        Destination: attributeValue("email", user.Attributes),
+      },
     );
 
     expect(result).toEqual({

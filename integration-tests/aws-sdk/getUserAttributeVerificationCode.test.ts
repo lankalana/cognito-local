@@ -1,6 +1,7 @@
-import { TestContext } from '../../src/__tests__/testContext.js';
-import { User } from '../../src/services/userPoolService.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { TestContext } from "../../src/__tests__/testContext";
+import type { User } from "../../src/services/userPoolService";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.getUserAttributeVerificationCode',
@@ -55,5 +56,5 @@ describe(
 
       expect(storedUser.AttributeVerificationCode).toMatch(/^\d{6}$/);
     });
-  })
+  }),
 );

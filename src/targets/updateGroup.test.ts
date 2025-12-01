@@ -1,17 +1,18 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { GroupNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { UpdateGroup, UpdateGroupTarget } from './updateGroup.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { GroupNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import { UpdateGroup, type UpdateGroupTarget } from "./updateGroup";
 
 const originalDate = new Date();
 
 describe('UpdateGroup target', () => {
   let updateGroup: UpdateGroupTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -42,7 +43,7 @@ describe('UpdateGroup target', () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
@@ -84,7 +85,7 @@ describe('UpdateGroup target', () => {
 
     expect(mockUserPoolService.getGroupByGroupName).toHaveBeenCalledWith(
       TestContext,
-      existingGroup.GroupName
+      existingGroup.GroupName,
     );
 
     expect(mockUserPoolService.saveGroup).toHaveBeenCalledWith(TestContext, {
@@ -109,9 +110,9 @@ describe('UpdateGroup target', () => {
 
     await expect(
       updateGroup(TestContext, {
-        GroupName: 'group',
-        UserPoolId: 'test',
-      })
+        GroupName: "group",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 });

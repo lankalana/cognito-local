@@ -1,5 +1,5 @@
-import { GroupNotFoundError } from '../../src/errors.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.deleteGroup',
@@ -7,29 +7,46 @@ describe(
     it('deletes a group', async () => {
       const client = Cognito();
 
-      await client.createGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
 
-      const getGroupResponse = await client.getGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-      });
+      await client
+        .createGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
+
+      const getGroupResponse = await client
+        .getGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
 
       expect(getGroupResponse.Group).toBeDefined();
 
-      await client.deleteGroup({
-        GroupName: 'abc',
-        UserPoolId: 'test',
-      });
+      await client
+        .deleteGroup({
+          GroupName: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
 
       await expect(
-        client.getGroup({
-          GroupName: 'abc',
-          UserPoolId: 'test',
-        })
-      ).rejects.toMatchObject(new GroupNotFoundError());
+        client
+          .getGroup({
+            GroupName: "abc",
+            UserPoolId: userPoolId,
+          })
+          .promise(),
+      ).rejects.toMatchObject({
+        code: "ResourceNotFoundException",
+      });
     });
-  })
+  }),
 );

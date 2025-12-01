@@ -1,7 +1,10 @@
-import {
+import type {
   UpdateUserPoolRequest,
   UpdateUserPoolResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import type { UserPool } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 import { MissingParameterError } from '../errors.js';
 import { Services } from '../services/index.js';

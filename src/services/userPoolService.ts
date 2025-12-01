@@ -1,48 +1,69 @@
-import {
+import type {
+  AttributeListType,
   AttributeType,
   IdentityProviderType,
   MFAOptionType,
   SchemaAttributeType,
   UserPoolType,
   UserStatusType,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { InvalidParameterError } from '../errors.js';
-import { AppClient } from './appClient.js';
-import { Clock } from './clock.js';
-import { Context } from './context.js';
-import { DataStore } from './dataStore/dataStore.js';
-import { DataStoreFactory } from './dataStore/factory.js';
-import { FilterConfig } from './filter.js';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { InvalidParameterError } from "../errors";
+import type { AppClient } from "./appClient";
+import type { Clock } from "./clock";
+import type { Context } from "./context";
+import type { DataStore } from "./dataStore/dataStore";
+import type { DataStoreFactory } from "./dataStore/factory";
+import { FilterConfig } from "./filter";
 
 export interface MFAOption {
   DeliveryMedium: 'SMS';
   AttributeName: 'phone_number';
 }
 
-export const attribute = (name: string, value: string | undefined): AttributeType => ({
-  Name: name,
-  Value: value,
-});
+export const attribute = (
+  name: string,
+  value: string | undefined,
+): AttributeType => ({ Name: name, Value: value });
+
 export const attributesIncludeMatch = (
   attributeName: string,
   attributeValue: string,
-  attributes: AttributeType[] | undefined
-) => !!(attributes ?? []).find((x) => x.Name === attributeName && x.Value === attributeValue);
-export const attributesInclude = (attributeName: string, attributes: AttributeType[] | undefined) =>
-  !!(attributes ?? []).find((x) => x.Name === attributeName);
+  attributes: AttributeListType | undefined,
+) =>
+  !!(attributes ?? []).find(
+    (x) => x.Name === attributeName && x.Value === attributeValue,
+  );
+
+export const attributesInclude = (
+  attributeName: string,
+  attributes: AttributeListType | undefined,
+) => !!(attributes ?? []).find((x) => x.Name === attributeName);
+
 export const attributeValue = (
   attributeName: string | undefined,
-  attributes: AttributeType[] | undefined
+  attributes: AttributeListType | undefined,
 ) => (attributes ?? []).find((x) => x.Name === attributeName)?.Value;
+
 export const attributesToRecord = (
-  attributes: AttributeType[] | undefined
+  attributes: AttributeListType | undefined,
 ): Record<string, string> =>
-  (attributes ?? [])
-    .filter((attr) => attr.Name)
-    .reduce((acc, attr) => ({ ...acc, [attr.Name!]: attr.Value }), {});
-export const attributesFromRecord = (attributes: Record<string, string>): AttributeType[] =>
-  Object.entries(attributes).map(([Name, Value]) => ({ Name, Value }));
+  (attributes ?? []).reduce(
+    (acc, attr) => {
+      if (attr.Name && attr.Value) {
+        acc[attr.Name] = attr.Value;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+
+export const attributesFromRecord = (
+  attributes: Record<string, string>,
+): AttributeListType =>
+  Object.entries(attributes)
+    .map(([Name, Value]) => ({ Name, Value }))
+    .sort((a, b) => a.Name.localeCompare(b.Name));
+
 export const attributesAppend = (
   attributes: AttributeType[] | undefined,
   ...toAppend: AttributeType[]
@@ -65,8 +86,10 @@ export const attributesRemove = (
   ...toRemove: readonly string[]
 ): AttributeType[] => attributes?.filter((x) => x.Name && !toRemove.includes(x.Name)) ?? [];
 
-export const customAttributes = (attributes: AttributeType[] | undefined): AttributeType[] =>
-  (attributes ?? []).filter((attr) => attr.Name && attr.Name.startsWith('custom:'));
+export const customAttributes = (
+  attributes: AttributeListType | undefined,
+): AttributeListType =>
+  (attributes ?? []).filter((attr) => attr.Name.startsWith("custom:"));
 
 export interface User {
   Attributes: AttributeType[];
@@ -85,6 +108,13 @@ export interface User {
   ConfirmationCode?: string;
   MFACode?: string;
   RefreshTokens: string[];
+
+  /**
+   * UnverifiedAttributeChanges is a list of attributes that have been requested to be changed
+   * but have not yet been verified. This is used to track changes that require user verification
+   * before they can be applied to the user.
+   */
+  UnverifiedAttributeChanges?: AttributeListType;
 }
 
 export interface Group {
@@ -148,24 +178,33 @@ export interface UserPoolService {
     providerName: string
   ): Promise<IdentityProvider | null>;
   getUserByUsername(ctx: Context, username: string): Promise<User | null>;
-  getUserByRefreshToken(ctx: Context, refreshToken: string): Promise<User | null>;
+  getUserByRefreshToken(
+    ctx: Context,
+    refreshToken: string,
+  ): Promise<User | null>;
   listGroups(ctx: Context): Promise<readonly Group[]>;
-  listIdentityProviders(ctx: Context): Promise<readonly IdentityProvider[]>;
-  listUsers(ctx: Context, filter?: string): Promise<readonly User[]>;
+  listUsers(
+    ctx: Context,
+    filter?: string | undefined,
+  ): Promise<readonly User[]>;
   listUserGroupMembership(ctx: Context, user: User): Promise<readonly string[]>;
   updateOptions(ctx: Context, userPool: UserPool): Promise<void>;
   removeUserFromGroup(ctx: Context, group: Group, user: User): Promise<void>;
   saveGroup(ctx: Context, group: Group): Promise<void>;
   saveIdentityProvider(ctx: Context, identityProvider: IdentityProvider): Promise<void>;
   saveUser(ctx: Context, user: User): Promise<void>;
-  storeRefreshToken(ctx: Context, refreshToken: string, user: User): Promise<void>;
+  storeRefreshToken(
+    ctx: Context,
+    refreshToken: string,
+    user: User,
+  ): Promise<void>;
 }
 
 export interface UserPoolServiceFactory {
   create(
     ctx: Context,
     clientsDataStore: DataStore,
-    defaultOptions: UserPool
+    defaultOptions: UserPool,
   ): Promise<UserPoolService>;
 }
 
@@ -184,7 +223,7 @@ export class UserPoolServiceImpl implements UserPoolService {
     clientsDataStore: DataStore,
     clock: Clock,
     dataStore: DataStore,
-    config: UserPool
+    config: UserPool,
   ) {
     this.clientsDataStore = clientsDataStore;
     this._options = config;
@@ -192,14 +231,27 @@ export class UserPoolServiceImpl implements UserPoolService {
     this.dataStore = dataStore;
   }
 
-  public async saveAppClient(ctx: Context, appClient: AppClient): Promise<void> {
-    ctx.logger.debug('UserPoolServiceImpl.saveAppClient');
-    await this.clientsDataStore.set(ctx, ['Clients', appClient.ClientId], appClient);
+  public async saveAppClient(
+    ctx: Context,
+    appClient: AppClient,
+  ): Promise<void> {
+    ctx.logger.debug("UserPoolServiceImpl.saveAppClient");
+    await this.clientsDataStore.set(
+      ctx,
+      ["Clients", appClient.ClientId],
+      appClient,
+    );
   }
 
-  public async deleteAppClient(ctx: Context, appClient: AppClient): Promise<void> {
-    ctx.logger.debug({ clientId: appClient.ClientId }, 'UserPoolServiceImpl.deleteAppClient');
-    await this.clientsDataStore.delete(ctx, ['Clients', appClient.ClientId]);
+  public async deleteAppClient(
+    ctx: Context,
+    appClient: AppClient,
+  ): Promise<void> {
+    ctx.logger.debug(
+      { clientId: appClient.ClientId },
+      "UserPoolServiceImpl.deleteAppClient",
+    );
+    await this.clientsDataStore.delete(ctx, ["Clients", appClient.ClientId]);
   }
 
   public async deleteGroup(ctx: Context, group: Group): Promise<void> {
@@ -212,40 +264,37 @@ export class UserPoolServiceImpl implements UserPoolService {
     identityProvider: IdentityProvider
   ): Promise<void> {
     ctx.logger.debug(
-      {
-        userPoolId: identityProvider.UserPoolId,
-        idendityProviderName: identityProvider.ProviderName,
-      },
-      'UserPoolServiceImpl.deleteIdentityProvider'
+      { groupName: group.GroupName },
+      "UserPoolServiceImpl.deleteGroup",
     );
     await this.dataStore.delete(ctx, ['IdentityProviders', identityProvider.ProviderName]);
   }
 
   public async deleteUser(ctx: Context, user: User): Promise<void> {
-    ctx.logger.debug({ username: user.Username }, 'UserPoolServiceImpl.deleteUser');
+    ctx.logger.debug(
+      { username: user.Username },
+      "UserPoolServiceImpl.deleteUser",
+    );
 
     await this.dataStore.delete(ctx, ['Users', user.Username]);
     await this.removeUserFromAllGroups(ctx, user);
   }
 
-  public async getGroupByGroupName(ctx: Context, groupName: string): Promise<Group | null> {
-    ctx.logger.debug('UserPoolServiceImpl.getGroupByGroupName');
-    const result = await this.dataStore.get<Group>(ctx, ['Groups', groupName]);
+  public async getGroupByGroupName(
+    ctx: Context,
+    groupName: string,
+  ): Promise<Group | null> {
+    ctx.logger.debug("UserPoolServiceImpl.getGroupByGroupName");
+    const result = await this.dataStore.get<Group>(ctx, ["Groups", groupName]);
 
     return result ?? null;
   }
 
   public async getIdentityProviderByIdentifier(
     ctx: Context,
-    identifier: string
-  ): Promise<IdentityProvider | null> {
-    ctx.logger.debug({ identifier }, 'UserPoolServiceImpl.getIdentityProviderByIdentifier');
-    const identityProviders = await this.listIdentityProviders(ctx);
-    const identityProvider = identityProviders.find(
-      (identityProvider) =>
-        Array.isArray(identityProvider.IdpIdentifiers) &&
-        identityProvider.IdpIdentifiers.includes(identifier)
-    );
+    username: string,
+  ): Promise<User | null> {
+    ctx.logger.debug({ username }, "UserPoolServiceImpl.getUserByUsername");
 
     return identityProvider ?? null;
   }
@@ -274,7 +323,11 @@ export class UserPoolServiceImpl implements UserPoolService {
       return userByUsername;
     }
 
-    const users = await this.dataStore.get<Record<string, User>>(ctx, 'Users', {});
+    const users = await this.dataStore.get<Record<string, User>>(
+      ctx,
+      "Users",
+      {},
+    );
 
     for (const user of Object.values(users)) {
       if (attributesIncludeMatch('sub', username, user.Attributes)) {
@@ -296,42 +349,72 @@ export class UserPoolServiceImpl implements UserPoolService {
     return null;
   }
 
-  public async getUserByRefreshToken(ctx: Context, refreshToken: string): Promise<User | null> {
-    ctx.logger.debug({ refreshToken }, 'UserPoolServiceImpl.getUserByRefreshToken');
+  public async getUserByRefreshToken(
+    ctx: Context,
+    refreshToken: string,
+  ): Promise<User | null> {
+    ctx.logger.debug(
+      { refreshToken },
+      "UserPoolServiceImpl.getUserByRefreshToken",
+    );
     const users = await this.listUsers(ctx);
     const user = users.find(
-      (user) => Array.isArray(user.RefreshTokens) && user.RefreshTokens.includes(refreshToken)
+      (user) =>
+        Array.isArray(user.RefreshTokens) &&
+        user.RefreshTokens.includes(refreshToken),
     );
 
     return user ?? null;
   }
 
-  public async listUsers(ctx: Context, filter?: string): Promise<readonly User[]> {
-    ctx.logger.debug('UserPoolServiceImpl.listUsers');
+  public async listUsers(
+    ctx: Context,
+    filter?: string | undefined,
+  ): Promise<readonly User[]> {
+    ctx.logger.debug("UserPoolServiceImpl.listUsers");
 
     const filterConfig = new FilterConfig<User>({
       username: FilterConfig.caseSensitive((x) => x.Username),
-      email: FilterConfig.caseSensitive((x) => attributeValue('email', x.Attributes)),
-      phone_number: FilterConfig.caseSensitive((x) => attributeValue('phone_number', x.Attributes)),
-      name: FilterConfig.caseSensitive((x) => attributeValue('name', x.Attributes)),
-      given_name: FilterConfig.caseSensitive((x) => attributeValue('given_name', x.Attributes)),
-      family_name: FilterConfig.caseSensitive((x) => attributeValue('family_name', x.Attributes)),
+      email: FilterConfig.caseSensitive((x) =>
+        attributeValue("email", x.Attributes),
+      ),
+      phone_number: FilterConfig.caseSensitive((x) =>
+        attributeValue("phone_number", x.Attributes),
+      ),
+      name: FilterConfig.caseSensitive((x) =>
+        attributeValue("name", x.Attributes),
+      ),
+      given_name: FilterConfig.caseSensitive((x) =>
+        attributeValue("given_name", x.Attributes),
+      ),
+      family_name: FilterConfig.caseSensitive((x) =>
+        attributeValue("family_name", x.Attributes),
+      ),
       preferred_username: FilterConfig.caseSensitive((x) =>
-        attributeValue('preferred_username', x.Attributes)
+        attributeValue("preferred_username", x.Attributes),
       ),
       'cognito:user_status': FilterConfig.caseInsensitive((x) => x.UserStatus),
       status: FilterConfig.caseSensitive((x) => x.Enabled),
-      sub: FilterConfig.caseSensitive((x) => attributeValue('sub', x.Attributes)),
+      sub: FilterConfig.caseSensitive((x) =>
+        attributeValue("sub", x.Attributes),
+      ),
     });
 
-    const users = await this.dataStore.get<Record<string, User>>(ctx, 'Users', {});
+    const users = await this.dataStore.get<Record<string, User>>(
+      ctx,
+      "Users",
+      {},
+    );
 
     return Object.values(users).filter(filterConfig.parse(filter));
   }
 
   public async updateOptions(ctx: Context, userPool: UserPool): Promise<void> {
-    ctx.logger.debug({ userPoolId: userPool.Id }, 'UserPoolServiceImpl.updateOptions');
-    await this.dataStore.set(ctx, 'Options', userPool);
+    ctx.logger.debug(
+      { userPoolId: userPool.Id },
+      "UserPoolServiceImpl.updateOptions",
+    );
+    await this.dataStore.set(ctx, "Options", userPool);
     this._options = userPool;
   }
 
@@ -352,17 +435,21 @@ export class UserPoolServiceImpl implements UserPoolService {
     ctx.logger.debug('UserPoolServiceImpl.listIdentityProviders');
     const groups = await this.dataStore.get<Record<string, IdentityProvider>>(
       ctx,
-      'IdentityProviders',
-      {}
+      "Groups",
+      {},
     );
 
     return Object.values(groups);
   }
 
-  public async addUserToGroup(ctx: Context, group: Group, user: User): Promise<void> {
+  public async addUserToGroup(
+    ctx: Context,
+    group: Group,
+    user: User,
+  ): Promise<void> {
     ctx.logger.debug(
       { username: user.Username, groupName: group.GroupName },
-      'UserPoolServiceImpl.addUserToFromGroup'
+      "UserPoolServiceImpl.addUserToFromGroup",
     );
 
     const groupMembers = new Set(group.members ?? []);
@@ -376,10 +463,14 @@ export class UserPoolServiceImpl implements UserPoolService {
     }
   }
 
-  public async removeUserFromGroup(ctx: Context, group: Group, user: User): Promise<void> {
+  public async removeUserFromGroup(
+    ctx: Context,
+    group: Group,
+    user: User,
+  ): Promise<void> {
     ctx.logger.debug(
       { username: user.Username, groupName: group.GroupName },
-      'UserPoolServiceImpl.removeUserFromGroup'
+      "UserPoolServiceImpl.removeUserFromGroup",
     );
 
     const groupMembers = new Set(group.members ?? []);
@@ -393,11 +484,19 @@ export class UserPoolServiceImpl implements UserPoolService {
     }
   }
 
-  private async removeUserFromAllGroups(ctx: Context, user: User): Promise<void> {
-    ctx.logger.debug({ username: user.Username }, 'UserPoolServiceImpl.removeUserFromAllGroups');
+  private async removeUserFromAllGroups(
+    ctx: Context,
+    user: User,
+  ): Promise<void> {
+    ctx.logger.debug(
+      { username: user.Username },
+      "UserPoolServiceImpl.removeUserFromAllGroups",
+    );
     const groups = await this.listGroups(ctx);
 
-    await Promise.all(groups.map((group) => this.removeUserFromGroup(ctx, group, user)));
+    await Promise.all(
+      groups.map((group) => this.removeUserFromGroup(ctx, group, user)),
+    );
   }
 
   async saveGroup(ctx: Context, group: Group): Promise<void> {
@@ -406,13 +505,13 @@ export class UserPoolServiceImpl implements UserPoolService {
     await this.dataStore.set<Group>(ctx, ['Groups', group.GroupName], group);
   }
 
-  async saveIdentityProvider(ctx: Context, identityProvider: IdentityProvider): Promise<void> {
-    ctx.logger.debug({ identityProvider }, 'UserPoolServiceImpl.saveIdentityProvider');
-
-    await this.dataStore.set<IdentityProvider>(
-      ctx,
-      ['IdentityProviders', identityProvider.ProviderName],
-      identityProvider
+  async listUserGroupMembership(
+    ctx: Context,
+    user: User,
+  ): Promise<readonly string[]> {
+    ctx.logger.debug(
+      { username: user.Username },
+      "UserPoolServiceImpl.listUserGroupMembership",
     );
   }
 
@@ -430,11 +529,15 @@ export class UserPoolServiceImpl implements UserPoolService {
       .sort((a, b) => a.localeCompare(b));
   }
 
-  async storeRefreshToken(ctx: Context, refreshToken: string, user: User): Promise<void> {
+  async storeRefreshToken(
+    ctx: Context,
+    refreshToken: string,
+    user: User,
+  ): Promise<void> {
     ctx.logger.debug(
       { refreshToken, username: user.Username },
-      'UserPoolServiceImpl.storeRefreshToken',
-      refreshToken
+      "UserPoolServiceImpl.storeRefreshToken",
+      refreshToken,
     );
     const refreshTokens = Array.isArray(user.RefreshTokens) ? user.RefreshTokens : [];
     refreshTokens.push(refreshToken);
@@ -458,7 +561,7 @@ export class UserPoolServiceFactoryImpl implements UserPoolServiceFactory {
   public async create(
     ctx: Context,
     clientsDataStore: DataStore,
-    defaultOptions: UserPool
+    defaultOptions: UserPool,
   ): Promise<UserPoolService> {
     const id = defaultOptions.Id;
 
@@ -468,24 +571,35 @@ export class UserPoolServiceFactoryImpl implements UserPoolServiceFactory {
       Users: {},
       Options: defaultOptions,
     });
-    const config = await dataStore.get<UserPool>(ctx, 'Options', defaultOptions);
+    const config = await dataStore.get<UserPool>(
+      ctx,
+      "Options",
+      defaultOptions,
+    );
 
-    return new UserPoolServiceImpl(clientsDataStore, this.clock, dataStore, config);
+    return new UserPoolServiceImpl(
+      clientsDataStore,
+      this.clock,
+      dataStore,
+      config,
+    );
   }
 }
 
 export const validatePermittedAttributeChanges = (
-  requestAttributes: AttributeType[],
-  schemaAttributes: SchemaAttributeType[]
-): AttributeType[] => {
+  requestAttributes: AttributeListType,
+  schemaAttributes: SchemaAttributesListType,
+): AttributeListType => {
   for (const attr of requestAttributes) {
     const attrSchema = schemaAttributes.find((x) => x.Name === attr.Name);
     if (!attrSchema) {
-      throw new InvalidParameterError(`user.${attr.Name}: Attribute does not exist in the schema.`);
+      throw new InvalidParameterError(
+        `user.${attr.Name}: Attribute does not exist in the schema.`,
+      );
     }
     if (!attrSchema.Mutable) {
       throw new InvalidParameterError(
-        `user.${attr.Name}: Attribute cannot be updated. (changing an immutable attribute)`
+        `user.${attr.Name}: Attribute cannot be updated. (changing an immutable attribute)`,
       );
     }
   }
@@ -494,22 +608,26 @@ export const validatePermittedAttributeChanges = (
     attributesInclude('email_verified', requestAttributes) &&
     !attributesInclude('email', requestAttributes)
   ) {
-    throw new InvalidParameterError('Email is required to verify/un-verify an email');
+    throw new InvalidParameterError(
+      "Email is required to verify/un-verify an email",
+    );
   }
 
   if (
     attributesInclude('phone_number_verified', requestAttributes) &&
     !attributesInclude('phone_number', requestAttributes)
   ) {
-    throw new InvalidParameterError('Phone Number is required to verify/un-verify a phone number');
+    throw new InvalidParameterError(
+      "Phone Number is required to verify/un-verify a phone number",
+    );
   }
 
   return requestAttributes;
 };
 
 export const defaultVerifiedAttributesIfModified = (
-  attributes: AttributeType[]
-): AttributeType[] => {
+  attributes: AttributeListType,
+): AttributeListType => {
   const attributesToSet = [...attributes];
   if (attributesInclude('email', attributes) && !attributesInclude('email_verified', attributes)) {
     attributesToSet.push(attribute('email_verified', 'false'));
@@ -523,6 +641,34 @@ export const defaultVerifiedAttributesIfModified = (
   return attributesToSet;
 };
 
-export const hasUnverifiedContactAttributes = (userAttributesToSet: AttributeType[]): boolean =>
-  attributeValue('email_verified', userAttributesToSet) === 'false' ||
-  attributeValue('phone_number_verified', userAttributesToSet) === 'false';
+export const hasUnverifiedContactAttributes = (
+  userAttributesToSet: AttributeListType | undefined,
+): boolean =>
+  attributeValue("email_verified", userAttributesToSet) === "false" ||
+  attributeValue("phone_number_verified", userAttributesToSet) === "false";
+
+/**
+ * Splits user attributes into two lists:
+ * - Immediate attributes that can be set without verification
+ * - Delayed attributes that require verification before they can be set
+ */
+export const splitImmediateAndDelayedAttributes = (
+  userAttributesToSet: AttributeListType,
+  attributesRequireVerificationBeforeUpdate: readonly string[] | undefined,
+): [AttributeListType, AttributeListType] => {
+  const immediateAttributes: AttributeListType = [];
+  const delayedAttributes: AttributeListType = [];
+
+  for (const attr of userAttributesToSet) {
+    if (attributesRequireVerificationBeforeUpdate?.includes(attr.Name)) {
+      delayedAttributes.push(attr);
+    } else {
+      immediateAttributes.push(attr);
+    }
+  }
+
+  return [
+    defaultVerifiedAttributesIfModified(immediateAttributes),
+    defaultVerifiedAttributesIfModified(delayedAttributes),
+  ];
+};

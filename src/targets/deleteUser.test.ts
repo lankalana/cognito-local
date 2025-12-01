@@ -1,5 +1,14 @@
-import jwt from 'jsonwebtoken';
-import * as uuid from 'uuid';
+import jwt from "jsonwebtoken";
+import * as uuid from "uuid";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import PrivateKey from "../keys/cognitoLocal.private.json";
+import type { UserPoolService } from "../services";
+import { DeleteUser, type DeleteUserTarget } from "./deleteUser";
 
 import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
 import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
@@ -12,7 +21,7 @@ import { DeleteUser, DeleteUserTarget } from './deleteUser.js';
 
 describe('DeleteUser target', () => {
   let deleteUser: DeleteUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -42,20 +51,23 @@ describe('DeleteUser target', () => {
         {
           algorithm: 'RS256',
           issuer: `http://localhost:9229/test`,
-          expiresIn: '24h',
-          keyid: 'CognitoLocal',
-        }
+          expiresIn: "24h",
+          keyid: "CognitoLocal",
+        },
       ),
     });
 
-    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(TestContext, user);
+    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
+      TestContext,
+      user,
+    );
   });
 
   it("throws if token isn't valid", async () => {
     await expect(
       deleteUser(TestContext, {
-        AccessToken: 'blah',
-      })
+        AccessToken: "blah",
+      }),
     ).rejects.toBeInstanceOf(InvalidParameterError);
   });
 
@@ -79,11 +91,11 @@ describe('DeleteUser target', () => {
           {
             algorithm: 'RS256',
             issuer: `http://localhost:9229/test`,
-            expiresIn: '24h',
-            keyid: 'CognitoLocal',
-          }
+            expiresIn: "24h",
+            keyid: "CognitoLocal",
+          },
         ),
-      })
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 });

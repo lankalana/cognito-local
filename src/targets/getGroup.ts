@@ -1,9 +1,11 @@
-import { GetGroupRequest, GetGroupResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { GroupNotFoundError, MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { groupToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import type {
+  GetGroupRequest,
+  GetGroupResponse,
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { GroupNotFoundError } from "../errors";
+import type { Services } from "../services";
+import { groupToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 export type GetGroupTarget = Target<GetGroupRequest, GetGroupResponse>;
 

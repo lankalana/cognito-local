@@ -1,13 +1,17 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CognitoService } from '../services/index.js';
-import { DescribeUserPool, DescribeUserPoolTarget } from './describeUserPool.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService } from "../services";
+import {
+  DescribeUserPool,
+  type DescribeUserPoolTarget,
+} from "./describeUserPool";
 
 describe('DescribeUserPool target', () => {
   let describeUserPool: DescribeUserPoolTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     mockCognitoService = newMockCognitoService(newMockUserPoolService());
@@ -18,7 +22,9 @@ describe('DescribeUserPool target', () => {
 
   it('returns an existing user pool', async () => {
     const existingUserPool = TDB.userPool();
-    mockCognitoService.getUserPool.mockResolvedValue(newMockUserPoolService(existingUserPool));
+    mockCognitoService.getUserPool.mockResolvedValue(
+      newMockUserPoolService(existingUserPool),
+    );
 
     const result = await describeUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,

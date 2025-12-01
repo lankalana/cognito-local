@@ -1,4 +1,4 @@
-import {
+import type {
   VerifyUserAttributeRequest,
   VerifyUserAttributeResponse,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -9,11 +9,11 @@ import {
   InvalidParameterError,
   MissingParameterError,
   NotAuthorizedError,
-} from '../errors.js';
-import { Services } from '../services/index.js';
-import { Token } from '../services/tokenGenerator.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Services } from "../services";
+import type { Token } from "../services/tokenGenerator";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 export type VerifyUserAttributeTarget = Target<
   VerifyUserAttributeRequest,
@@ -33,7 +33,10 @@ export const VerifyUserAttribute =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
+    const userPool = await cognito.getUserPoolForClientId(
+      ctx,
+      decodedToken.client_id,
+    );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();
@@ -43,17 +46,32 @@ export const VerifyUserAttribute =
       throw new CodeMismatchError();
     }
 
-    if (req.AttributeName === 'email') {
+    const attributesToUpdate = [
+      ...user.Attributes,
+      ...(user.UnverifiedAttributeChanges ?? []),
+    ];
+
+    if (req.AttributeName === "email") {
       await userPool.saveUser(ctx, {
         ...user,
-        Attributes: attributesAppend(user.Attributes, attribute('email_verified', 'true')),
+        Attributes: attributesAppend(
+          attributesToUpdate,
+          attribute("email_verified", "true"),
+        ),
         UserLastModifiedDate: clock.get(),
+        UnverifiedAttributeChanges: undefined,
+        AttributeVerificationCode: undefined,
       });
     } else if (req.AttributeName === 'phone_number') {
       await userPool.saveUser(ctx, {
         ...user,
-        Attributes: attributesAppend(user.Attributes, attribute('phone_number_verified', 'true')),
+        Attributes: attributesAppend(
+          attributesToUpdate,
+          attribute("phone_number_verified", "true"),
+        ),
         UserLastModifiedDate: clock.get(),
+        UnverifiedAttributeChanges: undefined,
+        AttributeVerificationCode: undefined,
       });
     } else {
       // not sure what to do here

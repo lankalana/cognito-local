@@ -1,22 +1,27 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockMessages } from '../__tests__/mockMessages.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { InvalidParameterError, NotAuthorizedError } from '../errors.js';
-import { Messages, UserPoolService } from '../services/index.js';
-import { attribute, attributesAppend, attributeValue } from '../services/userPoolService.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockMessages } from "../__tests__/mockMessages";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import type { Messages, UserPoolService } from "../services";
+import {
+  attribute,
+  attributesAppend,
+  attributeValue,
+} from "../services/userPoolService";
 import {
   AdminUpdateUserAttributes,
-  AdminUpdateUserAttributesTarget,
-} from './adminUpdateUserAttributes.js';
+  type AdminUpdateUserAttributesTarget,
+} from "./adminUpdateUserAttributes";
 
 describe('AdminUpdateUserAttributes target', () => {
   let adminUpdateUserAttributes: AdminUpdateUserAttributesTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
-  let mockMessages: jest.Mocked<Messages>;
+  let mockMessages: MockedObject<Messages>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -36,10 +41,10 @@ describe('AdminUpdateUserAttributes target', () => {
         ClientMetadata: {
           client: 'metadata',
         },
-        UserPoolId: 'test',
-        UserAttributes: [{ Name: 'custom:example', Value: '1' }],
-        Username: 'abc',
-      })
+        UserPoolId: "test",
+        UserAttributes: [{ Name: "custom:example", Value: "1" }],
+        Username: "abc",
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
@@ -65,7 +70,10 @@ describe('AdminUpdateUserAttributes target', () => {
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
-      Attributes: attributesAppend(user.Attributes, attribute('custom:example', '1')),
+      Attributes: attributesAppend(
+        user.Attributes,
+        attribute("custom:example", "1"),
+      ),
       UserLastModifiedDate: clock.get(),
     });
   });
@@ -85,16 +93,13 @@ describe('AdminUpdateUserAttributes target', () => {
             Name: 'email_verified',
             Mutable: true,
           },
-          {
-            Name: 'phone_number_verified',
-            Mutable: true,
-          },
-          {
-            Name: 'custom:immutable',
-            Mutable: false,
-          },
-        ];
-      });
+          UserPoolId: "test",
+          UserAttributes: [{ Name: attribute, Value: "1" }],
+          Username: "abc",
+        }),
+      ).rejects.toEqual(new InvalidParameterError(expectedError));
+    });
+  });
 
       it('throws an invalid parameter error', async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(TDB.user());
@@ -134,13 +139,13 @@ describe('AdminUpdateUserAttributes target', () => {
           ...user,
           Attributes: attributesAppend(
             user.Attributes,
-            attribute(attr, 'new value'),
-            attribute(`${attr}_verified`, 'false')
+            attribute(attr, "new value"),
+            attribute(`${attr}_verified`, "false"),
           ),
           UserLastModifiedDate: clock.get(),
         });
       });
-    }
+    },
   );
 
   describe('user pool has auto verified attributes enabled', () => {
@@ -157,7 +162,9 @@ describe('AdminUpdateUserAttributes target', () => {
       describe('the verification status was not affected by the update', () => {
         it('does not deliver a OTP code to the user', async () => {
           const user = TDB.user({
-            Attributes: attributes.map((attr: string) => attribute(`${attr}_verified`, 'false')),
+            Attributes: attributes.map((attr: string) =>
+              attribute(`${attr}_verified`, "false"),
+            ),
           });
 
           mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -189,14 +196,16 @@ describe('AdminUpdateUserAttributes target', () => {
               ClientMetadata: {
                 client: 'metadata',
               },
-              UserPoolId: 'test',
-              UserAttributes: attributes.map((attr: string) => attribute(attr, 'new value')),
-              Username: 'abc',
-            })
+              UserPoolId: "test",
+              UserAttributes: attributes.map((attr: string) =>
+                attribute(attr, "new value"),
+              ),
+              Username: "abc",
+            }),
           ).rejects.toEqual(
             new InvalidParameterError(
-              'User has no attribute matching desired auto verified attributes'
-            )
+              "User has no attribute matching desired auto verified attributes",
+            ),
           );
         });
 
@@ -209,9 +218,11 @@ describe('AdminUpdateUserAttributes target', () => {
             ClientMetadata: {
               client: 'metadata',
             },
-            UserPoolId: 'test',
-            UserAttributes: attributes.map((attr: string) => attribute(attr, 'new value')),
-            Username: 'abc',
+            UserPoolId: "test",
+            UserAttributes: attributes.map((attr: string) =>
+              attribute(attr, "new value"),
+            ),
+            Username: "abc",
           });
 
           expect(mockMessages.deliver).toHaveBeenCalledWith(
@@ -223,17 +234,17 @@ describe('AdminUpdateUserAttributes target', () => {
             '123456',
             { client: 'metadata' },
             {
-              AttributeName: 'email',
-              DeliveryMedium: 'EMAIL',
-              Destination: attributeValue('email', user.Attributes),
-            }
+              AttributeName: "email",
+              DeliveryMedium: "EMAIL",
+              Destination: attributeValue("email", user.Attributes),
+            },
           );
 
           expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
             TestContext,
             expect.objectContaining({
-              AttributeVerificationCode: '123456',
-            })
+              AttributeVerificationCode: "123456",
+            }),
           );
         });
       });
@@ -254,7 +265,9 @@ describe('AdminUpdateUserAttributes target', () => {
       describe('the verification status was not affected by the update', () => {
         it('does not deliver a OTP code to the user', async () => {
           const user = TDB.user({
-            Attributes: attributes.map((attr: string) => attribute(`${attr}_verified`, 'false')),
+            Attributes: attributes.map((attr: string) =>
+              attribute(`${attr}_verified`, "false"),
+            ),
           });
 
           mockUserPoolService.getUserByUsername.mockResolvedValue(user);
@@ -283,9 +296,11 @@ describe('AdminUpdateUserAttributes target', () => {
             ClientMetadata: {
               client: 'metadata',
             },
-            UserPoolId: 'test',
-            UserAttributes: attributes.map((attr: string) => attribute(attr, 'new value')),
-            Username: 'abc',
+            UserPoolId: "test",
+            UserAttributes: attributes.map((attr: string) =>
+              attribute(attr, "new value"),
+            ),
+            Username: "abc",
           });
 
           expect(mockMessages.deliver).not.toHaveBeenCalled();

@@ -1,23 +1,22 @@
-import {
+import type {
   UpdateUserAttributesRequest,
   UpdateUserAttributesResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-import jwt from 'jsonwebtoken';
-
-import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
-import { Context } from '../services/context.js';
-import { Messages, Services, UserPoolService } from '../services/index.js';
-import { selectAppropriateDeliveryMethod } from '../services/messageDelivery/deliveryMethod.js';
-import { Token } from '../services/tokenGenerator.js';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import jwt from "jsonwebtoken";
+import { InvalidParameterError, NotAuthorizedError } from "../errors";
+import type { Messages, Services, UserPoolService } from "../services";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import type { Context } from "../services/context";
+import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
+import type { Token } from "../services/tokenGenerator";
 import {
   attributesAppend,
-  defaultVerifiedAttributesIfModified,
   hasUnverifiedContactAttributes,
-  User,
+  splitImmediateAndDelayedAttributes,
+  type User,
   validatePermittedAttributeChanges,
-} from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "../services/userPoolService";
+import type { Target } from "./Target";
 
 const sendAttributeVerificationCode = async (
   ctx: Context,
@@ -25,16 +24,16 @@ const sendAttributeVerificationCode = async (
   user: User,
   messages: Messages,
   req: UpdateUserAttributesRequest,
-  code: string
+  code: string,
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
     userPool.options.AutoVerifiedAttributes ?? [],
-    user
+    user,
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
     throw new InvalidParameterError(
-      'User has no attribute matching desired auto verified attributes'
+      "User has no attribute matching desired auto verified attributes",
     );
   }
 
@@ -46,7 +45,7 @@ const sendAttributeVerificationCode = async (
     user,
     code,
     req.ClientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 
   return deliveryDetails;
@@ -71,27 +70,39 @@ export const UpdateUserAttributes =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
+    const userPool = await cognito.getUserPoolForClientId(
+      ctx,
+      decodedToken.client_id,
+    );
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();
     }
 
-    const userAttributesToSet = defaultVerifiedAttributesIfModified(
-      validatePermittedAttributeChanges(
-        req.UserAttributes,
-        // if the user pool doesn't have any SchemaAttributes it was probably created manually
-        // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
-        // this case, otherwise checks against the schema for default attributes like email will
-        // fail.
-        userPool.options.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []
-      )
+    const permittedAttributeChanges = validatePermittedAttributeChanges(
+      req.UserAttributes,
+      // if the user pool doesn't have any SchemaAttributes it was probably created manually
+      // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
+      // this case, otherwise checks against the schema for default attributes like email will
+      // fail.
+      userPool.options.SchemaAttributes ??
+        USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
+        [],
     );
 
-    const updatedUser = {
+    const [immediateAttributes, delayedAttributes] =
+      splitImmediateAndDelayedAttributes(
+        permittedAttributeChanges,
+        userPool.options.UserAttributeUpdateSettings
+          ?.AttributesRequireVerificationBeforeUpdate,
+      );
+
+    const updatedUser: User = {
       ...user,
-      Attributes: attributesAppend(user.Attributes, ...userAttributesToSet),
+      Attributes: attributesAppend(user.Attributes, ...immediateAttributes),
       UserLastModifiedDate: clock.get(),
+      UnverifiedAttributeChanges:
+        delayedAttributes.length > 0 ? delayedAttributes : undefined,
     };
 
     await userPool.saveUser(ctx, updatedUser);
@@ -100,7 +111,8 @@ export const UpdateUserAttributes =
     // e.g. a user with email_verified=false that you don't touch the email attributes won't get notified
     if (
       userPool.options.AutoVerifiedAttributes?.length &&
-      hasUnverifiedContactAttributes(userAttributesToSet)
+      (hasUnverifiedContactAttributes(immediateAttributes) ||
+        hasUnverifiedContactAttributes(delayedAttributes))
     ) {
       const code = otp();
 
@@ -112,10 +124,10 @@ export const UpdateUserAttributes =
       const deliveryDetails = await sendAttributeVerificationCode(
         ctx,
         userPool,
-        user,
+        updatedUser,
         messages,
         req,
-        code
+        code,
       );
 
       return {

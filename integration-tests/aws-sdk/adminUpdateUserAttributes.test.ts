@@ -1,5 +1,6 @@
-import { UUID } from '../../src/__tests__/patterns.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { UUID } from "../../src/__tests__/patterns";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.adminUpdateUserAttributes',
@@ -7,43 +8,58 @@ describe(
     it("updates a user's attributes", async () => {
       const client = Cognito();
 
-      await client.adminCreateUser({
-        UserAttributes: [
-          { Name: 'email', Value: 'example@example.com' },
-          { Name: 'phone_number', Value: '0400000000' },
-        ],
-        Username: 'abc',
-        UserPoolId: 'test',
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
 
-      let user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      await client
+        .adminCreateUser({
+          UserAttributes: [
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
+          ],
+          Username: "abc",
+          UserPoolId: userPoolId,
+        })
+        .promise();
+
+      let user = await client
+        .adminGetUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
 
-      await client.adminUpdateUserAttributes({
-        UserPoolId: 'test',
-        Username: 'abc',
-        UserAttributes: [{ Name: 'email', Value: 'example2@example.com' }],
-      });
+      await client
+        .adminUpdateUserAttributes({
+          UserPoolId: userPoolId,
+          Username: "abc",
+          UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
+        })
+        .promise();
 
-      user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      user = await client
+        .adminGetUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example2@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
-        { Name: 'email_verified', Value: 'false' },
+        { Name: "email", Value: "example2@example.com" },
+        { Name: "email_verified", Value: "false" },
+        { Name: "phone_number", Value: "0400000000" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
     });
-  })
+  }),
 );

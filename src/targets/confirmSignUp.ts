@@ -1,4 +1,4 @@
-import {
+import type {
   ConfirmSignUpRequest,
   ConfirmSignUpResponse,
   UserStatusType,
@@ -9,10 +9,10 @@ import {
   ExpiredCodeError,
   MissingParameterError,
   NotAuthorizedError,
-} from '../errors.js';
-import { Services } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Services } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 export type ConfirmSignUpTarget = Target<ConfirmSignUpRequest, ConfirmSignUpResponse>;
 
@@ -61,7 +61,7 @@ export const ConfirmSignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute('cognito:user_status', updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

@@ -1,22 +1,16 @@
-import { Config } from '../server/config.js';
-import { Clock } from './clock.js';
-import { CognitoService } from './cognitoService.js';
-import { Messages } from './messages.js';
-import { TokenGenerator } from './tokenGenerator.js';
-import { Triggers } from './triggers/index.js';
+import type { Config } from "../server/config";
+import type { Clock } from "./clock";
+import type { CognitoService } from "./cognitoService";
+import type { Messages } from "./messages";
+import type { TokenGenerator } from "./tokenGenerator";
+import type { Triggers } from "./triggers";
 
-export type { Clock } from './clock.js';
-export { DateClock } from './clock.js';
-export type { CognitoService } from './cognitoService.js';
-export { CognitoServiceImpl } from './cognitoService.js';
-export type { Lambda } from './lambda.js';
-export { LambdaService } from './lambda.js';
-export type { Messages } from './messages.js';
-export { MessagesService } from './messages.js';
-export type { Triggers } from './triggers/index.js';
-export { TriggersService } from './triggers/index.js';
-export type { UserPoolService } from './userPoolService.js';
-export { UserPoolServiceImpl } from './userPoolService.js';
+export { Clock, DateClock } from "./clock";
+export { CognitoService, CognitoServiceImpl } from "./cognitoService";
+export { Lambda, LambdaService } from "./lambda";
+export { Messages, MessagesService } from "./messages";
+export { Triggers, TriggersService } from "./triggers";
+export { UserPoolService, UserPoolServiceImpl } from "./userPoolService";
 
 export interface Services {
   clock: Clock;

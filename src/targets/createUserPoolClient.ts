@@ -1,13 +1,11 @@
-import {
+import type {
   CreateUserPoolClientRequest,
   CreateUserPoolClientResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError } from '../errors.js';
-import { AppClient, newId } from '../services/appClient.js';
-import { Services } from '../services/index.js';
-import { appClientToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import { type AppClient, newId } from "../services/appClient";
+import { appClientToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 export type CreateUserPoolClientTarget = Target<
   CreateUserPoolClientRequest,

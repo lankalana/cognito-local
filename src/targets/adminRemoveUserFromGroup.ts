@@ -1,8 +1,12 @@
-import { AdminRemoveUserFromGroupRequest } from '@aws-sdk/client-cognito-identity-provider';
+import type { AdminRemoveUserFromGroupRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
-import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+export type AdminRemoveUserFromGroupTarget = Target<
+  AdminRemoveUserFromGroupRequest,
+  object
+>;
 
 export type AdminRemoveUserFromGroupTarget = Target<AdminRemoveUserFromGroupRequest, object>;
 

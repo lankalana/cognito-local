@@ -1,7 +1,8 @@
-import { UUID } from '../../src/__tests__/patterns.js';
-import { TestContext } from '../../src/__tests__/testContext.js';
-import { User } from '../../src/services/userPoolService.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { UUID } from "../../src/__tests__/patterns";
+import { TestContext } from "../../src/__tests__/testContext";
+import type { User } from "../../src/services/userPoolService";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.verifyUserAttribute',
@@ -67,10 +68,10 @@ describe(
       });
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example2@example.com' },
-        { Name: 'email_verified', Value: 'true' },
+        { Name: "email", Value: "example2@example.com" },
+        { Name: "email_verified", Value: "true" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
     });
-  })
+  }),
 );

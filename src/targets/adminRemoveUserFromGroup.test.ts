@@ -1,17 +1,18 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { GroupNotFoundError, UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { GroupNotFoundError, UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
 import {
   AdminRemoveUserFromGroup,
-  AdminRemoveUserFromGroupTarget,
-} from './adminRemoveUserFromGroup.js';
+  type AdminRemoveUserFromGroupTarget,
+} from "./adminRemoveUserFromGroup";
 
 describe('AdminRemoveUserFromGroup target', () => {
   let adminRemoveUserFromGroup: AdminRemoveUserFromGroupTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -39,7 +40,7 @@ describe('AdminRemoveUserFromGroup target', () => {
     expect(mockUserPoolService.removeUserFromGroup).toHaveBeenCalledWith(
       TestContext,
       existingGroup,
-      existingUser
+      existingUser,
     );
   });
 
@@ -53,8 +54,8 @@ describe('AdminRemoveUserFromGroup target', () => {
       adminRemoveUserFromGroup(TestContext, {
         GroupName: 'group',
         Username: existingUser.Username,
-        UserPoolId: 'test',
-      })
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new GroupNotFoundError());
   });
 
@@ -67,9 +68,9 @@ describe('AdminRemoveUserFromGroup target', () => {
     await expect(
       adminRemoveUserFromGroup(TestContext, {
         GroupName: existingGroup.GroupName,
-        Username: 'user',
-        UserPoolId: 'test',
-      })
+        Username: "user",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

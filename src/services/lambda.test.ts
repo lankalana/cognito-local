@@ -1,21 +1,27 @@
-import '../__tests__/jsonMatching.js';
+import type * as AWS from "aws-sdk";
+import { version } from "aws-sdk/package.json";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { TestContext } from "../__tests__/testContext";
+import {
+  InvalidLambdaResponseError,
+  UserLambdaValidationError,
+} from "../errors";
+import { LambdaService } from "./lambda";
 
-import { Lambda } from '@aws-sdk/client-lambda';
-
-import { TestContext } from '../__tests__/testContext.js';
-import { awsSdkVersion } from '../constants.js';
-import { InvalidLambdaResponseError, UserLambdaValidationError } from '../errors.js';
-import { LambdaService } from './lambda.js';
-
-describe('Lambda function invoker', () => {
-  let mockLambdaClient: jest.Mocked<Lambda>;
-  const encoder = new TextEncoder();
+describe("Lambda function invoker", () => {
+  let mockLambdaClient: MockedObject<AWS.Lambda>;
 
   beforeEach(() => {
     mockLambdaClient = {
-      ...mockLambdaClient,
-      invoke: jest.fn(),
-    };
+      invoke: vi.fn(),
+    } as any;
   });
 
   describe('enabled', () => {
@@ -24,7 +30,7 @@ describe('Lambda function invoker', () => {
         {
           UserMigration: 'MyLambdaName',
         },
-        mockLambdaClient
+        mockLambdaClient,
       );
 
       expect(lambda.enabled('UserMigration')).toBe(true);
@@ -51,8 +57,8 @@ describe('Lambda function invoker', () => {
           username: 'username',
           userPoolId: 'userPoolId',
           validationData: undefined,
-        })
-      ).rejects.toEqual(new Error('UserMigration trigger not configured'));
+        }),
+      ).rejects.toEqual(new Error("UserMigration trigger not configured"));
     });
 
     describe('when lambda is successful', () => {
@@ -66,7 +72,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         const result = await lambda.invoke(TestContext, 'UserMigration', {
@@ -93,7 +99,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await expect(
@@ -106,7 +112,7 @@ describe('Lambda function invoker', () => {
             username: 'username',
             userPoolId: 'userPoolId',
             validationData: undefined,
-          })
+          }),
         ).rejects.toBeInstanceOf(InvalidLambdaResponseError);
       });
 
@@ -120,7 +126,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await expect(
@@ -133,8 +139,10 @@ describe('Lambda function invoker', () => {
             username: 'username',
             userPoolId: 'userPoolId',
             validationData: undefined,
-          })
-        ).rejects.toEqual(new UserLambdaValidationError('Something bad happened'));
+          }),
+        ).rejects.toEqual(
+          new UserLambdaValidationError("Something bad happened"),
+        );
       });
 
       it('throws if the function returns an Unhandled error with a 200 status code and a errorMessage payload', async () => {
@@ -149,7 +157,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await expect(
@@ -162,9 +170,11 @@ describe('Lambda function invoker', () => {
             username: 'username',
             userPoolId: 'userPoolId',
             validationData: undefined,
-          })
+          }),
         ).rejects.toEqual(
-          new UserLambdaValidationError('MyLambdaName failed with error Something bad in Userland.')
+          new UserLambdaValidationError(
+            "MyLambdaName failed with error Something bad in Userland.",
+          ),
         );
       });
 
@@ -178,7 +188,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         const result = await lambda.invoke(TestContext, 'UserMigration', {
@@ -211,7 +221,7 @@ describe('Lambda function invoker', () => {
           {
             PreSignUp: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, 'PreSignUp', {
@@ -268,7 +278,7 @@ describe('Lambda function invoker', () => {
           {
             UserMigration: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, 'UserMigration', {
@@ -328,7 +338,7 @@ describe('Lambda function invoker', () => {
           {
             [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, trigger, {
@@ -384,7 +394,7 @@ describe('Lambda function invoker', () => {
           {
             [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, trigger, {
@@ -442,7 +452,7 @@ describe('Lambda function invoker', () => {
           {
             [trigger]: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, trigger, {
@@ -502,7 +512,7 @@ describe('Lambda function invoker', () => {
           {
             CustomMessage: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, 'CustomMessage', {
@@ -566,7 +576,7 @@ describe('Lambda function invoker', () => {
           {
             CustomEmailSender: 'MyLambdaName',
           },
-          mockLambdaClient
+          mockLambdaClient,
         );
 
         await lambda.invoke(TestContext, 'CustomEmailSender', {

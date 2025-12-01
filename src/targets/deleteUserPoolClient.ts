@@ -1,8 +1,12 @@
-import { DeleteUserPoolClientRequest } from '@aws-sdk/client-cognito-identity-provider';
+import type { DeleteUserPoolClientRequest } from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { ResourceNotFoundError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
-import { MissingParameterError, ResourceNotFoundError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+export type DeleteUserPoolClientTarget = Target<
+  DeleteUserPoolClientRequest,
+  object
+>;
 
 export type DeleteUserPoolClientTarget = Target<DeleteUserPoolClientRequest, object>;
 

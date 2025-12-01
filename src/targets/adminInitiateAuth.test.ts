@@ -1,20 +1,24 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockTokenGenerator } from '../__tests__/mockTokenGenerator.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CognitoService, Triggers, UserPoolService } from '../services/index.js';
-import { TokenGenerator } from '../services/tokenGenerator.js';
-import { AdminInitiateAuth, AdminInitiateAuthTarget } from './adminInitiateAuth.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService, Triggers, UserPoolService } from "../services";
+import type { TokenGenerator } from "../services/tokenGenerator";
+import {
+  AdminInitiateAuth,
+  type AdminInitiateAuthTarget,
+} from "./adminInitiateAuth";
 
 describe('AdminInitiateAuth target', () => {
   let adminInitiateAuth: AdminInitiateAuthTarget;
 
-  let mockCognitoService: jest.Mocked<CognitoService>;
-  let mockTokenGenerator: jest.Mocked<TokenGenerator>;
-  let mockTriggers: jest.Mocked<Triggers>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockCognitoService: MockedObject<CognitoService>;
+  let mockTokenGenerator: MockedObject<TokenGenerator>;
+  let mockTriggers: MockedObject<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   const userPoolClient = TDB.appClient();
 
   beforeEach(() => {
@@ -60,7 +64,7 @@ describe('AdminInitiateAuth target', () => {
     expect(mockUserPoolService.storeRefreshToken).toHaveBeenCalledWith(
       TestContext,
       response.AuthenticationResult?.RefreshToken,
-      existingUser
+      existingUser,
     );
 
     expect(response.AuthenticationResult?.AccessToken).toEqual('access');
@@ -75,7 +79,7 @@ describe('AdminInitiateAuth target', () => {
       {
         client: 'metadata',
       },
-      'Authentication'
+      "Authentication",
     );
   });
 
@@ -107,7 +111,7 @@ describe('AdminInitiateAuth target', () => {
 
     expect(mockUserPoolService.getUserByRefreshToken).toHaveBeenCalledWith(
       TestContext,
-      'refresh token'
+      "refresh token",
     );
     expect(mockUserPoolService.storeRefreshToken).not.toHaveBeenCalled();
 
@@ -125,7 +129,7 @@ describe('AdminInitiateAuth target', () => {
       {
         client: 'metadata',
       },
-      'RefreshTokens'
+      "RefreshTokens",
     );
   });
 });

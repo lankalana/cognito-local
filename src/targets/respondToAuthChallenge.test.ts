@@ -1,22 +1,30 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockTokenGenerator } from '../__tests__/mockTokenGenerator.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CodeMismatchError, InvalidParameterError, NotAuthorizedError } from '../errors.js';
-import { Triggers, UserPoolService } from '../services/index.js';
-import { TokenGenerator } from '../services/tokenGenerator.js';
-import { RespondToAuthChallenge, RespondToAuthChallengeTarget } from './respondToAuthChallenge.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import {
+  CodeMismatchError,
+  InvalidParameterError,
+  NotAuthorizedError,
+} from "../errors";
+import type { Triggers, UserPoolService } from "../services";
+import type { TokenGenerator } from "../services/tokenGenerator";
+import {
+  RespondToAuthChallenge,
+  type RespondToAuthChallengeTarget,
+} from "./respondToAuthChallenge";
 
 const currentDate = new Date();
 
 describe('RespondToAuthChallenge target', () => {
   let respondToAuthChallenge: RespondToAuthChallengeTarget;
-  let mockTokenGenerator: jest.Mocked<TokenGenerator>;
-  let mockTriggers: jest.Mocked<Triggers>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockTokenGenerator: MockedObject<TokenGenerator>;
+  let mockTriggers: MockedObject<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
   const userPoolClient = TDB.appClient();
 
@@ -50,18 +58,22 @@ describe('RespondToAuthChallenge target', () => {
           USERNAME: 'username',
           SMS_MFA_CODE: '123456',
         },
-        Session: 'Session',
-      })
+        Session: "Session",
+      }),
     ).rejects.toBeInstanceOf(NotAuthorizedError);
   });
 
   it('throws if ChallengeResponses missing', async () => {
     await expect(
       respondToAuthChallenge(TestContext, {
-        ClientId: 'clientId',
-        ChallengeName: 'SMS_MFA',
-      })
-    ).rejects.toEqual(new InvalidParameterError('Missing required parameter challenge responses'));
+        ClientId: "clientId",
+        ChallengeName: "SMS_MFA",
+      }),
+    ).rejects.toEqual(
+      new InvalidParameterError(
+        "Missing required parameter challenge responses",
+      ),
+    );
   });
 
   it('throws if ChallengeResponses.USERNAME is missing', async () => {
@@ -70,8 +82,10 @@ describe('RespondToAuthChallenge target', () => {
         ClientId: 'clientId',
         ChallengeName: 'SMS_MFA',
         ChallengeResponses: {},
-      })
-    ).rejects.toEqual(new InvalidParameterError('Missing required parameter USERNAME'));
+      }),
+    ).rejects.toEqual(
+      new InvalidParameterError("Missing required parameter USERNAME"),
+    );
   });
 
   it('throws if Session is missing', async () => {
@@ -84,8 +98,10 @@ describe('RespondToAuthChallenge target', () => {
         ChallengeResponses: {
           USERNAME: 'abc',
         },
-      })
-    ).rejects.toEqual(new InvalidParameterError('Missing required parameter Session'));
+      }),
+    ).rejects.toEqual(
+      new InvalidParameterError("Missing required parameter Session"),
+    );
   });
 
   describe('ChallengeName=SMS_MFA', () => {
@@ -153,13 +169,15 @@ describe('RespondToAuthChallenge target', () => {
           {
             client: 'metadata',
           },
-          'Authentication'
+          "Authentication",
         );
       });
 
-      describe('when Post Authentication trigger is enabled', () => {
-        it('does invokes the trigger', async () => {
-          mockTriggers.enabled.mockImplementation((trigger) => trigger === 'PostAuthentication');
+      describe("when Post Authentication trigger is enabled", () => {
+        it("does invokes the trigger", async () => {
+          mockTriggers.enabled.mockImplementation(
+            (trigger) => trigger === "PostAuthentication",
+          );
 
           await respondToAuthChallenge(TestContext, {
             ClientId: userPoolClient.ClientId,
@@ -174,16 +192,19 @@ describe('RespondToAuthChallenge target', () => {
             Session: 'Session',
           });
 
-          expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(TestContext, {
-            clientId: userPoolClient.ClientId,
-            clientMetadata: {
-              client: 'metadata',
+          expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
+            TestContext,
+            {
+              clientId: userPoolClient.ClientId,
+              clientMetadata: {
+                client: "metadata",
+              },
+              source: "PostAuthentication_Authentication",
+              userAttributes: user.Attributes,
+              username: user.Username,
+              userPoolId: userPoolClient.UserPoolId,
             },
-            source: 'PostAuthentication_Authentication',
-            userAttributes: user.Attributes,
-            username: user.Username,
-            userPoolId: userPoolClient.UserPoolId,
-          });
+          );
         });
       });
     });
@@ -200,8 +221,8 @@ describe('RespondToAuthChallenge target', () => {
               USERNAME: user.Username,
               SMS_MFA_CODE: '4321',
             },
-            Session: 'Session',
-          })
+            Session: "Session",
+          }),
         ).rejects.toBeInstanceOf(CodeMismatchError);
       });
     });
@@ -222,9 +243,11 @@ describe('RespondToAuthChallenge target', () => {
           ChallengeResponses: {
             USERNAME: user.Username,
           },
-          Session: 'session',
-        })
-      ).rejects.toEqual(new InvalidParameterError('Missing required parameter NEW_PASSWORD'));
+          Session: "session",
+        }),
+      ).rejects.toEqual(
+        new InvalidParameterError("Missing required parameter NEW_PASSWORD"),
+      );
     });
 
     it("updates the user's password and status", async () => {
@@ -280,14 +303,16 @@ describe('RespondToAuthChallenge target', () => {
         user,
         [],
         userPoolClient,
-        { client: 'metadata' },
-        'Authentication'
+        { client: "metadata" },
+        "Authentication",
       );
     });
 
-    describe('when Post Authentication trigger is enabled', () => {
-      it('does invokes the trigger', async () => {
-        mockTriggers.enabled.mockImplementation((trigger) => trigger === 'PostAuthentication');
+    describe("when Post Authentication trigger is enabled", () => {
+      it("does invokes the trigger", async () => {
+        mockTriggers.enabled.mockImplementation(
+          (trigger) => trigger === "PostAuthentication",
+        );
 
         await respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
@@ -299,13 +324,16 @@ describe('RespondToAuthChallenge target', () => {
           Session: 'Session',
         });
 
-        expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(TestContext, {
-          clientId: userPoolClient.ClientId,
-          source: 'PostAuthentication_Authentication',
-          userAttributes: user.Attributes,
-          username: user.Username,
-          userPoolId: userPoolClient.UserPoolId,
-        });
+        expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
+          TestContext,
+          {
+            clientId: userPoolClient.ClientId,
+            source: "PostAuthentication_Authentication",
+            userAttributes: user.Attributes,
+            username: user.Username,
+            userPoolId: userPoolClient.UserPoolId,
+          },
+        );
       });
     });
   });

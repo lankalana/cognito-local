@@ -1,13 +1,11 @@
-import {
+import type {
   AdminConfirmSignUpRequest,
   AdminConfirmSignUpResponse,
-  UserStatusType,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { NotAuthorizedError } from "../errors";
+import type { Services } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 export type AdminConfirmSignUpTarget = Target<
   AdminConfirmSignUpRequest,
@@ -30,7 +28,7 @@ export const AdminConfirmSignUp =
 
     if (user.UserStatus !== UserStatusType.UNCONFIRMED) {
       throw new NotAuthorizedError(
-        `User cannot be confirmed. Current status is ${user.UserStatus}`
+        `User cannot be confirmed. Current status is ${user.UserStatus}`,
       );
     }
 
@@ -54,7 +52,7 @@ export const AdminConfirmSignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute('cognito:user_status', updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

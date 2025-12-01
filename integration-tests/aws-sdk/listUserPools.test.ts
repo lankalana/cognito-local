@@ -1,4 +1,5 @@
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.listUserPools',
@@ -22,11 +23,11 @@ describe(
 
       expect(result.UserPools).toEqual(
         expect.arrayContaining([
-          expect.objectContaining({ Name: 'test-1' }),
-          expect.objectContaining({ Name: 'test-2' }),
-          expect.objectContaining({ Name: 'test-3' }),
-        ])
+          expect.objectContaining({ Name: "test-1" }),
+          expect.objectContaining({ Name: "test-2" }),
+          expect.objectContaining({ Name: "test-3" }),
+        ]),
       );
     });
-  })
+  }),
 );

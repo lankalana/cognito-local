@@ -1,22 +1,30 @@
-import { newMockLambda } from "../../__tests__/mockLambda.js";
-import { TestContext } from "../../__tests__/testContext.js";
-import { CryptoService } from "../crypto.js";
-import { Lambda } from "../lambda.js";
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { newMockLambda } from "../../__tests__/mockLambda";
+import { TestContext } from "../../__tests__/testContext";
+import type { CryptoService } from "../crypto";
+import type { Lambda } from "../lambda";
 import {
   CustomEmailSender,
-  CustomEmailSenderTrigger,
-} from "./customEmailSender.js";
+  type CustomEmailSenderTrigger,
+} from "./customEmailSender";
 
-describe.only("CustomEmailSender trigger", () => {
-  let mockLambda: jest.Mocked<Lambda>;
-  let mockCrypto: jest.Mocked<CryptoService>;
+describe("CustomEmailSender trigger", () => {
+  let mockLambda: MockedObject<Lambda>;
+  let mockCrypto: MockedObject<CryptoService>;
   let customEmailSender: CustomEmailSenderTrigger;
 
   beforeEach(() => {
     mockLambda = newMockLambda();
     mockCrypto = {
-      encrypt: jest.fn(),
-    } as any as jest.Mocked<CryptoService>;
+      encrypt: vi.fn(),
+    } as any as MockedObject<CryptoService>;
 
     customEmailSender = CustomEmailSender({
       lambda: mockLambda,

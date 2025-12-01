@@ -1,20 +1,21 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CodeMismatchError, NotAuthorizedError } from '../errors.js';
-import { Triggers, UserPoolService } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { ConfirmSignUp, ConfirmSignUpTarget } from './confirmSignUp.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { CodeMismatchError, NotAuthorizedError } from "../errors";
+import type { Triggers, UserPoolService } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import { ConfirmSignUp, type ConfirmSignUpTarget } from "./confirmSignUp";
 
 const originalDate = new Date();
 
 describe('ConfirmSignUp target', () => {
   let confirmSignUp: ConfirmSignUpTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockTriggers: jest.Mocked<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockTriggers: MockedObject<Triggers>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -38,7 +39,7 @@ describe('ConfirmSignUp target', () => {
         Username: 'janice',
         ConfirmationCode: '123456',
         ForceAliasCreation: false,
-      })
+      }),
     ).rejects.toBeInstanceOf(NotAuthorizedError);
   });
 
@@ -54,8 +55,8 @@ describe('ConfirmSignUp target', () => {
       confirmSignUp(TestContext, {
         ClientId: 'clientId',
         Username: user.Username,
-        ConfirmationCode: '123456',
-      })
+        ConfirmationCode: "123456",
+      }),
     ).rejects.toBeInstanceOf(CodeMismatchError);
   });
 
@@ -106,19 +107,22 @@ describe('ConfirmSignUp target', () => {
           ForceAliasCreation: false,
         });
 
-        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
-          clientId: 'clientId',
-          clientMetadata: {
-            client: 'metadata',
+        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
+          TestContext,
+          {
+            clientId: "clientId",
+            clientMetadata: {
+              client: "metadata",
+            },
+            source: "PostConfirmation_ConfirmSignUp",
+            userAttributes: attributesAppend(
+              user.Attributes,
+              attribute("cognito:user_status", "CONFIRMED"),
+            ),
+            userPoolId: "test",
+            username: user.Username,
           },
-          source: 'PostConfirmation_ConfirmSignUp',
-          userAttributes: attributesAppend(
-            user.Attributes,
-            attribute('cognito:user_status', 'CONFIRMED')
-          ),
-          userPoolId: 'test',
-          username: user.Username,
-        });
+        );
       });
     });
 

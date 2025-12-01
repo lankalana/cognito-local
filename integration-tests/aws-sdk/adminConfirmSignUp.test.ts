@@ -1,4 +1,5 @@
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.adminConfirmSignUp',
@@ -6,10 +7,19 @@ describe(
     it('confirms a user', async () => {
       const client = Cognito();
 
-      const upc = await client.createUserPoolClient({
-        UserPoolId: 'test',
-        ClientName: 'test',
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
+
+      const upc = await client
+        .createUserPoolClient({
+          UserPoolId: userPoolId,
+          ClientName: "test",
+        })
+        .promise();
 
       await client.signUp({
         UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
@@ -18,24 +28,30 @@ describe(
         Password: 'def',
       });
 
-      let user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      let user = await client
+        .adminGetUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
       expect(user.UserStatus).toEqual('UNCONFIRMED');
 
-      await client.adminConfirmSignUp({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      await client
+        .adminConfirmSignUp({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
-      user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      user = await client
+        .adminGetUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
       expect(user.UserStatus).toEqual('CONFIRMED');
     });
-  })
+  }),
 );

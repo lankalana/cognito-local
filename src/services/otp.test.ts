@@ -1,4 +1,5 @@
-import { otp } from './otp.js';
+import { describe, expect, it } from "vitest";
+import { otp } from "./otp";
 
 describe('otp', () => {
   it('generates a code', () => {

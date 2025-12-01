@@ -1,7 +1,10 @@
-import {
+import type {
   AdminGetUserRequest,
   AdminGetUserResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import { UserNotFoundError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 import { MissingParameterError, UserNotFoundError } from '../errors.js';
 import { Services } from '../services/index.js';

@@ -1,5 +1,6 @@
-import { ClockFake } from '../../src/__tests__/clockFake.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { ClockFake } from "../../src/__tests__/clockFake";
+import { withCognitoSdk } from "./setup";
 
 const currentDate = new Date();
 const roundedDate = new Date(currentDate.getTime());
@@ -14,25 +15,38 @@ describe(
       it('sets a permanent password', async () => {
         const client = Cognito();
 
-        // create the user
-        const createUserResult = await client.adminCreateUser({
-          UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
-          Username: 'abc',
-          UserPoolId: 'test',
-        });
+        const pool = await client
+          .createUserPool({
+            PoolName: "test",
+          })
+          .promise();
+        const userPoolId = pool.UserPool?.Id!;
 
-        await client.adminSetUserPassword({
-          Username: 'abc',
-          UserPoolId: 'test',
-          Password: 'newPassword',
-          Permanent: true,
-        });
+        // create the user
+        const createUserResult = await client
+          .adminCreateUser({
+            UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+            Username: "abc",
+            UserPoolId: userPoolId,
+          })
+          .promise();
+
+        await client
+          .adminSetUserPassword({
+            Username: "abc",
+            UserPoolId: userPoolId,
+            Password: "newPassword",
+            Permanent: true,
+          })
+          .promise();
 
         // verify they exist
-        const result = await client.adminGetUser({
-          Username: 'abc',
-          UserPoolId: 'test',
-        });
+        const result = await client
+          .adminGetUser({
+            Username: "abc",
+            UserPoolId: userPoolId,
+          })
+          .promise();
 
         expect(result).toEqual({
           $metadata: result.$metadata,
@@ -47,6 +61,6 @@ describe(
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

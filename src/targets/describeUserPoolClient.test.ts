@@ -1,14 +1,18 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import { ResourceNotFoundError } from '../errors.js';
-import { AppClient } from '../services/appClient.js';
-import { CognitoService } from '../services/index.js';
-import { DescribeUserPoolClient, DescribeUserPoolClientTarget } from './describeUserPoolClient.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import { ResourceNotFoundError } from "../errors";
+import type { CognitoService } from "../services";
+import type { AppClient } from "../services/appClient";
+import {
+  DescribeUserPoolClient,
+  type DescribeUserPoolClientTarget,
+} from "./describeUserPoolClient";
 
 describe('DescribeUserPoolClient target', () => {
   let describeUserPoolClient: DescribeUserPoolClientTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     mockCognitoService = newMockCognitoService(newMockUserPoolService());
@@ -48,9 +52,9 @@ describe('DescribeUserPoolClient target', () => {
 
     await expect(
       describeUserPoolClient(TestContext, {
-        ClientId: 'abc',
-        UserPoolId: 'userPoolId',
-      })
+        ClientId: "abc",
+        UserPoolId: "userPoolId",
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 });

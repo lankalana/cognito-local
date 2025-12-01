@@ -1,4 +1,5 @@
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
   'CognitoIdentityServiceProvider.adminDisableUser',
@@ -6,27 +7,40 @@ describe(
     it("updates a user's attributes", async () => {
       const client = Cognito();
 
-      await client.adminCreateUser({
-        UserAttributes: [
-          { Name: 'email', Value: 'example@example.com' },
-          { Name: 'custom:example', Value: '1' },
-        ],
-        Username: 'abc',
-        UserPoolId: 'test',
-        DesiredDeliveryMediums: ['EMAIL'],
-      });
+      const pool = await client
+        .createUserPool({
+          PoolName: "test",
+        })
+        .promise();
+      const userPoolId = pool.UserPool?.Id!;
 
-      await client.adminDisableUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      await client
+        .adminCreateUser({
+          UserAttributes: [
+            { Name: "email", Value: "example@example.com" },
+            { Name: "custom:example", Value: "1" },
+          ],
+          Username: "abc",
+          UserPoolId: userPoolId,
+          DesiredDeliveryMediums: ["EMAIL"],
+        })
+        .promise();
 
-      const user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
-      });
+      await client
+        .adminDisableUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
+
+      const user = await client
+        .adminGetUser({
+          UserPoolId: userPoolId,
+          Username: "abc",
+        })
+        .promise();
 
       expect(user.Enabled).toEqual(false);
     });
-  })
+  }),
 );

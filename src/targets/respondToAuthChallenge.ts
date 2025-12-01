@@ -1,4 +1,4 @@
-import {
+import type {
   RespondToAuthChallengeRequest,
   RespondToAuthChallengeResponse,
 } from '@aws-sdk/client-cognito-identity-provider';
@@ -9,9 +9,9 @@ import {
   MissingParameterError,
   NotAuthorizedError,
   UnsupportedError,
-} from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 export type RespondToAuthChallengeTarget = Target<
   RespondToAuthChallengeRequest,
@@ -34,7 +34,9 @@ export const RespondToAuthChallenge =
     if (!req.ClientId) throw new MissingParameterError('ClientId');
 
     if (!req.ChallengeResponses) {
-      throw new InvalidParameterError('Missing required parameter challenge responses');
+      throw new InvalidParameterError(
+        "Missing required parameter challenge responses",
+      );
     }
     if (!req.ChallengeResponses.USERNAME) {
       throw new InvalidParameterError('Missing required parameter USERNAME');
@@ -46,7 +48,10 @@ export const RespondToAuthChallenge =
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const userPoolClient = await cognito.getAppClient(ctx, req.ClientId);
 
-    const user = await userPool.getUserByUsername(ctx, req.ChallengeResponses.USERNAME);
+    const user = await userPool.getUserByUsername(
+      ctx,
+      req.ChallengeResponses.USERNAME,
+    );
     if (!user || !userPoolClient) {
       throw new NotAuthorizedError();
     }
@@ -63,7 +68,9 @@ export const RespondToAuthChallenge =
       });
     } else if (req.ChallengeName === 'NEW_PASSWORD_REQUIRED') {
       if (!req.ChallengeResponses.NEW_PASSWORD) {
-        throw new InvalidParameterError('Missing required parameter NEW_PASSWORD');
+        throw new InvalidParameterError(
+          "Missing required parameter NEW_PASSWORD",
+        );
       }
 
       // TODO: validate the password?
@@ -74,7 +81,9 @@ export const RespondToAuthChallenge =
         UserStatus: 'CONFIRMED',
       });
     } else {
-      throw new UnsupportedError(`respondToAuthChallenge with ChallengeName=${req.ChallengeName}`);
+      throw new UnsupportedError(
+        `respondToAuthChallenge with ChallengeName=${req.ChallengeName}`,
+      );
     }
 
     if (triggers.enabled('PostAuthentication')) {
@@ -98,7 +107,7 @@ export const RespondToAuthChallenge =
         userGroups,
         userPoolClient,
         req.ClientMetadata,
-        'Authentication'
+        "Authentication",
       ),
     };
   };

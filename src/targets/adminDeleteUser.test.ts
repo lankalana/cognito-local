@@ -1,14 +1,15 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { AdminDeleteUser, AdminDeleteUserTarget } from './adminDeleteUser.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import { AdminDeleteUser, type AdminDeleteUserTarget } from "./adminDeleteUser";
 
 describe('AdminDeleteUser target', () => {
   let adminDeleteUser: AdminDeleteUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -27,7 +28,10 @@ describe('AdminDeleteUser target', () => {
       UserPoolId: 'test',
     });
 
-    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(TestContext, existingUser);
+    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
+      TestContext,
+      existingUser,
+    );
   });
 
   it('handles trying to delete an invalid user', async () => {
@@ -38,8 +42,8 @@ describe('AdminDeleteUser target', () => {
     await expect(
       adminDeleteUser(TestContext, {
         Username: existingUser.Username,
-        UserPoolId: 'test',
-      })
-    ).rejects.toEqual(new UserNotFoundError('User does not exist'));
+        UserPoolId: "test",
+      }),
+    ).rejects.toEqual(new UserNotFoundError("User does not exist"));
   });
 });

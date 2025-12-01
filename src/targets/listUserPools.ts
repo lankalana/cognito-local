@@ -1,7 +1,10 @@
-import {
+import type {
   ListUserPoolsRequest,
   ListUserPoolsResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "aws-sdk/clients/cognitoidentityserviceprovider";
+import type { Services } from "../services";
+import { userPoolToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 import { Services } from '../services/index.js';
 import { userPoolToResponseObject } from './responses.js';
