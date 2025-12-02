@@ -384,7 +384,15 @@ export class LambdaService implements Lambda {
           userName: event.username,
           request: {
             userAttributes: event.userAttributes,
-            groupConfiguration: {},
+            groupConfiguration: {
+              groupsToOverride: [
+                ...(event.groupConfiguration?.groupsToOverride ?? []),
+              ],
+              iamRolesToOverride: [
+                ...(event.groupConfiguration?.iamRolesToOverride ?? []),
+              ],
+              preferredRole: event.groupConfiguration?.preferredRole,
+            },
             clientMetadata: event.clientMetadata,
           },
           response: {

@@ -487,7 +487,11 @@ describe("Lambda function invoker", () => {
               clientMetadata: {
                 client: "metadata",
               },
-              groupConfiguration: {},
+              groupConfiguration: {
+                groupsToOverride: [],
+                iamRolesToOverride: [],
+                preferredRole: undefined,
+              },
             },
             response: { claimsOverrideDetails: {} },
             userName: "username",
