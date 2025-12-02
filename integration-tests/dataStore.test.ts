@@ -1,10 +1,14 @@
+import fs from "node:fs";
+import { promisify } from "node:util";
 import StormDB from "stormdb";
-import { TestContext } from "../src/__tests__/testContext.js";
-import { InMemoryCache, NoOpCache } from "../src/services/dataStore/cache.js";
-import { DataStoreFactory } from "../src/services/dataStore/factory.js";
-import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb.js";
-import { mkdtemp, readFile, rmdir, writeFile } from "fs/promises";
-import { existsSync } from "fs";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { TestContext } from "../src/__tests__/testContext";
+import type { DataStoreFactory } from "../src/services/dataStore/factory";
+import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
+
+const mkdtemp = promisify(fs.mkdtemp);
+const readFile = promisify(fs.readFile);
+const rm = promisify(fs.rm);
 
 describe("Data Store", () => {
   let path: string;
@@ -12,11 +16,11 @@ describe("Data Store", () => {
 
   beforeEach(async () => {
     path = await mkdtemp("/tmp/cognito-local:");
-    factory = new StormDBDataStoreFactory(path, new NoOpCache());
+    factory = new StormDBDataStoreFactory(path);
   });
 
   afterEach(() =>
-    rmdir(path, {
+    rm(path, {
       recursive: true,
     }),
   );
@@ -24,28 +28,28 @@ describe("Data Store", () => {
   it("creates a named database", async () => {
     await factory.create(TestContext, "example", {});
 
-    expect(existsSync(path + "/example.json")).toBe(true);
+    expect(fs.existsSync(`${path}/example.json`)).toBe(true);
   });
 
   it("creates a named database with the defaults persisted", async () => {
     await factory.create(TestContext, "example", { DefaultValue: true });
 
-    expect(existsSync(path + "/example.json")).toBe(true);
+    expect(fs.existsSync(`${path}/example.json`)).toBe(true);
 
-    const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+    const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
     expect(file).toEqual({
       DefaultValue: true,
     });
   });
 
   it("does not overwrite defaults if the file already exists", async () => {
-    await writeFile(path + "/example.json", '{"Users":{"a":{"key":"value"}}}');
+    fs.writeFileSync(`${path}/example.json`, '{"Users":{"a":{"key":"value"}}}');
 
     await factory.create(TestContext, "example", { Users: {} });
 
-    expect(existsSync(path + "/example.json")).toBe(true);
+    expect(fs.existsSync(`${path}/example.json`)).toBe(true);
 
-    const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+    const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
     expect(file).toEqual({
       Users: {
         a: {
@@ -62,7 +66,7 @@ describe("Data Store", () => {
 
     await dataStore.set(TestContext, "key", 1);
 
-    const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+    const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
     expect(file).toEqual({
       DefaultValue: true,
       key: 1,
@@ -77,7 +81,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key2", 2);
 
       const fileBefore = JSON.parse(
-        await readFile(path + "/example.json", "utf-8"),
+        await readFile(`${path}/example.json`, "utf-8"),
       );
 
       expect(fileBefore).toEqual({
@@ -88,7 +92,7 @@ describe("Data Store", () => {
       await dataStore.delete(TestContext, "key1");
 
       const fileAfter = JSON.parse(
-        await readFile(path + "/example.json", "utf-8"),
+        await readFile(`${path}/example.json`, "utf-8"),
       );
 
       expect(fileAfter).toEqual({
@@ -104,7 +108,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key2", 3);
 
       const fileBefore = JSON.parse(
-        await readFile(path + "/example.json", "utf-8"),
+        await readFile(`${path}/example.json`, "utf-8"),
       );
 
       expect(fileBefore).toEqual({
@@ -120,7 +124,7 @@ describe("Data Store", () => {
       await dataStore.delete(TestContext, ["key", "a", "b"]);
 
       const fileAfter = JSON.parse(
-        await readFile(path + "/example.json", "utf-8"),
+        await readFile(`${path}/example.json`, "utf-8"),
       );
 
       expect(fileAfter).toEqual({
@@ -141,7 +145,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key1", 1);
       await dataStore.set(TestContext, "key2", 2);
 
-      const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         key1: 1,
@@ -156,7 +160,7 @@ describe("Data Store", () => {
 
       await dataStore.set(TestContext, "SomethingDate", date);
 
-      const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         SomethingDate: date.toISOString(),
@@ -182,7 +186,7 @@ describe("Data Store", () => {
 
       await dataStore.set(TestContext, ["key", "a", "b"], 1);
 
-      const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         key: {
@@ -198,7 +202,7 @@ describe("Data Store", () => {
 
       await dataStore.set(TestContext, "key.a.b", 1);
 
-      const file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      const file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         "key.a.b": 1,
@@ -210,7 +214,7 @@ describe("Data Store", () => {
 
       await dataStore.set(TestContext, "key", 1);
 
-      let file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      let file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         key: 1,
@@ -218,7 +222,7 @@ describe("Data Store", () => {
 
       await dataStore.set(TestContext, "key", 2);
 
-      file = JSON.parse(await readFile(path + "/example.json", "utf-8"));
+      file = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(file).toEqual({
         key: 2,
@@ -299,30 +303,6 @@ describe("Data Store", () => {
       const result = await dataStore.get(TestContext, "SomethingDate");
 
       expect(result).toEqual(date);
-    });
-
-    it("supports caching data stores across creates for the same id", async () => {
-      const factory = new StormDBDataStoreFactory(path, new InMemoryCache());
-
-      const dataStore1 = await factory.create(TestContext, "example", {});
-      const dataStore2 = await factory.create(TestContext, "example", {});
-      const dataStore3 = await factory.create(TestContext, "example2", {});
-
-      await dataStore1.set(TestContext, "One", 1);
-      await dataStore2.set(TestContext, "Two", 2);
-      await dataStore3.set(TestContext, "Three", 3);
-
-      expect(await dataStore1.getRoot(TestContext)).toEqual({
-        One: 1,
-        Two: 2,
-      });
-      expect(await dataStore2.getRoot(TestContext)).toEqual({
-        One: 1,
-        Two: 2,
-      });
-      expect(await dataStore3.getRoot(TestContext)).toEqual({
-        Three: 3,
-      });
     });
   });
 });

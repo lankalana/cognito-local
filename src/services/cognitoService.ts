@@ -1,17 +1,20 @@
-import fs from 'fs/promises';
-import mergeWith from 'lodash.mergewith';
-import * as path from 'path';
+import type { Dirent } from "node:fs";
+import fs from "node:fs/promises";
+import * as path from "node:path";
+import mergeWith from "lodash.mergewith";
+import { ResourceNotFoundError } from "../errors.js";
+import type { UserPoolDefaults } from "../server/config.js";
+import type { AppClient } from "./appClient.js";
+import type { Context } from "./context.js";
+import type { DataStore } from "./dataStore/dataStore.js";
+import type { DataStoreFactory } from "./dataStore/factory.js";
+import type {
+  UserPool,
+  UserPoolService,
+  UserPoolServiceFactory,
+} from "./userPoolService.js";
 
-import { ResourceNotFoundError } from '../errors.js';
-import { UserPoolDefaults } from '../server/config.js';
-import { AppClient } from './appClient.js';
-import { Clock } from './clock.js';
-import { Context } from './context.js';
-import { DataStore } from './dataStore/dataStore.js';
-import { DataStoreFactory } from './dataStore/factory.js';
-import { UserPool, UserPoolService, UserPoolServiceFactory } from './userPoolService.js';
-
-const CLIENTS_DATABASE_NAME = 'clients';
+const CLIENTS_DATABASE_NAME = "clients";
 
 // These defaults were pulled from Cognito on 2021-11-26 by creating a new User Pool with only a Name and
 // capturing what defaults Cognito set on the pool.
@@ -32,224 +35,224 @@ export const USER_POOL_AWS_DEFAULTS: UserPoolDefaults = {
   LambdaConfig: {},
   SchemaAttributes: [
     {
-      Name: 'sub',
-      AttributeDataType: 'String',
+      Name: "sub",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: false,
       Required: true,
       StringAttributeConstraints: {
-        MinLength: '1',
-        MaxLength: '2048',
+        MinLength: "1",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'name',
-      AttributeDataType: 'String',
+      Name: "name",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'given_name',
-      AttributeDataType: 'String',
+      Name: "given_name",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'family_name',
-      AttributeDataType: 'String',
+      Name: "family_name",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'middle_name',
-      AttributeDataType: 'String',
+      Name: "middle_name",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'nickname',
-      AttributeDataType: 'String',
+      Name: "nickname",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'preferred_username',
-      AttributeDataType: 'String',
+      Name: "preferred_username",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'profile',
-      AttributeDataType: 'String',
+      Name: "profile",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'picture',
-      AttributeDataType: 'String',
+      Name: "picture",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'website',
-      AttributeDataType: 'String',
+      Name: "website",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'email',
-      AttributeDataType: 'String',
+      Name: "email",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'email_verified',
-      AttributeDataType: 'Boolean',
+      Name: "email_verified",
+      AttributeDataType: "Boolean",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
     },
     {
-      Name: 'gender',
-      AttributeDataType: 'String',
+      Name: "gender",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'birthdate',
-      AttributeDataType: 'String',
+      Name: "birthdate",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '10',
-        MaxLength: '10',
+        MinLength: "10",
+        MaxLength: "10",
       },
     },
     {
-      Name: 'zoneinfo',
-      AttributeDataType: 'String',
+      Name: "zoneinfo",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'locale',
-      AttributeDataType: 'String',
+      Name: "locale",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'phone_number',
-      AttributeDataType: 'String',
+      Name: "phone_number",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'phone_number_verified',
-      AttributeDataType: 'Boolean',
+      Name: "phone_number_verified",
+      AttributeDataType: "Boolean",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
     },
     {
-      Name: 'address',
-      AttributeDataType: 'String',
+      Name: "address",
+      AttributeDataType: "String",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       StringAttributeConstraints: {
-        MinLength: '0',
-        MaxLength: '2048',
+        MinLength: "0",
+        MaxLength: "2048",
       },
     },
     {
-      Name: 'updated_at',
-      AttributeDataType: 'Number',
+      Name: "updated_at",
+      AttributeDataType: "Number",
       DeveloperOnlyAttribute: false,
       Mutable: true,
       Required: false,
       NumberAttributeConstraints: {
-        MinValue: '0',
+        MinValue: "0",
       },
     },
   ],
   VerificationMessageTemplate: {
-    DefaultEmailOption: 'CONFIRM_WITH_CODE',
+    DefaultEmailOption: "CONFIRM_WITH_CODE",
   },
-  MfaConfiguration: 'OFF',
+  MfaConfiguration: "OFF",
   EstimatedNumberOfUsers: 0,
   EmailConfiguration: {
-    EmailSendingAccount: 'COGNITO_DEFAULT',
+    EmailSendingAccount: "COGNITO_DEFAULT",
   },
   AdminCreateUserConfig: {
     AllowAdminCreateUserOnly: false,
@@ -262,141 +265,226 @@ export interface CognitoService {
   deleteUserPool(ctx: Context, userPool: UserPool): Promise<void>;
   getAppClient(ctx: Context, clientId: string): Promise<AppClient | null>;
   getUserPool(ctx: Context, userPoolId: string): Promise<UserPoolService>;
-  getUserPoolForClientId(ctx: Context, clientId: string): Promise<UserPoolService>;
-  listAppClients(ctx: Context, userPoolId: string): Promise<readonly AppClient[]>;
+  getUserPoolForClientId(
+    ctx: Context,
+    clientId: string,
+  ): Promise<UserPoolService>;
+  listAppClients(
+    ctx: Context,
+    userPoolId: string,
+  ): Promise<readonly AppClient[]>;
   listUserPools(ctx: Context): Promise<readonly UserPool[]>;
 }
 
 export interface CognitoServiceFactory {
-  create(ctx: Context, userPoolDefaultConfig: UserPoolDefaults): Promise<CognitoService>;
+  create(
+    ctx: Context,
+    userPoolDefaultConfig: UserPoolDefaults,
+  ): Promise<CognitoService>;
+}
+
+class NotInitializedError extends Error {
+  public constructor() {
+    super("Not initialized, CognitoServiceImpl.init() must be called first");
+  }
 }
 
 export class CognitoServiceImpl implements CognitoService {
   private readonly clients: DataStore;
-  private readonly clock: Clock;
   private readonly userPoolServiceFactory: UserPoolServiceFactory;
   private readonly dataDirectory: string;
   private readonly userPoolDefaultConfig: UserPoolDefaults;
+  private userPools: UserPoolService[] | undefined;
 
   public constructor(
     dataDirectory: string,
     clients: DataStore,
-    clock: Clock,
     userPoolDefaultConfig: UserPoolDefaults,
-    userPoolServiceFactory: UserPoolServiceFactory
+    userPoolServiceFactory: UserPoolServiceFactory,
   ) {
     this.clients = clients;
-    this.clock = clock;
     this.dataDirectory = dataDirectory;
     this.userPoolDefaultConfig = userPoolDefaultConfig;
     this.userPoolServiceFactory = userPoolServiceFactory;
   }
 
-  public async createUserPool(ctx: Context, userPool: UserPool): Promise<UserPool> {
-    ctx.logger.debug('CognitoServiceImpl.createUserPool');
+  public async createUserPool(
+    ctx: Context,
+    userPool: UserPool,
+  ): Promise<UserPool> {
+    ctx.logger.debug("CognitoServiceImpl.createUserPool");
+
+    if (!this.userPools) {
+      throw new NotInitializedError();
+    }
+
     const service = await this.userPoolServiceFactory.create(
       ctx,
       this.clients,
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      mergeWith({}, USER_POOL_AWS_DEFAULTS, this.userPoolDefaultConfig, userPool)
+      mergeWith(
+        {},
+        USER_POOL_AWS_DEFAULTS,
+        this.userPoolDefaultConfig,
+        userPool,
+      ),
     );
+
+    this.userPools.push(service);
 
     return service.options;
   }
 
   public async deleteUserPool(ctx: Context, userPool: UserPool): Promise<void> {
-    ctx.logger.debug({ userPoolId: userPool.Id }, 'CognitoServiceImpl.deleteUserPool');
-    await fs.rm(path.join(this.dataDirectory, `${userPool.Id}.json`));
-  }
+    ctx.logger.debug(
+      { userPoolId: userPool.Id },
+      "CognitoServiceImpl.deleteUserPool",
+    );
 
-  public async getUserPool(ctx: Context, userPoolId: string): Promise<UserPoolService> {
-    ctx.logger.debug({ userPoolId }, 'CognitoServiceImpl.getUserPool');
-    return this.userPoolServiceFactory.create(ctx, this.clients, {
-      ...USER_POOL_AWS_DEFAULTS,
-      ...this.userPoolDefaultConfig,
-      Id: userPoolId,
-    });
-  }
-
-  public async getUserPoolForClientId(ctx: Context, clientId: string): Promise<UserPoolService> {
-    ctx.logger.debug({ clientId }, 'CognitoServiceImpl.getUserPoolForClientId');
-    const appClient = await this.getAppClient(ctx, clientId);
-    if (!appClient) {
-      throw new ResourceNotFoundError();
+    if (!this.userPools) {
+      throw new NotInitializedError();
     }
 
-    return this.userPoolServiceFactory.create(ctx, this.clients, {
-      ...USER_POOL_AWS_DEFAULTS,
-      ...this.userPoolDefaultConfig,
-      Id: appClient.UserPoolId,
-    });
+    await fs.rm(path.join(this.dataDirectory, `${userPool.Id}.json`));
+    this.userPools = this.userPools.filter((x) => x.options.Id !== userPool.Id);
   }
 
-  public async getAppClient(ctx: Context, clientId: string): Promise<AppClient | null> {
-    ctx.logger.debug({ clientId }, 'CognitoServiceImpl.getAppClient');
-    return this.clients.get(ctx, ['Clients', clientId]);
+  public getUserPool(
+    ctx: Context,
+    userPoolId: string,
+  ): Promise<UserPoolService> {
+    ctx.logger.debug({ userPoolId }, "CognitoServiceImpl.getUserPool");
+    if (!this.userPools) {
+      throw new NotInitializedError();
+    }
+
+    const userPool = this.userPools.find((x) => x.options.Id === userPoolId);
+    if (!userPool) {
+      throw new ResourceNotFoundError(`User Pool ${userPoolId} not found`);
+    }
+
+    return Promise.resolve(userPool);
   }
 
-  public async listAppClients(ctx: Context, userPoolId: string): Promise<readonly AppClient[]> {
-    ctx.logger.debug({ userPoolId }, 'CognitoServiceImpl.listAppClients');
-    const clients = await this.clients.get<Record<string, AppClient>>(ctx, 'Clients', {});
+  public async getUserPoolForClientId(
+    ctx: Context,
+    clientId: string,
+  ): Promise<UserPoolService> {
+    ctx.logger.debug({ clientId }, "CognitoServiceImpl.getUserPoolForClientId");
+    if (!this.userPools) {
+      throw new NotInitializedError();
+    }
+
+    const appClient = await this.getAppClient(ctx, clientId);
+    if (!appClient) {
+      throw new ResourceNotFoundError(`App Client ${clientId} not found`);
+    }
+
+    const userPool = this.userPools.find(
+      (x) => x.options.Id === appClient.UserPoolId,
+    );
+    if (!userPool) {
+      throw new ResourceNotFoundError(
+        `User Pool ${appClient.UserPoolId} not found`,
+      );
+    }
+
+    return userPool;
+  }
+
+  public async getAppClient(
+    ctx: Context,
+    clientId: string,
+  ): Promise<AppClient | null> {
+    ctx.logger.debug({ clientId }, "CognitoServiceImpl.getAppClient");
+    return this.clients.get(ctx, ["Clients", clientId]);
+  }
+
+  public async listAppClients(
+    ctx: Context,
+    userPoolId: string,
+  ): Promise<readonly AppClient[]> {
+    ctx.logger.debug({ userPoolId }, "CognitoServiceImpl.listAppClients");
+    const clients = await this.clients.get<Record<string, AppClient>>(
+      ctx,
+      "Clients",
+      {},
+    );
 
     return Object.values(clients).filter((x) => x.UserPoolId === userPoolId);
   }
 
-  public async listUserPools(ctx: Context): Promise<readonly UserPool[]> {
-    ctx.logger.debug('CognitoServiceImpl.listUserPools');
+  public listUserPools(ctx: Context): Promise<readonly UserPool[]> {
+    ctx.logger.debug("CognitoServiceImpl.listUserPools");
+    if (!this.userPools) {
+      throw new NotInitializedError();
+    }
+
+    return Promise.resolve(this.userPools.map((x) => x.options));
+  }
+
+  public async init(ctx: Context) {
+    function userPoolIdFromDirent(x: Dirent) {
+      return path.basename(x.name, path.extname(x.name));
+    }
+
+    ctx.logger.debug("CognitoServiceImpl.init");
     const entries = await fs.readdir(this.dataDirectory, {
       withFileTypes: true,
     });
 
-    return Promise.all(
+    this.userPools = await Promise.all(
       entries
         .filter(
           (x) =>
             x.isFile() &&
-            path.extname(x.name) === '.json' &&
-            path.basename(x.name, path.extname(x.name)) !== CLIENTS_DATABASE_NAME
+            path.extname(x.name) === ".json" &&
+            userPoolIdFromDirent(x) !== CLIENTS_DATABASE_NAME,
         )
-        .map(async (x) => {
-          const userPool = await this.getUserPool(ctx, path.basename(x.name, path.extname(x.name)));
-
-          return userPool.options;
-        })
+        .map(async (x) =>
+          this.userPoolServiceFactory.create(ctx, this.clients, {
+            ...USER_POOL_AWS_DEFAULTS,
+            ...this.userPoolDefaultConfig,
+            Id: userPoolIdFromDirent(x),
+          }),
+        ),
     );
   }
 }
 
 export class CognitoServiceFactoryImpl implements CognitoServiceFactory {
   private readonly dataDirectory: string;
-  private readonly clock: Clock;
   private readonly dataStoreFactory: DataStoreFactory;
   private readonly userPoolServiceFactory: UserPoolServiceFactory;
 
   public constructor(
     dataDirectory: string,
-    clock: Clock,
     dataStoreFactory: DataStoreFactory,
-    userPoolServiceFactory: UserPoolServiceFactory
+    userPoolServiceFactory: UserPoolServiceFactory,
   ) {
     this.dataDirectory = dataDirectory;
-    this.clock = clock;
     this.dataStoreFactory = dataStoreFactory;
     this.userPoolServiceFactory = userPoolServiceFactory;
   }
 
   public async create(
     ctx: Context,
-    userPoolDefaultConfig: UserPoolDefaults
+    userPoolDefaultConfig: UserPoolDefaults,
   ): Promise<CognitoService> {
-    const clients = await this.dataStoreFactory.create(ctx, CLIENTS_DATABASE_NAME, { Clients: {} });
+    const clients = await this.dataStoreFactory.create(
+      ctx,
+      CLIENTS_DATABASE_NAME,
+      { Clients: {} },
+    );
 
-    return new CognitoServiceImpl(
+    const cognitoService = new CognitoServiceImpl(
       this.dataDirectory,
       clients,
-      this.clock,
       userPoolDefaultConfig,
-      this.userPoolServiceFactory
+      this.userPoolServiceFactory,
     );
+
+    await cognitoService.init(ctx);
+
+    return cognitoService;
   }
 }

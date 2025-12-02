@@ -1,24 +1,27 @@
-import { UserStatusType } from '@aws-sdk/client-cognito-identity-provider';
-
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { NotAuthorizedError } from '../errors.js';
-import { Triggers, UserPoolService } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { AdminConfirmSignUp, AdminConfirmSignUpTarget } from './adminConfirmSignUp.js';
+import { UserStatusType } from "@aws-sdk/client-cognito-identity-provider";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { NotAuthorizedError } from "../errors";
+import type { Triggers, UserPoolService } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import {
+  AdminConfirmSignUp,
+  type AdminConfirmSignUpTarget,
+} from "./adminConfirmSignUp";
 
 const currentDate = new Date();
 
 const clock = new ClockFake(currentDate);
 
-describe('AdminConfirmSignUp target', () => {
+describe("AdminConfirmSignUp target", () => {
   let adminConfirmSignUp: AdminConfirmSignUpTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockTriggers: jest.Mocked<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockTriggers: MockedObject<Triggers>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -36,11 +39,11 @@ describe('AdminConfirmSignUp target', () => {
     await expect(
       adminConfirmSignUp(TestContext, {
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Username: 'invalid user',
-        UserPoolId: 'test',
-      })
+        Username: "invalid user",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
@@ -51,7 +54,7 @@ describe('AdminConfirmSignUp target', () => {
     UserStatusType.UNKNOWN,
     UserStatusType.RESET_REQUIRED,
     UserStatusType.FORCE_CHANGE_PASSWORD,
-  ])('throws if the user has status %s', async (status) => {
+  ])("throws if the user has status %s", async (status) => {
     const user = TDB.user({
       UserStatus: status,
     });
@@ -61,88 +64,92 @@ describe('AdminConfirmSignUp target', () => {
     await expect(
       adminConfirmSignUp(TestContext, {
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
         Username: user.Username,
-        UserPoolId: 'test',
-      })
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(
-      new NotAuthorizedError(`User cannot be confirmed. Current status is ${status}`)
+      new NotAuthorizedError(
+        `User cannot be confirmed. Current status is ${status}`,
+      ),
     );
   });
 
   it("updates the user's status", async () => {
     const user = TDB.user({
-      UserStatus: 'UNCONFIRMED',
+      UserStatus: "UNCONFIRMED",
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await adminConfirmSignUp(TestContext, {
       ClientMetadata: {
-        client: 'metadata',
+        client: "metadata",
       },
       Username: user.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
       UserLastModifiedDate: currentDate,
-      UserStatus: 'CONFIRMED',
+      UserStatus: "CONFIRMED",
     });
   });
 
-  describe('when PostConfirmation trigger is enabled', () => {
-    it('invokes the trigger', async () => {
-      mockTriggers.enabled.mockImplementation((trigger) => trigger === 'PostConfirmation');
+  describe("when PostConfirmation trigger is enabled", () => {
+    it("invokes the trigger", async () => {
+      mockTriggers.enabled.mockImplementation(
+        (trigger) => trigger === "PostConfirmation",
+      );
 
       const user = TDB.user({
-        UserStatus: 'UNCONFIRMED',
+        UserStatus: "UNCONFIRMED",
       });
 
       mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
       await adminConfirmSignUp(TestContext, {
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
         Username: user.Username,
-        UserPoolId: 'test',
+        UserPoolId: "test",
       });
 
       expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
         clientId: null,
         clientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        source: 'PostConfirmation_ConfirmSignUp',
+        source: "PostConfirmation_ConfirmSignUp",
         userAttributes: attributesAppend(
           user.Attributes,
-          attribute('cognito:user_status', 'CONFIRMED')
+          attribute("cognito:user_status", "CONFIRMED"),
         ),
-        userPoolId: 'test',
+        userPoolId: "test",
         username: user.Username,
       });
     });
   });
 
-  describe('when PostConfirmation trigger is not enabled', () => {
-    it('invokes the trigger', async () => {
+  describe("when PostConfirmation trigger is not enabled", () => {
+    it("invokes the trigger", async () => {
       mockTriggers.enabled.mockReturnValue(false);
 
       const user = TDB.user({
-        UserStatus: 'UNCONFIRMED',
+        UserStatus: "UNCONFIRMED",
       });
 
       mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
       await adminConfirmSignUp(TestContext, {
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
         Username: user.Username,
-        UserPoolId: 'test',
+        UserPoolId: "test",
       });
 
       expect(mockTriggers.postConfirmation).not.toHaveBeenCalled();

@@ -1,23 +1,22 @@
-import { AdminDeleteUserRequest } from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError, UserNotFoundError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+import type { AdminDeleteUserRequest } from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, UserNotFoundError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 export type AdminDeleteUserTarget = Target<AdminDeleteUserRequest, object>;
 
-type AdminDeleteUserServices = Pick<Services, 'cognito'>;
+type AdminDeleteUserServices = Pick<Services, "cognito">;
 
 export const AdminDeleteUser =
   ({ cognito }: AdminDeleteUserServices): AdminDeleteUserTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
     if (!user) {
-      throw new UserNotFoundError('User does not exist');
+      throw new UserNotFoundError("User does not exist");
     }
 
     await userPool.deleteUser(ctx, user);

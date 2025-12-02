@@ -1,8 +1,12 @@
-import { v4 } from 'uuid';
-
-import { AppClient } from '../services/appClient.js';
-import { USER_POOL_AWS_DEFAULTS } from '../services/cognitoService.js';
-import { Group, IdentityProvider, User, UserPool } from '../services/userPoolService.js';
+import { v4 } from "uuid";
+import type { AppClient } from "../services/appClient";
+import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
+import type {
+  Group,
+  IdentityProvider,
+  User,
+  UserPool,
+} from "../services/userPoolService";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;
@@ -14,8 +18,8 @@ export const appClient = (partial?: Partial<AppClient>): AppClient => ({
   AllowedOAuthScopes: partial?.AllowedOAuthScopes,
   AnalyticsConfiguration: partial?.AnalyticsConfiguration,
   CallbackURLs: partial?.CallbackURLs,
-  ClientId: partial?.ClientId ?? id('AppClient'),
-  ClientName: partial?.ClientName ?? id('ClientName'),
+  ClientId: partial?.ClientId ?? id("AppClient"),
+  ClientName: partial?.ClientName ?? id("ClientName"),
   ClientSecret: partial?.ClientSecret ?? undefined,
   CreationDate: partial?.CreationDate ?? new Date(),
   DefaultRedirectURI: partial?.DefaultRedirectURI,
@@ -29,22 +33,24 @@ export const appClient = (partial?: Partial<AppClient>): AppClient => ({
   RefreshTokenValidity: partial?.RefreshTokenValidity,
   SupportedIdentityProviders: partial?.SupportedIdentityProviders,
   TokenValidityUnits: partial?.TokenValidityUnits,
-  UserPoolId: partial?.UserPoolId ?? id('UserPool'),
+  UserPoolId: partial?.UserPoolId ?? id("UserPool"),
   WriteAttributes: partial?.WriteAttributes,
 });
 
 export const group = (partial?: Partial<Group>): Group => ({
   CreationDate: partial?.CreationDate ?? new Date(),
   Description: partial?.Description ?? undefined,
-  GroupName: partial?.GroupName ?? id('Group'),
+  GroupName: partial?.GroupName ?? id("Group"),
   LastModifiedDate: partial?.LastModifiedDate ?? new Date(),
   Precedence: partial?.Precedence ?? undefined,
   RoleArn: partial?.RoleArn ?? undefined,
   members: partial?.members ?? undefined,
 });
 
-export const identityProvider = (partial?: Partial<IdentityProvider>): IdentityProvider => ({
-  ProviderName: partial?.ProviderName ?? id('IdentityProvider'),
+export const identityProvider = (
+  partial?: Partial<IdentityProvider>,
+): IdentityProvider => ({
+  ProviderName: partial?.ProviderName ?? id("IdentityProvider"),
   ProviderType: partial?.ProviderType ?? undefined,
   ProviderDetails: partial?.ProviderDetails ?? undefined,
   AttributeMapping: partial?.AttributeMapping ?? undefined,
@@ -55,30 +61,33 @@ export const identityProvider = (partial?: Partial<IdentityProvider>): IdentityP
 
 export const user = (partial?: Partial<User>): User => ({
   Attributes: partial?.Attributes ?? [
-    { Name: 'sub', Value: v4() },
-    { Name: 'email', Value: `${id('example')}@example.com` },
+    { Name: "email", Value: `${id("example")}@example.com` },
+    { Name: "sub", Value: v4() },
   ],
   AttributeVerificationCode: partial?.AttributeVerificationCode ?? undefined,
   ConfirmationCode: partial?.ConfirmationCode ?? undefined,
   Enabled: partial?.Enabled ?? true,
   MFACode: partial?.MFACode ?? undefined,
   MFAOptions: partial?.MFAOptions ?? undefined,
-  Password: partial?.Password ?? 'Password123!',
+  Password: partial?.Password ?? "Password123!",
+  RefreshTokens: partial?.RefreshTokens ?? [],
+  UnverifiedAttributeChanges: partial?.UnverifiedAttributeChanges,
   UserCreateDate: partial?.UserCreateDate ?? new Date(),
   UserLastModifiedDate: partial?.UserLastModifiedDate ?? new Date(),
-  Username: partial?.Username ?? id('User'),
-  UserStatus: partial?.UserStatus ?? 'CONFIRMED',
-  RefreshTokens: [],
+  UserStatus: partial?.UserStatus ?? "CONFIRMED",
+  Username: partial?.Username ?? id("User"),
 });
 
 export const userPool = (partial?: Partial<UserPool>): UserPool => {
-  const userPoolId = partial?.Id ?? id('local_UserPool');
+  const userPoolId = partial?.Id ?? id("local_UserPool");
 
   return {
     AccountRecoverySetting: partial?.AccountRecoverySetting ?? undefined,
     AdminCreateUserConfig: partial?.AdminCreateUserConfig ?? undefined,
     AliasAttributes: partial?.AliasAttributes ?? undefined,
-    Arn: partial?.Arn ?? `arn:aws:cognito-idp:local:local:userpool/${userPoolId}`,
+    Arn:
+      partial?.Arn ??
+      `arn:aws:cognito-idp:local:000000000000:userpool/${userPoolId}`,
     AutoVerifiedAttributes: partial?.AutoVerifiedAttributes ?? undefined,
     CreationDate: partial?.CreationDate ?? new Date(),
     CustomDomain: partial?.CustomDomain ?? undefined,
@@ -95,7 +104,8 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     MfaConfiguration: partial?.MfaConfiguration ?? undefined,
     Name: partial?.Name ?? undefined,
     Policies: partial?.Policies ?? undefined,
-    SchemaAttributes: partial?.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes,
+    SchemaAttributes:
+      partial?.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes,
     SmsAuthenticationMessage: partial?.SmsAuthenticationMessage ?? undefined,
     SmsConfiguration: partial?.SmsConfiguration ?? undefined,
     SmsConfigurationFailure: partial?.SmsConfigurationFailure ?? undefined,
@@ -105,6 +115,7 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     UsernameConfiguration: partial?.UsernameConfiguration ?? undefined,
     UserPoolAddOns: partial?.UserPoolAddOns ?? undefined,
     UserPoolTags: partial?.UserPoolTags ?? undefined,
-    VerificationMessageTemplate: partial?.VerificationMessageTemplate ?? undefined,
+    VerificationMessageTemplate:
+      partial?.VerificationMessageTemplate ?? undefined,
   };
 };

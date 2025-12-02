@@ -1,15 +1,16 @@
-import { newMockLambda } from "../../__tests__/mockLambda.js";
-import { TestContext } from "../../__tests__/testContext.js";
-import { Lambda } from "../lambda.js";
-import { attributesToRecord } from "../userPoolService.js";
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockLambda } from "../../__tests__/mockLambda";
+import { TestContext } from "../../__tests__/testContext";
+import * as TDB from "../../__tests__/testDataBuilder";
+import type { Lambda } from "../lambda";
+import { attributesToRecord } from "../userPoolService";
 import {
   PostAuthentication,
-  PostAuthenticationTrigger,
-} from "./postAuthentication.js";
-import * as TDB from "../../__tests__/testDataBuilder.js";
+  type PostAuthenticationTrigger,
+} from "./postAuthentication";
 
 describe("PostAuthentication trigger", () => {
-  let mockLambda: jest.Mocked<Lambda>;
+  let mockLambda: MockedObject<Lambda>;
   let postAuthentication: PostAuthenticationTrigger;
 
   beforeEach(() => {

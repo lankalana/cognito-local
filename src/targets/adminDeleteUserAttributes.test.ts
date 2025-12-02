@@ -1,19 +1,20 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { NotAuthorizedError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { attribute } from '../services/userPoolService.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { NotAuthorizedError } from "../errors";
+import type { UserPoolService } from "../services";
+import { attribute } from "../services/userPoolService";
 import {
   AdminDeleteUserAttributes,
-  AdminDeleteUserAttributesTarget,
-} from './adminDeleteUserAttributes.js';
+  type AdminDeleteUserAttributesTarget,
+} from "./adminDeleteUserAttributes";
 
-describe('AdminDeleteUserAttributes target', () => {
+describe("AdminDeleteUserAttributes target", () => {
   let adminDeleteUserAttributes: AdminDeleteUserAttributesTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -28,29 +29,32 @@ describe('AdminDeleteUserAttributes target', () => {
   it("throws if the user doesn't exist", async () => {
     await expect(
       adminDeleteUserAttributes(TestContext, {
-        UserPoolId: 'test',
-        Username: 'abc',
-        UserAttributeNames: ['custom:example'],
-      })
+        UserPoolId: "test",
+        Username: "abc",
+        UserAttributeNames: ["custom:example"],
+      }),
     ).rejects.toEqual(new NotAuthorizedError());
   });
 
-  it('saves the updated attributes on the user', async () => {
+  it("saves the updated attributes on the user", async () => {
     const user = TDB.user({
-      Attributes: [attribute('email', 'example@example.com'), attribute('custom:example', '1')],
+      Attributes: [
+        attribute("email", "example@example.com"),
+        attribute("custom:example", "1"),
+      ],
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await adminDeleteUserAttributes(TestContext, {
-      UserPoolId: 'test',
-      Username: 'abc',
-      UserAttributeNames: ['custom:example'],
+      UserPoolId: "test",
+      Username: "abc",
+      UserAttributeNames: ["custom:example"],
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
-      Attributes: [attribute('email', 'example@example.com')],
+      Attributes: [attribute("email", "example@example.com")],
       UserLastModifiedDate: clock.get(),
     });
   });

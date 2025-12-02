@@ -1,28 +1,31 @@
-import {
+import type {
   AddCustomAttributesRequest,
   AddCustomAttributesResponse,
-  AttributeDataType,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { InvalidParameterError, MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
-import { assertParameterLength } from './utils/assertions.js';
+} from "@aws-sdk/client-cognito-identity-provider";
+import { AttributeDataType } from "@aws-sdk/client-cognito-identity-provider";
+import { InvalidParameterError, MissingParameterError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
+import { assertParameterLength } from "./utils/assertions";
 
 export type AddCustomAttributesTarget = Target<
   AddCustomAttributesRequest,
   AddCustomAttributesResponse
 >;
 
-type AddCustomAttributesServices = Pick<Services, 'clock' | 'cognito'>;
+type AddCustomAttributesServices = Pick<Services, "clock" | "cognito">;
 
 export const AddCustomAttributes =
-  ({ clock, cognito }: AddCustomAttributesServices): AddCustomAttributesTarget =>
+  ({
+    clock,
+    cognito,
+  }: AddCustomAttributesServices): AddCustomAttributesTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.CustomAttributes) throw new MissingParameterError('CustomAttributes');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.CustomAttributes)
+      throw new MissingParameterError("CustomAttributes");
 
-    assertParameterLength('CustomAttributes', 1, 25, req.CustomAttributes);
+    assertParameterLength("CustomAttributes", 1, 25, req.CustomAttributes);
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
@@ -31,11 +34,11 @@ export const AddCustomAttributes =
       SchemaAttributes: [
         ...(userPool.options.SchemaAttributes ?? []),
         ...req.CustomAttributes.map(({ Name, ...attr }) => {
-          const name = `custom:${Name ?? 'null'}`;
+          const name = `custom:${Name ?? "null"}`;
 
           if (userPool.options.SchemaAttributes?.find((x) => x.Name === name)) {
             throw new InvalidParameterError(
-              `${name}: Existing attribute already has name ${name}.`
+              `${name}: Existing attribute already has name ${name}.`,
             );
           }
 

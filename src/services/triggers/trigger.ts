@@ -1,6 +1,7 @@
-import { Context } from "../context.js";
+import type { Context } from "../context";
 
-export type Trigger<Params extends object, Res extends object | null | void> = (
-  ctx: Context,
-  params: Params,
-) => Promise<Res>;
+export type Trigger<
+  Params extends {},
+  // biome-ignore lint/suspicious/noConfusingVoidType: some triggers don't return a value
+  Res extends object | null | undefined | void,
+> = (ctx: Context, params: Params) => Promise<Res>;

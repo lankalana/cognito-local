@@ -1,10 +1,11 @@
-import { LogService } from '../services/LogService.js';
+import { vi } from "vitest";
+import type { LogService } from "../services/LogService.js";
 
 export const MockLogger = {
-  info: jest.fn(),
-  error: jest.fn(),
-  debug: jest.fn(),
-  warn: jest.fn(),
+  info: vi.fn(),
+  error: vi.fn(),
+  debug: vi.fn(),
+  warn: vi.fn(),
   child() {
     return this;
   },

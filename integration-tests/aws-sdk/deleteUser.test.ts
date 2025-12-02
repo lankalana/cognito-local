@@ -1,41 +1,46 @@
-import { UserNotFoundError } from '../../src/errors.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.deleteUser',
+  "CognitoIdentityServiceProvider.deleteUser",
   withCognitoSdk((Cognito) => {
-    it('deletes the current user', async () => {
+    it("deletes the current user", async () => {
       const client = Cognito();
+
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
+      const userPoolId = pool.UserPool?.Id!;
 
       // create the user pool client
       const upc = await client.createUserPoolClient({
-        UserPoolId: 'test',
-        ClientName: 'test',
+        UserPoolId: userPoolId,
+        ClientName: "test",
       });
 
       // create a user
       await client.adminCreateUser({
-        DesiredDeliveryMediums: ['EMAIL'],
-        TemporaryPassword: 'def',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        Username: 'abc',
-        UserPoolId: 'test',
+        DesiredDeliveryMediums: ["EMAIL"],
+        TemporaryPassword: "def",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        Username: "abc",
+        UserPoolId: userPoolId,
       });
 
       await client.adminSetUserPassword({
-        Password: 'newPassword',
+        Password: "newPassword",
         Permanent: true,
-        Username: 'abc',
-        UserPoolId: 'test',
+        Username: "abc",
+        UserPoolId: userPoolId,
       });
 
       // attempt to login
       const initAuthResponse = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
-        AuthFlow: 'USER_PASSWORD_AUTH',
+        AuthFlow: "USER_PASSWORD_AUTH",
         AuthParameters: {
-          USERNAME: 'abc',
-          PASSWORD: 'newPassword',
+          USERNAME: "abc",
+          PASSWORD: "newPassword",
         },
       });
 
@@ -47,10 +52,13 @@ describe(
       // verify they don't exist anymore
       await expect(
         client.adminGetUser({
-          Username: 'abc',
-          UserPoolId: 'test',
-        })
-      ).rejects.toEqual(new UserNotFoundError('User does not exist.'));
+          Username: "abc",
+          UserPoolId: userPoolId,
+        }),
+      ).rejects.toMatchObject({
+        name: "UserNotFoundException",
+        message: "User does not exist.",
+      });
     });
-  })
+  }),
 );

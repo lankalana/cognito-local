@@ -1,24 +1,29 @@
-import { RevokeTokenRequest, RevokeTokenResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { Target } from './Target.js';
+import type {
+  RevokeTokenRequest,
+  RevokeTokenResponse,
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
+import type { Services } from "../services";
+import type { Target } from "./Target";
 
 export type RevokeTokenTarget = Target<RevokeTokenRequest, RevokeTokenResponse>;
 
-type RevokeTokenServices = Pick<Services, 'cognito'>;
+type RevokeTokenServices = Pick<Services, "cognito">;
 
 export const RevokeToken =
   ({ cognito }: RevokeTokenServices): RevokeTokenTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Token) throw new MissingParameterError('Token');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Token) throw new MissingParameterError("Token");
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
 
     const users = await userPool.listUsers(ctx);
     const user = users.find(
-      (user) => Array.isArray(user.RefreshTokens) && user.RefreshTokens.includes(req.Token!)
+      (user) =>
+        Array.isArray(user.RefreshTokens) &&
+        // biome-ignore lint/style/noNonNullAssertion: TypeScript requirement
+        user.RefreshTokens.includes(req.Token!),
     );
 
     if (!user) {

@@ -1,26 +1,29 @@
-import {
+import type {
   CreateIdentityProviderRequest,
   CreateIdentityProviderResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "@aws-sdk/client-cognito-identity-provider";
 
-import { MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { IdentityProvider } from '../services/userPoolService.js';
-import { identityProviderToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import { MissingParameterError } from "../errors.js";
+import type { Services } from "../services/index.js";
+import type { IdentityProvider } from "../services/userPoolService.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import type { Target } from "./Target.js";
 
 export type CreateIdentityProviderTarget = Target<
   CreateIdentityProviderRequest,
   CreateIdentityProviderResponse
 >;
 
-type CreateIdentityProviderServices = Pick<Services, 'clock' | 'cognito'>;
+type CreateIdentityProviderServices = Pick<Services, "clock" | "cognito">;
 
 export const CreateIdentityProvider =
-  ({ cognito, clock }: CreateIdentityProviderServices): CreateIdentityProviderTarget =>
+  ({
+    cognito,
+    clock,
+  }: CreateIdentityProviderServices): CreateIdentityProviderTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.ProviderName) throw new MissingParameterError('ProviderName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.ProviderName) throw new MissingParameterError("ProviderName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
 
@@ -39,6 +42,8 @@ export const CreateIdentityProvider =
     await userPool.saveIdentityProvider(ctx, identityProvider);
 
     return {
-      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(identityProvider),
+      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
+        identityProvider,
+      ),
     };
   };

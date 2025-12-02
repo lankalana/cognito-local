@@ -1,51 +1,63 @@
-import {
+import type {
   AdminCreateUserRequest,
   AdminCreateUserResponse,
   DeliveryMediumType,
-} from '@aws-sdk/client-cognito-identity-provider';
-import shortUUID from 'short-uuid';
-import * as uuid from 'uuid';
+} from "@aws-sdk/client-cognito-identity-provider";
+import shortUUID from "short-uuid";
+import * as uuid from "uuid";
 
 import {
   InvalidParameterError,
   MissingParameterError,
   UnsupportedError,
   UsernameExistsError,
-} from '../errors.js';
-import { Context } from '../services/context.js';
-import { Messages, Services, UserPoolService } from '../services/index.js';
-import { DeliveryDetails } from '../services/messageDelivery/messageDelivery.js';
-import { attributesInclude, attributeValue, User } from '../services/userPoolService.js';
-import { userToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Messages, Services, UserPoolService } from "../services";
+import type { Context } from "../services/context";
+import type { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
+import {
+  attributesInclude,
+  attributeValue,
+  type User,
+} from "../services/userPoolService";
+import { userToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
-const generator = shortUUID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!');
+const generator = shortUUID(
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!",
+);
 
-export type AdminCreateUserTarget = Target<AdminCreateUserRequest, AdminCreateUserResponse>;
+export type AdminCreateUserTarget = Target<
+  AdminCreateUserRequest,
+  AdminCreateUserResponse
+>;
 
-type AdminCreateUserServices = Pick<Services, 'clock' | 'cognito' | 'messages' | 'config'>;
+type AdminCreateUserServices = Pick<
+  Services,
+  "clock" | "cognito" | "messages" | "config"
+>;
 
 const selectAppropriateDeliveryMethod = (
   desiredDeliveryMediums: DeliveryMediumType[],
-  user: User
+  user: User,
 ): DeliveryDetails | null => {
-  if (desiredDeliveryMediums.includes('SMS')) {
-    const phoneNumber = attributeValue('phone_number', user.Attributes);
+  if (desiredDeliveryMediums.includes("SMS")) {
+    const phoneNumber = attributeValue("phone_number", user.Attributes);
     if (phoneNumber) {
       return {
-        AttributeName: 'phone_number',
-        DeliveryMedium: 'SMS',
+        AttributeName: "phone_number",
+        DeliveryMedium: "SMS",
         Destination: phoneNumber,
       };
     }
   }
 
-  if (desiredDeliveryMediums.includes('EMAIL')) {
-    const email = attributeValue('email', user.Attributes);
+  if (desiredDeliveryMediums.includes("EMAIL")) {
+    const email = attributeValue("email", user.Attributes);
     if (email) {
       return {
-        AttributeName: 'email',
-        DeliveryMedium: 'EMAIL',
+        AttributeName: "email",
+        DeliveryMedium: "EMAIL",
         Destination: email,
       };
     }
@@ -60,67 +72,88 @@ const deliverWelcomeMessage = async (
   temporaryPassword: string,
   user: User,
   messages: Messages,
-  userPool: UserPoolService
+  userPool: UserPoolService,
 ) => {
   const deliveryDetails = selectAppropriateDeliveryMethod(
-    req.DesiredDeliveryMediums ?? ['SMS'],
-    user
+    req.DesiredDeliveryMediums ?? ["SMS"],
+    user,
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
-    throw new InvalidParameterError('User has no attribute matching desired delivery mediums');
+    throw new InvalidParameterError(
+      "User has no attribute matching desired delivery mediums",
+    );
   }
 
   await messages.deliver(
     ctx,
-    'AdminCreateUser',
+    "AdminCreateUser",
     null,
     userPool.options.Id,
     user,
     temporaryPassword,
     req.ClientMetadata,
-    deliveryDetails
+    deliveryDetails,
   );
 };
 
 export const AdminCreateUser =
-  ({ clock, cognito, messages, config }: AdminCreateUserServices): AdminCreateUserTarget =>
+  ({
+    clock,
+    cognito,
+    messages,
+  }: AdminCreateUserServices): AdminCreateUserTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const existingUser = await userPool.getUserByUsername(ctx, req.Username);
-    const supressWelcomeMessage = req.MessageAction === 'SUPPRESS';
+    const supressWelcomeMessage = req.MessageAction === "SUPPRESS";
 
-    if (existingUser && req.MessageAction === 'RESEND') {
-      throw new UnsupportedError('AdminCreateUser with MessageAction=RESEND');
+    if (existingUser && req.MessageAction === "RESEND") {
+      throw new UnsupportedError("AdminCreateUser with MessageAction=RESEND");
     } else if (existingUser) {
       throw new UsernameExistsError();
     }
 
-    const attributes = attributesInclude('sub', req.UserAttributes)
+    const sub = uuid.v4();
+    const attributes = attributesInclude("sub", req.UserAttributes)
       ? (req.UserAttributes ?? [])
-      : [{ Name: 'sub', Value: uuid.v4() }, ...(req.UserAttributes ?? [])];
+      : [{ Name: "sub", Value: sub }, ...(req.UserAttributes ?? [])];
 
     const now = clock.get();
 
     const temporaryPassword =
-      req.TemporaryPassword ?? process.env.CODE ?? generator.new().slice(0, 6);
+      req.TemporaryPassword ??
+      process.env.CODE ??
+      generator.generate().slice(0, 6);
 
-    const isEmailUsername = config.UserPoolDefaults.UsernameAttributes?.includes('email');
-    const hasEmailAttribute = attributesInclude('email', attributes);
+    let username = req.Username;
+    if (userPool.options.UsernameAttributes?.includes("email")) {
+      // user pool is configured to use the email attribute as the user's username
+      if (!req.Username.includes("@")) {
+        // naive validation that the username is an email
+        throw new InvalidParameterError("Username should be an email.");
+      }
 
-    if (isEmailUsername && !hasEmailAttribute) {
-      attributes.push({ Name: 'email', Value: req.Username });
+      if (!attributesInclude("email", attributes)) {
+        attributes.push({ Name: "email", Value: req.Username });
+      }
+
+      // when the username is an email address, cognito uses the sub as the username in
+      // requests/responses, triggers etc...
+      username = sub;
     }
 
     const user: User = {
-      Username: req.Username,
+      Username: username,
       Password: temporaryPassword,
-      Attributes: attributes,
+      Attributes: attributes.sort((a, b) =>
+        a.Name && b.Name ? a.Name.localeCompare(b.Name) : 0,
+      ),
       Enabled: true,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
       ConfirmationCode: undefined,
       UserCreateDate: now,
       UserLastModifiedDate: now,
@@ -135,7 +168,14 @@ export const AdminCreateUser =
     // TODO: support PreSignIn lambda and ValidationData
 
     if (!supressWelcomeMessage) {
-      await deliverWelcomeMessage(ctx, req, temporaryPassword, user, messages, userPool);
+      await deliverWelcomeMessage(
+        ctx,
+        req,
+        temporaryPassword,
+        user,
+        messages,
+        userPool,
+      );
     }
 
     return {

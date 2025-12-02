@@ -1,15 +1,17 @@
-import {
+import type {
   ListUserPoolsRequest,
   ListUserPoolsResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "@aws-sdk/client-cognito-identity-provider";
+import type { Services } from "../services/index.js";
+import { userPoolToResponseObject } from "./responses.js";
+import type { Target } from "./Target.js";
 
-import { Services } from '../services/index.js';
-import { userPoolToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+export type ListUserPoolsTarget = Target<
+  ListUserPoolsRequest,
+  ListUserPoolsResponse
+>;
 
-export type ListUserPoolsTarget = Target<ListUserPoolsRequest, ListUserPoolsResponse>;
-
-type ListGroupServices = Pick<Services, 'cognito'>;
+type ListGroupServices = Pick<Services, "cognito">;
 
 export const ListUserPools =
   ({ cognito }: ListGroupServices): ListUserPoolsTarget =>

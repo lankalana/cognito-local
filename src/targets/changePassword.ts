@@ -1,36 +1,42 @@
-import {
+import type {
   ChangePasswordRequest,
   ChangePasswordResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
-import jwt from 'jsonwebtoken';
-
+} from "@aws-sdk/client-cognito-identity-provider";
+import jwt from "jsonwebtoken";
 import {
   InvalidParameterError,
   InvalidPasswordError,
   MissingParameterError,
   NotAuthorizedError,
-} from '../errors.js';
-import { Services } from '../services/index.js';
-import { Token } from '../services/tokenGenerator.js';
-import { Target } from './Target.js';
+} from "../errors";
+import type { Services } from "../services";
+import type { Token } from "../services/tokenGenerator";
+import type { Target } from "./Target";
 
-export type ChangePasswordTarget = Target<ChangePasswordRequest, ChangePasswordResponse>;
+export type ChangePasswordTarget = Target<
+  ChangePasswordRequest,
+  ChangePasswordResponse
+>;
 
-type ChangePasswordServices = Pick<Services, 'cognito' | 'clock'>;
+type ChangePasswordServices = Pick<Services, "cognito" | "clock">;
 
 export const ChangePassword =
   ({ cognito, clock }: ChangePasswordServices): ChangePasswordTarget =>
   async (ctx, req) => {
-    if (!req.AccessToken) throw new MissingParameterError('AccessToken');
-    if (!req.ProposedPassword) throw new MissingParameterError('ProposedPassword');
+    if (!req.AccessToken) throw new MissingParameterError("AccessToken");
+    if (!req.ProposedPassword)
+      throw new MissingParameterError("ProposedPassword");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
-      ctx.logger.info('Unable to decode token');
+      ctx.logger.info("Unable to decode token");
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
+    const userPool = await cognito.getUserPoolForClientId(
+      ctx,
+      decodedToken.client_id,
+    );
     const user = await userPool.getUserByUsername(ctx, decodedToken.username);
     if (!user) {
       throw new NotAuthorizedError();

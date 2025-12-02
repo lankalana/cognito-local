@@ -1,5 +1,6 @@
-import { ClockFake } from '../../src/__tests__/clockFake.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { ClockFake } from "../../src/__tests__/clockFake";
+import { withCognitoSdk } from "./setup";
 
 const originalDate = new Date();
 const roundedDate = new Date(originalDate.getTime());
@@ -8,47 +9,52 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(originalDate);
 
 describe(
-  'CognitoIdentityServiceProvider.adminRemoveUserFromGroup',
+  "CognitoIdentityServiceProvider.adminRemoveUserFromGroup",
   withCognitoSdk(
     (Cognito) => {
-      it('lists groups for a user', async () => {
+      it("lists groups for a user", async () => {
         const client = Cognito();
 
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
+        const userPoolId = pool.UserPool?.Id!;
+
         const createGroupResponse = await client.createGroup({
-          GroupName: 'group-1',
-          UserPoolId: 'test',
+          GroupName: "group-1",
+          UserPoolId: userPoolId,
         });
 
         await client.adminCreateUser({
-          DesiredDeliveryMediums: ['EMAIL'],
-          TemporaryPassword: 'def',
-          UserAttributes: [{ Name: 'email', Value: 'example+1@example.com' }],
-          Username: 'user-1',
-          UserPoolId: 'test',
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "def",
+          UserAttributes: [{ Name: "email", Value: "example+1@example.com" }],
+          Username: "user-1",
+          UserPoolId: userPoolId,
         });
 
         await client.adminAddUserToGroup({
-          Username: 'user-1',
-          GroupName: 'group-1',
-          UserPoolId: 'test',
+          Username: "user-1",
+          GroupName: "group-1",
+          UserPoolId: userPoolId,
         });
 
         const result = await client.adminListGroupsForUser({
-          UserPoolId: 'test',
-          Username: 'user-1',
+          UserPoolId: userPoolId,
+          Username: "user-1",
         });
 
         expect(result.Groups).toEqual([createGroupResponse.Group]);
 
         await client.adminRemoveUserFromGroup({
-          Username: 'user-1',
-          GroupName: 'group-1',
-          UserPoolId: 'test',
+          Username: "user-1",
+          GroupName: "group-1",
+          UserPoolId: userPoolId,
         });
 
         const resultAfterRemove = await client.adminListGroupsForUser({
-          UserPoolId: 'test',
-          Username: 'user-1',
+          UserPoolId: userPoolId,
+          Username: "user-1",
         });
 
         expect(resultAfterRemove.Groups).toHaveLength(0);
@@ -56,6 +62,6 @@ describe(
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

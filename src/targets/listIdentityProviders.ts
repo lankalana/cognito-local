@@ -1,29 +1,31 @@
-import {
+import type {
   ListIdentityProvidersRequest,
   ListIdentityProvidersResponse,
-} from '@aws-sdk/client-cognito-identity-provider';
+} from "@aws-sdk/client-cognito-identity-provider";
 
-import { MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { identityProviderToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import { MissingParameterError } from "../errors.js";
+import type { Services } from "../services/index.js";
+import { identityProviderToResponseObject } from "./responses.js";
+import type { Target } from "./Target.js";
 
 export type ListIdentityProvidersTarget = Target<
   ListIdentityProvidersRequest,
   ListIdentityProvidersResponse
 >;
 
-type ListIdentityProviderservices = Pick<Services, 'cognito'>;
+type ListIdentityProviderservices = Pick<Services, "cognito">;
 
 export const ListIdentityProviders =
   ({ cognito }: ListIdentityProviderservices): ListIdentityProvidersTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const identityProviders = await userPool.listIdentityProviders(ctx);
 
     return {
-      Providers: identityProviders.map(identityProviderToResponseObject(req.UserPoolId)),
+      Providers: identityProviders.map(
+        identityProviderToResponseObject(req.UserPoolId),
+      ),
     };
   };

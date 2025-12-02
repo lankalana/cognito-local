@@ -1,26 +1,32 @@
 import {
-  AdminConfirmSignUpRequest,
-  AdminConfirmSignUpResponse,
+  type AdminConfirmSignUpRequest,
+  type AdminConfirmSignUpResponse,
   UserStatusType,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { MissingParameterError, NotAuthorizedError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "@aws-sdk/client-cognito-identity-provider";
+import { MissingParameterError, NotAuthorizedError } from "../errors";
+import type { Services } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 export type AdminConfirmSignUpTarget = Target<
   AdminConfirmSignUpRequest,
   AdminConfirmSignUpResponse
 >;
 
-type AdminConfirmSignUpServices = Pick<Services, 'clock' | 'cognito' | 'triggers'>;
+type AdminConfirmSignUpServices = Pick<
+  Services,
+  "clock" | "cognito" | "triggers"
+>;
 
 export const AdminConfirmSignUp =
-  ({ clock, cognito, triggers }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
+  ({
+    clock,
+    cognito,
+    triggers,
+  }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.Username) throw new MissingParameterError('Username');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.Username) throw new MissingParameterError("Username");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -30,7 +36,7 @@ export const AdminConfirmSignUp =
 
     if (user.UserStatus !== UserStatusType.UNCONFIRMED) {
       throw new NotAuthorizedError(
-        `User cannot be confirmed. Current status is ${user.UserStatus}`
+        `User cannot be confirmed. Current status is ${user.UserStatus}`,
       );
     }
 
@@ -42,9 +48,9 @@ export const AdminConfirmSignUp =
 
     await userPool.saveUser(ctx, updatedUser);
 
-    if (triggers.enabled('PostConfirmation')) {
+    if (triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
-        source: 'PostConfirmation_ConfirmSignUp',
+        source: "PostConfirmation_ConfirmSignUp",
         clientId: null,
         clientMetadata: req.ClientMetadata,
         username: updatedUser.Username,
@@ -54,7 +60,7 @@ export const AdminConfirmSignUp =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute('cognito:user_status', updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

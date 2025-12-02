@@ -1,48 +1,54 @@
-import { UUID } from '../../src/__tests__/patterns.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, expect, it } from "vitest";
+import { UUID } from "../../src/__tests__/patterns";
+import { withCognitoSdk } from "./setup";
 
 describe(
-  'CognitoIdentityServiceProvider.adminDeleteUserAttributes',
+  "CognitoIdentityServiceProvider.adminDeleteUserAttributes",
   withCognitoSdk((Cognito) => {
     it("updates a user's attributes", async () => {
       const client = Cognito();
 
+      const pool = await client.createUserPool({
+        PoolName: "test",
+      });
+      const userPoolId = pool.UserPool?.Id!;
+
       await client.adminCreateUser({
         UserAttributes: [
-          { Name: 'email', Value: 'example@example.com' },
-          { Name: 'custom:example', Value: '1' },
+          { Name: "email", Value: "example@example.com" },
+          { Name: "custom:example", Value: "1" },
         ],
-        Username: 'abc',
-        UserPoolId: 'test',
-        DesiredDeliveryMediums: ['EMAIL'],
+        Username: "abc",
+        UserPoolId: userPoolId,
+        DesiredDeliveryMediums: ["EMAIL"],
       });
 
       let user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
+        UserPoolId: userPoolId,
+        Username: "abc",
       });
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'custom:example', Value: '1' },
+        { Name: "custom:example", Value: "1" },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
 
       await client.adminDeleteUserAttributes({
-        UserPoolId: 'test',
-        Username: 'abc',
-        UserAttributeNames: ['custom:example'],
+        UserPoolId: userPoolId,
+        Username: "abc",
+        UserAttributeNames: ["custom:example"],
       });
 
       user = await client.adminGetUser({
-        UserPoolId: 'test',
-        Username: 'abc',
+        UserPoolId: userPoolId,
+        Username: "abc",
       });
 
       expect(user.UserAttributes).toEqual([
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
       ]);
     });
-  })
+  }),
 );

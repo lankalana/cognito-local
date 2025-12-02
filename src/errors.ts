@@ -37,7 +37,7 @@ export class ExpiredCodeError extends CognitoError {
   public constructor() {
     super(
       "ExpiredCodeException",
-      "Invalid code provided, please request a code again."
+      "Invalid code provided, please request a code again.",
     );
   }
 }
@@ -82,7 +82,7 @@ export class UnexpectedLambdaExceptionError extends CognitoError {
   public constructor() {
     super(
       "UnexpectedLambdaExceptionException",
-      "Unexpected error when invoking lambda"
+      "Unexpected error when invoking lambda",
     );
   }
 }
@@ -91,7 +91,7 @@ export class UserLambdaValidationError extends CognitoError {
   public constructor(message?: string) {
     super(
       "UserLambdaValidationException",
-      message ?? "Lambda threw an exception"
+      message ?? "Lambda threw an exception",
     );
   }
 }
@@ -112,12 +112,10 @@ export class MissingParameterError extends CognitoError {
   public constructor(paramName: string) {
     if (paramName)
       super("MissingParameterError", `Missing required parameter ${paramName}`);
-    else
-      super("MissingParameterError", "Missing required parameters");
+    else super("MissingParameterError", "Missing required parameters");
   }
 
   static throwIfMissing<T extends object>(obj: T, paramName: keyof typeof obj) {
-    if (!obj[paramName])
-      throw new MissingParameterError("CustomAttributes");
+    if (!obj[paramName]) throw new MissingParameterError("CustomAttributes");
   }
 }

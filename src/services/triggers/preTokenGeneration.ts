@@ -1,7 +1,7 @@
-import { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
-import { Lambda, PreTokenGenerationTriggerResponse } from "../lambda.js";
-import { attributesToRecord } from "../userPoolService.js";
-import { Trigger } from "./trigger.js";
+import type { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
+import type { Lambda, PreTokenGenerationTriggerResponse } from "../lambda";
+import { attributesToRecord } from "../userPoolService";
+import type { Trigger } from "./trigger";
 
 export type Source =
   | "AuthenticateDevice"

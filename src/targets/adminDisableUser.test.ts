@@ -1,17 +1,21 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { AdminDisableUser, AdminDisableUserTarget } from './adminDisableUser.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import {
+  AdminDisableUser,
+  type AdminDisableUserTarget,
+} from "./adminDisableUser";
 
 const originalDate = new Date();
 
-describe('AdminDisableUser target', () => {
+describe("AdminDisableUser target", () => {
   let adminDisableUser: AdminDisableUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -24,7 +28,7 @@ describe('AdminDisableUser target', () => {
     });
   });
 
-  it('enables the user', async () => {
+  it("enables the user", async () => {
     const existingUser = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
@@ -34,7 +38,7 @@ describe('AdminDisableUser target', () => {
 
     await adminDisableUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
@@ -47,9 +51,9 @@ describe('AdminDisableUser target', () => {
   it("throws if the user doesn't exist", async () => {
     await expect(
       adminDisableUser(TestContext, {
-        Username: 'user',
-        UserPoolId: 'test',
-      })
+        Username: "user",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

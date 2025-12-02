@@ -1,21 +1,22 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockMessages } from '../__tests__/mockMessages.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { UUID } from '../__tests__/patterns.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { InvalidParameterError, UsernameExistsError } from '../errors.js';
-import { Config, DefaultConfig } from '../server/config.js';
-import { Messages, UserPoolService } from '../services/index.js';
-import { AdminCreateUser, AdminCreateUserTarget } from './adminCreateUser.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockMessages } from "../__tests__/mockMessages";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { UUID } from "../__tests__/patterns";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { InvalidParameterError, UsernameExistsError } from "../errors";
+import { type Config, DefaultConfig } from "../server/config";
+import type { Messages, UserPoolService } from "../services";
+import { AdminCreateUser, type AdminCreateUserTarget } from "./adminCreateUser";
 
 const originalDate = new Date();
 
-describe('AdminCreateUser target', () => {
+describe("AdminCreateUser target", () => {
   let adminCreateUser: AdminCreateUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockMessages: jest.Mocked<Messages>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockMessages: MockedObject<Messages>;
   let config: Config;
 
   beforeEach(() => {
@@ -30,290 +31,330 @@ describe('AdminCreateUser target', () => {
     });
   });
 
-  it('saves a new user with a provided temporary password', async () => {
+  it("saves a new user with a provided temporary password when the user pool has no username attributes", async () => {
     await adminCreateUser(TestContext, {
-      TemporaryPassword: 'pwd',
+      TemporaryPassword: "pwd",
       UserAttributes: [
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
       ],
-      Username: 'user-supplied',
-      UserPoolId: 'test',
+      Username: "user-supplied",
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       Attributes: [
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
         {
-          Name: 'sub',
+          Name: "sub",
           Value: expect.stringMatching(UUID),
         },
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
       ],
       Enabled: true,
-      Password: 'pwd',
+      Password: "pwd",
       UserCreateDate: originalDate,
       UserLastModifiedDate: originalDate,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
-      Username: 'user-supplied',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
+      Username: "user-supplied",
       RefreshTokens: [],
     });
   });
 
-  it('saves a new user with a generated temporary password', async () => {
+  it("saves a new user with a provided temporary password when the user pool has no username attributes", async () => {
+    mockUserPoolService.options.UsernameAttributes = ["email"];
+
     await adminCreateUser(TestContext, {
+      TemporaryPassword: "pwd",
       UserAttributes: [
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
       ],
-      Username: 'user-supplied',
-      UserPoolId: 'test',
+      Username: "example@example.com",
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       Attributes: [
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
         {
-          Name: 'sub',
+          Name: "sub",
           Value: expect.stringMatching(UUID),
         },
-        { Name: 'email', Value: 'example@example.com' },
-        { Name: 'phone_number', Value: '0400000000' },
+      ],
+      Enabled: true,
+      Password: "pwd",
+      UserCreateDate: originalDate,
+      UserLastModifiedDate: originalDate,
+      UserStatus: "FORCE_CHANGE_PASSWORD",
+      Username: expect.stringMatching(UUID),
+      RefreshTokens: [],
+    });
+  });
+
+  it("saves a new user with a generated temporary password", async () => {
+    await adminCreateUser(TestContext, {
+      UserAttributes: [
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
+      ],
+      Username: "user-supplied",
+      UserPoolId: "test",
+    });
+
+    expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+      Attributes: [
+        { Name: "email", Value: "example@example.com" },
+        { Name: "phone_number", Value: "0400000000" },
+        {
+          Name: "sub",
+          Value: expect.stringMatching(UUID),
+        },
       ],
       Enabled: true,
       Password: expect.stringMatching(/^[A-Za-z0-9!]{6}$/),
       UserCreateDate: originalDate,
       UserLastModifiedDate: originalDate,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
-      Username: 'user-supplied',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
+      Username: "user-supplied",
       RefreshTokens: [],
     });
   });
 
-  describe('messages', () => {
-    describe('DesiredDeliveryMediums=EMAIL', () => {
-      it('sends a welcome email to the user', async () => {
+  describe("messages", () => {
+    describe("DesiredDeliveryMediums=EMAIL", () => {
+      it("sends a welcome email to the user", async () => {
         const response = await adminCreateUser(TestContext, {
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          DesiredDeliveryMediums: ['EMAIL'],
-          TemporaryPassword: 'pwd',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-          Username: 'user-supplied',
-          UserPoolId: 'test',
+          DesiredDeliveryMediums: ["EMAIL"],
+          TemporaryPassword: "pwd",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          Username: "user-supplied",
+          UserPoolId: "test",
         });
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'AdminCreateUser',
+          "AdminCreateUser",
           null,
-          'test',
-          { ...response.User, Password: 'pwd', RefreshTokens: [] },
-          'pwd',
+          "test",
+          { ...response.User, Password: "pwd", RefreshTokens: [] },
+          "pwd",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'email',
-            DeliveryMedium: 'EMAIL',
-            Destination: 'example@example.com',
-          }
+            AttributeName: "email",
+            DeliveryMedium: "EMAIL",
+            Destination: "example@example.com",
+          },
         );
       });
 
-      it('fails for user without email attribute', async () => {
+      it("fails for user without email attribute", async () => {
         config.UserPoolDefaults.UsernameAttributes = [];
 
         await expect(
           adminCreateUser(TestContext, {
-            DesiredDeliveryMediums: ['EMAIL'],
-            TemporaryPassword: 'pwd',
+            DesiredDeliveryMediums: ["EMAIL"],
+            TemporaryPassword: "pwd",
             UserAttributes: [],
-            Username: 'user-supplied',
-            UserPoolId: 'test',
-          })
+            Username: "user-supplied",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(
-          new InvalidParameterError('User has no attribute matching desired delivery mediums')
+          new InvalidParameterError(
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('DesiredDeliveryMediums=SMS', () => {
-      it('sends a welcome sms to the user', async () => {
+    describe("DesiredDeliveryMediums=SMS", () => {
+      it("sends a welcome sms to the user", async () => {
         const response = await adminCreateUser(TestContext, {
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          DesiredDeliveryMediums: ['SMS'],
-          TemporaryPassword: 'pwd',
-          UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
-          Username: 'user-supplied',
-          UserPoolId: 'test',
+          DesiredDeliveryMediums: ["SMS"],
+          TemporaryPassword: "pwd",
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+          Username: "user-supplied",
+          UserPoolId: "test",
         });
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'AdminCreateUser',
+          "AdminCreateUser",
           null,
-          'test',
-          { ...response.User, Password: 'pwd', RefreshTokens: [] },
-          'pwd',
+          "test",
+          { ...response.User, Password: "pwd", RefreshTokens: [] },
+          "pwd",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'phone_number',
-            DeliveryMedium: 'SMS',
-            Destination: '0400000000',
-          }
+            AttributeName: "phone_number",
+            DeliveryMedium: "SMS",
+            Destination: "0400000000",
+          },
         );
       });
 
-      it('fails for user without phone_number attribute', async () => {
+      it("fails for user without phone_number attribute", async () => {
         await expect(
           adminCreateUser(TestContext, {
-            DesiredDeliveryMediums: ['SMS'],
-            TemporaryPassword: 'pwd',
+            DesiredDeliveryMediums: ["SMS"],
+            TemporaryPassword: "pwd",
             UserAttributes: [],
-            Username: 'user-supplied',
-            UserPoolId: 'test',
-          })
+            Username: "user-supplied",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(
-          new InvalidParameterError('User has no attribute matching desired delivery mediums')
+          new InvalidParameterError(
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('DesiredDeliveryMediums=default', () => {
-      it('sends a welcome sms to the user', async () => {
+    describe("DesiredDeliveryMediums=default", () => {
+      it("sends a welcome sms to the user", async () => {
         const response = await adminCreateUser(TestContext, {
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          TemporaryPassword: 'pwd',
-          UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
-          Username: 'user-supplied',
-          UserPoolId: 'test',
+          TemporaryPassword: "pwd",
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+          Username: "user-supplied",
+          UserPoolId: "test",
         });
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'AdminCreateUser',
+          "AdminCreateUser",
           null,
-          'test',
-          { ...response.User, Password: 'pwd', RefreshTokens: [] },
-          'pwd',
+          "test",
+          { ...response.User, Password: "pwd", RefreshTokens: [] },
+          "pwd",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'phone_number',
-            DeliveryMedium: 'SMS',
-            Destination: '0400000000',
-          }
+            AttributeName: "phone_number",
+            DeliveryMedium: "SMS",
+            Destination: "0400000000",
+          },
         );
       });
 
-      it('fails for user without phone_number attribute', async () => {
+      it("fails for user without phone_number attribute", async () => {
         await expect(
           adminCreateUser(TestContext, {
             ClientMetadata: {
-              client: 'metadata',
+              client: "metadata",
             },
-            TemporaryPassword: 'pwd',
+            TemporaryPassword: "pwd",
             UserAttributes: [],
-            Username: 'user-supplied',
-            UserPoolId: 'test',
-          })
+            Username: "user-supplied",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(
-          new InvalidParameterError('User has no attribute matching desired delivery mediums')
+          new InvalidParameterError(
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('DesiredDeliveryMediums=EMAIL and SMS', () => {
-      it('sends a welcome sms to a user with a phone_number and an email', async () => {
+    describe("DesiredDeliveryMediums=EMAIL and SMS", () => {
+      it("sends a welcome sms to a user with a phone_number and an email", async () => {
         const response = await adminCreateUser(TestContext, {
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          DesiredDeliveryMediums: ['EMAIL', 'SMS'],
-          TemporaryPassword: 'pwd',
+          DesiredDeliveryMediums: ["EMAIL", "SMS"],
+          TemporaryPassword: "pwd",
           UserAttributes: [
-            { Name: 'email', Value: 'example@example.com' },
-            { Name: 'phone_number', Value: '0400000000' },
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
           ],
-          Username: 'user-supplied',
-          UserPoolId: 'test',
+          Username: "user-supplied",
+          UserPoolId: "test",
         });
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'AdminCreateUser',
+          "AdminCreateUser",
           null,
-          'test',
-          { ...response.User, Password: 'pwd', RefreshTokens: [] },
-          'pwd',
+          "test",
+          { ...response.User, Password: "pwd", RefreshTokens: [] },
+          "pwd",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'phone_number',
-            DeliveryMedium: 'SMS',
-            Destination: '0400000000',
-          }
+            AttributeName: "phone_number",
+            DeliveryMedium: "SMS",
+            Destination: "0400000000",
+          },
         );
       });
 
-      it('sends a welcome email to a user without a phone_number but with an email', async () => {
+      it("sends a welcome email to a user without a phone_number but with an email", async () => {
         const response = await adminCreateUser(TestContext, {
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          DesiredDeliveryMediums: ['EMAIL', 'SMS'],
-          TemporaryPassword: 'pwd',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-          Username: 'user-supplied',
-          UserPoolId: 'test',
+          DesiredDeliveryMediums: ["EMAIL", "SMS"],
+          TemporaryPassword: "pwd",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          Username: "user-supplied",
+          UserPoolId: "test",
         });
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'AdminCreateUser',
+          "AdminCreateUser",
           null,
-          'test',
-          { ...response.User, Password: 'pwd', RefreshTokens: [] },
-          'pwd',
+          "test",
+          { ...response.User, Password: "pwd", RefreshTokens: [] },
+          "pwd",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'email',
-            DeliveryMedium: 'EMAIL',
-            Destination: 'example@example.com',
-          }
+            AttributeName: "email",
+            DeliveryMedium: "EMAIL",
+            Destination: "example@example.com",
+          },
         );
       });
 
-      it('fails for users without phone_number or email', async () => {
+      it("fails for users without phone_number or email", async () => {
         config.UserPoolDefaults.UsernameAttributes = [];
 
         await expect(
           adminCreateUser(TestContext, {
-            DesiredDeliveryMediums: ['EMAIL', 'SMS'],
-            TemporaryPassword: 'pwd',
+            DesiredDeliveryMediums: ["EMAIL", "SMS"],
+            TemporaryPassword: "pwd",
             UserAttributes: [],
-            Username: 'user-supplied',
-            UserPoolId: 'test',
-          })
+            Username: "user-supplied",
+            UserPoolId: "test",
+          }),
         ).rejects.toEqual(
-          new InvalidParameterError('User has no attribute matching desired delivery mediums')
+          new InvalidParameterError(
+            "User has no attribute matching desired delivery mediums",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -321,54 +362,54 @@ describe('AdminCreateUser target', () => {
     });
   });
 
-  it.todo('can create an alias to an existing user');
-  it.todo('can resend the welcome message');
+  it.todo("can create an alias to an existing user");
+  it.todo("can resend the welcome message");
 
-  it('can suppress the welcome message', async () => {
+  it("can suppress the welcome message", async () => {
     await adminCreateUser(TestContext, {
       ClientMetadata: {
-        client: 'metadata',
+        client: "metadata",
       },
-      MessageAction: 'SUPPRESS',
-      TemporaryPassword: 'pwd',
-      UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-      Username: 'user-supplied',
-      UserPoolId: 'test',
+      MessageAction: "SUPPRESS",
+      TemporaryPassword: "pwd",
+      UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+      Username: "user-supplied",
+      UserPoolId: "test",
     });
 
     expect(mockMessages.deliver).not.toHaveBeenCalled();
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       Attributes: [
+        { Name: "email", Value: "example@example.com" },
         {
-          Name: 'sub',
+          Name: "sub",
           Value: expect.stringMatching(UUID),
         },
-        { Name: 'email', Value: 'example@example.com' },
       ],
       Enabled: true,
-      Password: 'pwd',
+      Password: "pwd",
       UserCreateDate: originalDate,
       UserLastModifiedDate: originalDate,
-      UserStatus: 'FORCE_CHANGE_PASSWORD',
-      Username: 'user-supplied',
+      UserStatus: "FORCE_CHANGE_PASSWORD",
+      Username: "user-supplied",
       RefreshTokens: [],
     });
   });
 
-  it('handles creating a duplicate user', async () => {
+  it("handles creating a duplicate user", async () => {
     const existingUser = TDB.user();
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
 
     await expect(
       adminCreateUser(TestContext, {
-        TemporaryPassword: 'pwd',
+        TemporaryPassword: "pwd",
         UserAttributes: existingUser.Attributes,
         Username: existingUser.Username,
-        UserPoolId: 'test',
-      })
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new UsernameExistsError());
   });
 
-  it.todo('invokes the PreSignUp lambda');
+  it.todo("invokes the PreSignUp lambda");
 });

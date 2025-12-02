@@ -16,6 +16,13 @@ YARN_PID=$!
 
 trap "kill $YARN_PID" SIGINT
 
+sleep 1
+if ! kill -0 "$YARN_PID" &> /dev/null;
+then
+  echo "Yarn process exited prematurely" >&2
+  exit 1
+fi
+
 PORT=$PORT scripts/smoke-test.sh
 EXIT_CODE=$?
 

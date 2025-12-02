@@ -1,4 +1,6 @@
-/* eslint-disable */
+// biome-ignore-all lint/suspicious/noExplicitAny: test-utility
+import { expect } from "vitest";
+
 expect.extend({
   jsonMatching(actual: any, expected: any) {
     const pass = this.equals(JSON.parse(actual), expected);
@@ -9,7 +11,8 @@ expect.extend({
 
     return {
       pass,
-      message: () => `expected ${actual} to equal ${expected} when parsed as JSON`,
+      message: () =>
+        `expected ${actual} to equal ${expected} when parsed as JSON`,
     };
   },
 });
@@ -21,5 +24,3 @@ declare global {
     }
   }
 }
-
-export {};

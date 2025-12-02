@@ -1,13 +1,14 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CognitoService } from '../services/index.js';
-import { ListUserPools, ListUserPoolsTarget } from './listUserPools.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService } from "../services";
+import { ListUserPools, type ListUserPoolsTarget } from "./listUserPools";
 
-describe('ListUserPools target', () => {
+describe("ListUserPools target", () => {
   let listUserPools: ListUserPoolsTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     mockCognitoService = newMockCognitoService(newMockUserPoolService());
@@ -16,7 +17,7 @@ describe('ListUserPools target', () => {
     });
   });
 
-  it('lists user pools', async () => {
+  it("lists user pools", async () => {
     const userPool1 = TDB.userPool();
     const userPool2 = TDB.userPool();
 

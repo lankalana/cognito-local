@@ -1,7 +1,8 @@
-import { Context } from "../context.js";
-import { Message } from "../messages.js";
-import { User } from "../userPoolService.js";
-import { MessageSender } from "./messageSender.js";
+import boxen from "boxen";
+import type { Context } from "../context";
+import type { Message } from "../messages";
+import type { User } from "../userPoolService";
+import type { MessageSender } from "./messageSender";
 
 export class ConsoleMessageSender implements MessageSender {
   public sendEmail(
@@ -44,11 +45,15 @@ export class ConsoleMessageSender implements MessageSender {
       ...definedFields.map(([k]) => k.length),
     );
     const formattedFields = definedFields.map(
-      ([k, v]) => `${(k + ":").padEnd(longestDefinedFieldName + 1)} ${v}`,
+      ([k, v]) => `${(`${k}:`).padEnd(longestDefinedFieldName + 1)} ${v}`,
     );
 
     ctx.logger.info(
-      `Confirmation Code Delivery\n\n${formattedFields.join("\n")}`,
+      boxen(`Confirmation Code Delivery\n\n${formattedFields.join("\n")}`, {
+        borderStyle: "round",
+        borderColor: "yellow",
+        padding: 1,
+      }),
     );
 
     return Promise.resolve();

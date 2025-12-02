@@ -1,27 +1,37 @@
 import {
-  ConfirmForgotPasswordRequest,
-  ConfirmForgotPasswordResponse,
+  type ConfirmForgotPasswordRequest,
+  type ConfirmForgotPasswordResponse,
   UserStatusType,
-} from '@aws-sdk/client-cognito-identity-provider';
-
-import { CodeMismatchError, MissingParameterError, UserNotFoundError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { attribute, attributesAppend } from '../services/userPoolService.js';
-import { Target } from './Target.js';
+} from "@aws-sdk/client-cognito-identity-provider";
+import {
+  CodeMismatchError,
+  MissingParameterError,
+  UserNotFoundError,
+} from "../errors";
+import type { Services } from "../services";
+import { attribute, attributesAppend } from "../services/userPoolService";
+import type { Target } from "./Target";
 
 export type ConfirmForgotPasswordTarget = Target<
   ConfirmForgotPasswordRequest,
   ConfirmForgotPasswordResponse
 >;
 
-type ConfirmForgotPasswordServices = Pick<Services, 'cognito' | 'clock' | 'triggers'>;
+type ConfirmForgotPasswordServices = Pick<
+  Services,
+  "cognito" | "clock" | "triggers"
+>;
 
 export const ConfirmForgotPassword =
-  ({ cognito, clock, triggers }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
+  ({
+    cognito,
+    clock,
+    triggers,
+  }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
   async (ctx, req) => {
-    if (!req.ClientId) throw new MissingParameterError('ClientId');
-    if (!req.Username) throw new MissingParameterError('Username');
-    if (!req.Password) throw new MissingParameterError('Password');
+    if (!req.ClientId) throw new MissingParameterError("ClientId");
+    if (!req.Username) throw new MissingParameterError("Username");
+    if (!req.Password) throw new MissingParameterError("Password");
 
     const userPool = await cognito.getUserPoolForClientId(ctx, req.ClientId);
     const user = await userPool.getUserByUsername(ctx, req.Username);
@@ -43,11 +53,11 @@ export const ConfirmForgotPassword =
 
     await userPool.saveUser(ctx, updatedUser);
 
-    if (triggers.enabled('PostConfirmation')) {
+    if (triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,
-        source: 'PostConfirmation_ConfirmForgotPassword',
+        source: "PostConfirmation_ConfirmForgotPassword",
         username: updatedUser.Username,
         userPoolId: userPool.options.Id,
 
@@ -55,7 +65,7 @@ export const ConfirmForgotPassword =
         // into every place we send attributes to lambdas
         userAttributes: attributesAppend(
           updatedUser.Attributes,
-          attribute('cognito:user_status', updatedUser.UserStatus)
+          attribute("cognito:user_status", updatedUser.UserStatus),
         ),
       });
     }

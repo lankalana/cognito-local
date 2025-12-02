@@ -2,14 +2,13 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "outDir": "./lib",
     "resolveJsonModule": true,
     "strict": true,
     "target": "ES2020"
   },
-  "include": ["setupTests.ts", "src/**/*.ts", "integration-tests/**/*.ts"],
+  "include": ["./setupTests.ts", "src/**/*.ts", "integration-tests/**/*.ts"],
   "exclude": ["lib"],
-  "files": ["global.d.ts"]
 }

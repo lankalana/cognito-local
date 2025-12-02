@@ -1,14 +1,15 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CognitoService, UserPoolService } from '../services/index.js';
-import { UpdateUserPool, UpdateUserPoolTarget } from './updateUserPool.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService, UserPoolService } from "../services";
+import { UpdateUserPool, type UpdateUserPoolTarget } from "./updateUserPool";
 
-describe('UpdateUserPool target', () => {
+describe("UpdateUserPool target", () => {
   let updateUserPool: UpdateUserPoolTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockCognitoService: MockedObject<CognitoService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -19,9 +20,9 @@ describe('UpdateUserPool target', () => {
     });
   });
 
-  it('updates a user pool', async () => {
+  it("updates a user pool", async () => {
     const existingUserPool = TDB.userPool({
-      Name: 'name',
+      Name: "name",
     });
 
     const userPoolService = newMockUserPoolService(existingUserPool);
@@ -30,12 +31,12 @@ describe('UpdateUserPool target', () => {
 
     await updateUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,
-      MfaConfiguration: 'OPTIONAL',
+      MfaConfiguration: "OPTIONAL",
     });
 
     expect(userPoolService.updateOptions).toHaveBeenCalledWith(TestContext, {
       ...existingUserPool,
-      MfaConfiguration: 'OPTIONAL',
+      MfaConfiguration: "OPTIONAL",
     });
   });
 

@@ -7,4 +7,4 @@
 # We run this in CI to prove the actual server can start. This catches some edge-cases where
 # everything else passes, but something in the compile produced invalid JavaScript.
 
-wget --retry-connrefused --retry-on-http-error=404 --tries=30 -q --wait=1 --spider "http://localhost:$PORT/health"
+wget --retry-connrefused --retry-on-http-error=404 --tries=10 --wait=1 --spider "http://localhost:$PORT/health"

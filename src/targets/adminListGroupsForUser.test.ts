@@ -1,14 +1,18 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { UserNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { AdminListGroupsForUser, AdminListGroupsForUserTarget } from './adminListGroupsForUser.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { UserNotFoundError } from "../errors";
+import type { UserPoolService } from "../services";
+import {
+  AdminListGroupsForUser,
+  type AdminListGroupsForUserTarget,
+} from "./adminListGroupsForUser";
 
-describe('AdminListGroupsForUser target', () => {
+describe("AdminListGroupsForUser target", () => {
   let adminListGroupsForUser: AdminListGroupsForUserTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -24,11 +28,14 @@ describe('AdminListGroupsForUser target', () => {
     const existingGroup2 = TDB.group();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
+    mockUserPoolService.listGroups.mockResolvedValue([
+      existingGroup1,
+      existingGroup2,
+    ]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.listGroups).toHaveBeenCalledWith(TestContext);
@@ -36,7 +43,7 @@ describe('AdminListGroupsForUser target', () => {
     expect(result.Groups).toEqual([]);
   });
 
-  it('returns the groups that the user is assigned to', async () => {
+  it("returns the groups that the user is assigned to", async () => {
     const existingUser = TDB.user();
     const existingGroup1 = TDB.group();
     const existingGroup2 = TDB.group({
@@ -44,11 +51,14 @@ describe('AdminListGroupsForUser target', () => {
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
+    mockUserPoolService.listGroups.mockResolvedValue([
+      existingGroup1,
+      existingGroup2,
+    ]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.listGroups).toHaveBeenCalledWith(TestContext);
@@ -61,7 +71,7 @@ describe('AdminListGroupsForUser target', () => {
         LastModifiedDate: existingGroup2.LastModifiedDate,
         Precedence: existingGroup2.Precedence,
         RoleArn: existingGroup2.RoleArn,
-        UserPoolId: 'test',
+        UserPoolId: "test",
       },
     ]);
   });
@@ -71,9 +81,9 @@ describe('AdminListGroupsForUser target', () => {
 
     await expect(
       adminListGroupsForUser(TestContext, {
-        Username: 'user',
-        UserPoolId: 'test',
-      })
+        Username: "user",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new UserNotFoundError());
   });
 });

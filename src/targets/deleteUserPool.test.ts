@@ -1,13 +1,14 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { CognitoService } from '../services/index.js';
-import { DeleteUserPool, DeleteUserPoolTarget } from './deleteUserPool.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import type { CognitoService } from "../services";
+import { DeleteUserPool, type DeleteUserPoolTarget } from "./deleteUserPool";
 
-describe('DeleteUserPool target', () => {
+describe("DeleteUserPool target", () => {
   let deleteUserPool: DeleteUserPoolTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
+  let mockCognitoService: MockedObject<CognitoService>;
 
   beforeEach(() => {
     mockCognitoService = newMockCognitoService(newMockUserPoolService());
@@ -17,16 +18,21 @@ describe('DeleteUserPool target', () => {
     });
   });
 
-  it('deletes a user pool client', async () => {
+  it("deletes a user pool client", async () => {
     const userPool = TDB.userPool();
 
-    mockCognitoService.getUserPool.mockResolvedValue(newMockUserPoolService(userPool));
+    mockCognitoService.getUserPool.mockResolvedValue(
+      newMockUserPoolService(userPool),
+    );
 
     await deleteUserPool(TestContext, {
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
-    expect(mockCognitoService.deleteUserPool).toHaveBeenCalledWith(TestContext, userPool);
+    expect(mockCognitoService.deleteUserPool).toHaveBeenCalledWith(
+      TestContext,
+      userPool,
+    );
   });
 
   it.todo("throws if the user pool doesn't exist");

@@ -1,18 +1,22 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { ResourceNotFoundError } from '../errors.js';
-import { CognitoService, UserPoolService } from '../services/index.js';
-import { UpdateUserPoolClient, UpdateUserPoolClientTarget } from './updateUserPoolClient.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
+import { ResourceNotFoundError } from "../errors";
+import type { CognitoService, UserPoolService } from "../services";
+import {
+  UpdateUserPoolClient,
+  type UpdateUserPoolClientTarget,
+} from "./updateUserPoolClient";
 
 const originalDate = new Date();
 
-describe('UpdateUserPoolClient target', () => {
+describe("UpdateUserPoolClient target", () => {
   let updateUserPoolClient: UpdateUserPoolClientTarget;
-  let mockCognitoService: jest.Mocked<CognitoService>;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockCognitoService: MockedObject<CognitoService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
   let clock: ClockFake;
 
   beforeEach(() => {
@@ -26,9 +30,9 @@ describe('UpdateUserPoolClient target', () => {
     });
   });
 
-  it('updates a user pool client', async () => {
+  it("updates a user pool client", async () => {
     const existingAppClient = TDB.appClient({
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     mockCognitoService.getAppClient.mockResolvedValue(existingAppClient);
@@ -39,36 +43,39 @@ describe('UpdateUserPoolClient target', () => {
     const result = await updateUserPoolClient(TestContext, {
       ClientId: existingAppClient.ClientId,
       UserPoolId: existingAppClient.UserPoolId,
-      ClientName: 'new client name',
+      ClientName: "new client name",
       AccessTokenValidity: 50,
     });
 
     expect(mockCognitoService.getAppClient).toHaveBeenCalledWith(
       TestContext,
-      existingAppClient.ClientId
+      existingAppClient.ClientId,
     );
 
-    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(TestContext, {
-      ...existingAppClient,
-      AccessTokenValidity: 50,
-      ClientName: 'new client name',
-      LastModifiedDate: newDate,
-      TokenValidityUnits: {
-        AccessToken: 'hours',
-        IdToken: 'minutes',
-        RefreshToken: 'days',
+    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
+      TestContext,
+      {
+        ...existingAppClient,
+        AccessTokenValidity: 50,
+        ClientName: "new client name",
+        LastModifiedDate: newDate,
+        TokenValidityUnits: {
+          AccessToken: "hours",
+          IdToken: "minutes",
+          RefreshToken: "days",
+        },
       },
-    });
+    );
 
     expect(result.UserPoolClient).toEqual({
       ...existingAppClient,
       AccessTokenValidity: 50,
-      ClientName: 'new client name',
+      ClientName: "new client name",
       LastModifiedDate: newDate,
       TokenValidityUnits: {
-        AccessToken: 'hours',
-        IdToken: 'minutes',
-        RefreshToken: 'days',
+        AccessToken: "hours",
+        IdToken: "minutes",
+        RefreshToken: "days",
       },
     });
   });
@@ -78,9 +85,9 @@ describe('UpdateUserPoolClient target', () => {
 
     await expect(
       updateUserPoolClient(TestContext, {
-        ClientId: 'clientId',
-        UserPoolId: 'test',
-      })
+        ClientId: "clientId",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new ResourceNotFoundError());
   });
 });

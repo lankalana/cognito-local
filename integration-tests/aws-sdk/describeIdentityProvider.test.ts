@@ -1,5 +1,6 @@
-import { ClockFake } from '../../src/__tests__/clockFake.js';
-import { withCognitoSdk } from './setup.js';
+import { describe, it } from "vitest";
+import { ClockFake } from "../../src/__tests__/clockFake.js";
+import { withCognitoSdk } from "./setup.js";
 
 const currentDate = new Date();
 const roundedDate = new Date(currentDate.getTime());
@@ -8,14 +9,14 @@ roundedDate.setMilliseconds(0);
 const clock = new ClockFake(currentDate);
 
 describe(
-  'CognitoIdentityServiceProvider.describeIdentityProvider',
+  "CognitoIdentityServiceProvider.describeIdentityProvider",
   withCognitoSdk(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (Cognito) => {
-      it.todo('returns an identity provider');
+    (_Cognito) => {
+      it.todo("returns an identity provider");
     },
     {
       clock,
-    }
-  )
+    },
+  ),
 );

@@ -1,14 +1,18 @@
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
-import { IdentityProviderNotFoundError } from '../errors.js';
-import { UserPoolService } from '../services/index.js';
-import { DeleteIdentityProvider, DeleteIdentityProviderTarget } from './deleteIdentityProvider.js';
+import { beforeEach, describe, expect, it, type MockedObject } from "vitest";
+import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
+import { TestContext } from "../__tests__/testContext.js";
+import * as TDB from "../__tests__/testDataBuilder.js";
+import { IdentityProviderNotFoundError } from "../errors.js";
+import type { UserPoolService } from "../services/index.js";
+import {
+  DeleteIdentityProvider,
+  type DeleteIdentityProviderTarget,
+} from "./deleteIdentityProvider.js";
 
-describe('DeleteIdentityProvider target', () => {
+describe("DeleteIdentityProvider target", () => {
   let deleteIdentityProvider: DeleteIdentityProviderTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
 
   beforeEach(() => {
     mockUserPoolService = newMockUserPoolService();
@@ -18,21 +22,21 @@ describe('DeleteIdentityProvider target', () => {
     });
   });
 
-  it('deletes an identity provider', async () => {
+  it("deletes an identity provider", async () => {
     const existingIdentityProvider = TDB.identityProvider();
 
     mockUserPoolService.getIdentityProviderByProviderName.mockResolvedValue(
-      existingIdentityProvider
+      existingIdentityProvider,
     );
 
     await deleteIdentityProvider(TestContext, {
       ProviderName: existingIdentityProvider.ProviderName,
-      UserPoolId: 'test',
+      UserPoolId: "test",
     });
 
     expect(mockUserPoolService.deleteIdentityProvider).toHaveBeenCalledWith(
       TestContext,
-      existingIdentityProvider
+      existingIdentityProvider,
     );
   });
 
@@ -41,9 +45,9 @@ describe('DeleteIdentityProvider target', () => {
 
     await expect(
       deleteIdentityProvider(TestContext, {
-        ProviderName: 'identityProvider',
-        UserPoolId: 'test',
-      })
+        ProviderName: "identityProvider",
+        UserPoolId: "test",
+      }),
     ).rejects.toEqual(new IdentityProviderNotFoundError());
   });
 });

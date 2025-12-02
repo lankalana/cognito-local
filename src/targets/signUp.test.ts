@@ -1,26 +1,35 @@
-import { ClockFake } from '../__tests__/clockFake.js';
-import { newMockCognitoService } from '../__tests__/mockCognitoService.js';
-import { newMockMessages } from '../__tests__/mockMessages.js';
-import { newMockTriggers } from '../__tests__/mockTriggers.js';
-import { newMockUserPoolService } from '../__tests__/mockUserPoolService.js';
-import { UUID } from '../__tests__/patterns.js';
-import { TestContext } from '../__tests__/testContext.js';
-import * as TDB from '../__tests__/testDataBuilder.js';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type Mock,
+  type MockedObject,
+  vi,
+} from "vitest";
+import { ClockFake } from "../__tests__/clockFake";
+import { newMockCognitoService } from "../__tests__/mockCognitoService";
+import { newMockMessages } from "../__tests__/mockMessages";
+import { newMockTriggers } from "../__tests__/mockTriggers";
+import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
+import { UUID } from "../__tests__/patterns";
+import { TestContext } from "../__tests__/testContext";
+import * as TDB from "../__tests__/testDataBuilder";
 import {
   InvalidParameterError,
   UserLambdaValidationError,
   UsernameExistsError,
-} from '../errors.js';
-import { Config, DefaultConfig } from '../server/config.js';
-import { Messages, Triggers, UserPoolService } from '../services/index.js';
-import { SignUp, SignUpTarget } from './signUp.js';
+} from "../errors";
+import { type Config, DefaultConfig } from "../server/config";
+import type { Messages, Triggers, UserPoolService } from "../services";
+import { SignUp, type SignUpTarget } from "./signUp";
 
-describe('SignUp target', () => {
+describe("SignUp target", () => {
   let signUp: SignUpTarget;
-  let mockUserPoolService: jest.Mocked<UserPoolService>;
-  let mockMessages: jest.Mocked<Messages>;
-  let mockOtp: jest.MockedFunction<() => string>;
-  let mockTriggers: jest.Mocked<Triggers>;
+  let mockUserPoolService: MockedObject<UserPoolService>;
+  let mockMessages: MockedObject<Messages>;
+  let mockOtp: Mock<() => string>;
+  let mockTriggers: MockedObject<Triggers>;
   let now: Date;
   let config: Config;
 
@@ -29,7 +38,7 @@ describe('SignUp target', () => {
 
     mockUserPoolService = newMockUserPoolService();
     mockMessages = newMockMessages();
-    mockOtp = jest.fn();
+    mockOtp = vi.fn();
     mockTriggers = newMockTriggers();
     config = DefaultConfig;
     signUp = SignUp({
@@ -42,55 +51,100 @@ describe('SignUp target', () => {
     });
   });
 
-  it('throws if user already exists', async () => {
+  it("throws if user already exists", async () => {
     const user = TDB.user();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
     await expect(
       signUp(TestContext, {
-        ClientId: 'clientId',
-        Password: 'pwd',
+        ClientId: "clientId",
+        Password: "pwd",
         Username: user.Username,
         UserAttributes: [],
-      })
+      }),
     ).rejects.toBeInstanceOf(UsernameExistsError);
   });
 
-  it('saves a new user', async () => {
+  it("saves a new user in a user pool without any user attributes", async () => {
+    mockUserPoolService.options.UsernameAttributes = [];
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);
 
     await signUp(TestContext, {
-      ClientId: 'clientId',
-      Password: 'pwd',
-      Username: 'user-supplied',
-      UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+      ClientId: "clientId",
+      Password: "pwd",
+      Username: "user-supplied",
+      UserAttributes: [{ Name: "email", Value: "example@example.com" }],
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       Attributes: [
         {
-          Name: 'sub',
+          Name: "sub",
           Value: expect.stringMatching(UUID),
         },
-        { Name: 'email', Value: 'example@example.com' },
+        { Name: "email", Value: "example@example.com" },
       ],
       Enabled: true,
-      Password: 'pwd',
+      Password: "pwd",
       UserCreateDate: now,
       UserLastModifiedDate: now,
-      UserStatus: 'UNCONFIRMED',
-      Username: 'user-supplied',
+      UserStatus: "UNCONFIRMED",
+      Username: "user-supplied",
       RefreshTokens: [],
     });
   });
 
-  describe('when PreSignUp trigger is enabled', () => {
-    beforeEach(() => {
-      mockTriggers.enabled.mockImplementation((trigger) => trigger === 'PreSignUp');
+  it("saves a new user in a pool with email as a username attribute", async () => {
+    mockUserPoolService.options.UsernameAttributes = ["email"];
+    mockUserPoolService.getUserByUsername.mockResolvedValue(null);
+
+    await expect(
+      signUp(TestContext, {
+        ClientId: "clientId",
+        Password: "pwd",
+        Username: "user-supplied",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+      }),
+    ).rejects.toEqual(
+      new InvalidParameterError("Username should be an email."),
+    );
+
+    expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
+
+    await signUp(TestContext, {
+      ClientId: "clientId",
+      Password: "pwd",
+      Username: "example@example.com",
+      UserAttributes: [{ Name: "email", Value: "example@example.com" }],
     });
 
-    it('calls the trigger lambda', async () => {
+    expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+      Attributes: [
+        {
+          Name: "sub",
+          Value: expect.stringMatching(UUID),
+        },
+        { Name: "email", Value: "example@example.com" },
+      ],
+      Enabled: true,
+      Password: "pwd",
+      UserCreateDate: now,
+      UserLastModifiedDate: now,
+      UserStatus: "UNCONFIRMED",
+      Username: expect.stringMatching(UUID),
+      RefreshTokens: [],
+    });
+  });
+
+  describe("when PreSignUp trigger is enabled", () => {
+    beforeEach(() => {
+      mockTriggers.enabled.mockImplementation(
+        (trigger) => trigger === "PreSignUp",
+      );
+    });
+
+    it("calls the trigger lambda with the user's username if the user pool has no username attributes", async () => {
       mockUserPoolService.getUserByUsername.mockResolvedValue(null);
       mockTriggers.preSignUp.mockResolvedValue({
         autoConfirmUser: false,
@@ -99,51 +153,87 @@ describe('SignUp target', () => {
       });
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Password: 'pwd',
-        Username: 'user-supplied',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        ValidationData: [{ Name: 'another', Value: 'attribute' }],
+        Password: "pwd",
+        Username: "user-supplied",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
       });
 
       expect(mockTriggers.preSignUp).toHaveBeenCalledWith(TestContext, {
-        clientId: 'clientId',
+        clientId: "clientId",
         clientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        source: 'PreSignUp_SignUp',
+        source: "PreSignUp_SignUp",
         userAttributes: [
-          { Name: 'sub', Value: expect.stringMatching(UUID) },
-          { Name: 'email', Value: 'example@example.com' },
+          { Name: "sub", Value: expect.stringMatching(UUID) },
+          { Name: "email", Value: "example@example.com" },
         ],
-        userPoolId: 'test',
-        username: 'user-supplied',
+        userPoolId: "test",
+        username: "user-supplied",
         validationData: undefined,
       });
     });
 
-    it('throws if the trigger lambda fails', async () => {
+    it("calls the trigger lambda with the user's sub if the user pool has email as a username attributes", async () => {
+      mockUserPoolService.options.UsernameAttributes = ["email"];
+      mockUserPoolService.getUserByUsername.mockResolvedValue(null);
+      mockTriggers.preSignUp.mockResolvedValue({
+        autoConfirmUser: false,
+        autoVerifyPhone: false,
+        autoVerifyEmail: false,
+      });
+
+      await signUp(TestContext, {
+        ClientId: "clientId",
+        ClientMetadata: {
+          client: "metadata",
+        },
+        Password: "pwd",
+        Username: "example@example.com",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
+      });
+
+      expect(mockTriggers.preSignUp).toHaveBeenCalledWith(TestContext, {
+        clientId: "clientId",
+        clientMetadata: {
+          client: "metadata",
+        },
+        source: "PreSignUp_SignUp",
+        userAttributes: [
+          { Name: "sub", Value: expect.stringMatching(UUID) },
+          { Name: "email", Value: "example@example.com" },
+        ],
+        userPoolId: "test",
+        username: expect.stringMatching(UUID),
+        validationData: undefined,
+      });
+    });
+
+    it("throws if the trigger lambda fails", async () => {
       mockUserPoolService.getUserByUsername.mockResolvedValue(null);
       mockTriggers.preSignUp.mockRejectedValue(new UserLambdaValidationError());
 
       await expect(
         signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-          ValidationData: [{ Name: 'another', Value: 'attribute' }],
-        })
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          ValidationData: [{ Name: "another", Value: "attribute" }],
+        }),
       ).rejects.toBeInstanceOf(UserLambdaValidationError);
     });
 
-    describe('autoConfirmUser=true', () => {
+    describe("autoConfirmUser=true", () => {
       beforeEach(() => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
         mockTriggers.preSignUp.mockResolvedValue({
@@ -153,83 +243,123 @@ describe('SignUp target', () => {
         });
       });
 
-      it('confirms the user', async () => {
+      it("confirms the user", async () => {
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-          ValidationData: [{ Name: 'another', Value: 'attribute' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          ValidationData: [{ Name: "another", Value: "attribute" }],
         });
 
         expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
           TestContext,
           expect.objectContaining({
-            UserStatus: 'CONFIRMED',
-          })
+            UserStatus: "CONFIRMED",
+          }),
         );
       });
 
-      describe('when PostConfirmation trigger is enabled', () => {
+      describe("when PostConfirmation trigger is enabled", () => {
         beforeEach(() => {
           mockTriggers.enabled.mockImplementation(
-            (trigger) => trigger === 'PreSignUp' || trigger === 'PostConfirmation'
+            (trigger) =>
+              trigger === "PreSignUp" || trigger === "PostConfirmation",
           );
         });
 
-        it('calls the PostConfirmation trigger lambda', async () => {
+        it("calls the PostConfirmation trigger lambda with the user's username if the user pool has no username attributes", async () => {
           await signUp(TestContext, {
-            ClientId: 'clientId',
+            ClientId: "clientId",
             ClientMetadata: {
-              client: 'metadata',
+              client: "metadata",
             },
-            Password: 'pwd',
-            Username: 'user-supplied',
-            UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-            ValidationData: [{ Name: 'another', Value: 'attribute' }],
+            Password: "pwd",
+            Username: "user-supplied",
+            UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+            ValidationData: [{ Name: "another", Value: "attribute" }],
           });
 
-          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
-            clientId: 'clientId',
-            clientMetadata: {
-              client: 'metadata',
+          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
+            TestContext,
+            {
+              clientId: "clientId",
+              clientMetadata: {
+                client: "metadata",
+              },
+              source: "PostConfirmation_ConfirmSignUp",
+              userAttributes: [
+                { Name: "cognito:user_status", Value: "CONFIRMED" },
+                { Name: "email", Value: "example@example.com" },
+                { Name: "sub", Value: expect.stringMatching(UUID) },
+              ],
+              userPoolId: "test",
+              username: "user-supplied",
+              validationData: undefined,
             },
-            source: 'PostConfirmation_ConfirmSignUp',
-            userAttributes: [
-              { Name: 'sub', Value: expect.stringMatching(UUID) },
-              { Name: 'email', Value: 'example@example.com' },
-              { Name: 'cognito:user_status', Value: 'CONFIRMED' },
-            ],
-            userPoolId: 'test',
-            username: 'user-supplied',
-            validationData: undefined,
-          });
+          );
         });
 
-        it('throws if the PostConfirmation lambda fails', async () => {
+        it("calls the PostConfirmation trigger lambda with the user's sub if the user pool has email as a username attribute", async () => {
+          mockUserPoolService.options.UsernameAttributes = ["email"];
+
+          await signUp(TestContext, {
+            ClientId: "clientId",
+            ClientMetadata: {
+              client: "metadata",
+            },
+            Password: "pwd",
+            Username: "example@example.com",
+            UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+            ValidationData: [{ Name: "another", Value: "attribute" }],
+          });
+
+          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
+            TestContext,
+            {
+              clientId: "clientId",
+              clientMetadata: {
+                client: "metadata",
+              },
+              source: "PostConfirmation_ConfirmSignUp",
+              userAttributes: [
+                { Name: "cognito:user_status", Value: "CONFIRMED" },
+                { Name: "email", Value: "example@example.com" },
+                { Name: "sub", Value: expect.stringMatching(UUID) },
+              ],
+              userPoolId: "test",
+              username: expect.stringMatching(UUID),
+              validationData: undefined,
+            },
+          );
+        });
+
+        it("throws if the PostConfirmation lambda fails", async () => {
           mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-          mockTriggers.postConfirmation.mockRejectedValue(new UserLambdaValidationError());
+          mockTriggers.postConfirmation.mockRejectedValue(
+            new UserLambdaValidationError(),
+          );
 
           await expect(
             signUp(TestContext, {
-              ClientId: 'clientId',
+              ClientId: "clientId",
               ClientMetadata: {
-                client: 'metadata',
+                client: "metadata",
               },
-              Password: 'pwd',
-              Username: 'user-supplied',
-              UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-              ValidationData: [{ Name: 'another', Value: 'attribute' }],
-            })
+              Password: "pwd",
+              Username: "user-supplied",
+              UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+              ValidationData: [{ Name: "another", Value: "attribute" }],
+            }),
           ).rejects.toBeInstanceOf(UserLambdaValidationError);
         });
       });
     });
 
-    describe('autoConfirmUser=false', () => {
+    describe("autoConfirmUser=false", () => {
       beforeEach(() => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
         mockTriggers.preSignUp.mockResolvedValue({
@@ -239,34 +369,34 @@ describe('SignUp target', () => {
         });
       });
 
-      it('does not confirm the user', async () => {
+      it("does not confirm the user", async () => {
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-          ValidationData: [{ Name: 'another', Value: 'attribute' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+          ValidationData: [{ Name: "another", Value: "attribute" }],
         });
 
         expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
           TestContext,
           expect.objectContaining({
-            UserStatus: 'UNCONFIRMED',
-          })
+            UserStatus: "UNCONFIRMED",
+          }),
         );
       });
 
-      it('does not call the PostConfirmation trigger lambda', async () => {
+      it("does not call the PostConfirmation trigger lambda", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+          ClientId: "clientId",
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
         });
 
         expect(mockTriggers.postConfirmation).not.toHaveBeenCalled();
@@ -282,25 +412,25 @@ describe('SignUp target', () => {
       });
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Password: 'pwd',
-        Username: 'user-supplied',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
-        ValidationData: [{ Name: 'another', Value: 'attribute' }],
+        Password: "pwd",
+        Username: "user-supplied",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
         TestContext,
         expect.objectContaining({
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'email', Value: 'example@example.com' },
-            { Name: 'email_verified', Value: 'true' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "email", Value: "example@example.com" },
+            { Name: "email_verified", Value: "true" },
           ],
-        })
+        }),
       );
     });
 
@@ -315,21 +445,21 @@ describe('SignUp target', () => {
       });
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Password: 'pwd',
-        Username: 'user-supplied',
+        Password: "pwd",
+        Username: "user-supplied",
         UserAttributes: [],
-        ValidationData: [{ Name: 'another', Value: 'attribute' }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
         TestContext,
         expect.objectContaining({
-          Attributes: [{ Name: 'sub', Value: expect.stringMatching(UUID) }],
-        })
+          Attributes: [{ Name: "sub", Value: expect.stringMatching(UUID) }],
+        }),
       );
     });
 
@@ -344,25 +474,25 @@ describe('SignUp target', () => {
       });
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Password: 'pwd',
-        Username: 'user-supplied',
-        UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
-        ValidationData: [{ Name: 'another', Value: 'attribute' }],
+        Password: "pwd",
+        Username: "user-supplied",
+        UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
         TestContext,
         expect.objectContaining({
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'phone_number', Value: '0400000000' },
-            { Name: 'phone_number_verified', Value: 'true' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "phone_number", Value: "0400000000" },
+            { Name: "phone_number_verified", Value: "true" },
           ],
-        })
+        }),
       );
     });
 
@@ -377,315 +507,318 @@ describe('SignUp target', () => {
       });
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
+        ClientId: "clientId",
         ClientMetadata: {
-          client: 'metadata',
+          client: "metadata",
         },
-        Password: 'pwd',
-        Username: 'user-supplied',
+        Password: "pwd",
+        Username: "user-supplied",
         UserAttributes: [],
-        ValidationData: [{ Name: 'another', Value: 'attribute' }],
+        ValidationData: [{ Name: "another", Value: "attribute" }],
       });
 
       expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
         TestContext,
         expect.objectContaining({
-          Attributes: [{ Name: 'sub', Value: expect.stringMatching(UUID) }],
-        })
+          Attributes: [{ Name: "sub", Value: expect.stringMatching(UUID) }],
+        }),
       );
     });
   });
 
-  describe('when PreSignUp trigger is disabled', () => {
-    it('does not call the trigger lambda', async () => {
+  describe("when PreSignUp trigger is disabled", () => {
+    it("does not call the trigger lambda", async () => {
       mockUserPoolService.getUserByUsername.mockResolvedValue(null);
 
       await signUp(TestContext, {
-        ClientId: 'clientId',
-        Password: 'pwd',
-        Username: 'user-supplied',
-        UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+        ClientId: "clientId",
+        Password: "pwd",
+        Username: "user-supplied",
+        UserAttributes: [{ Name: "email", Value: "example@example.com" }],
       });
 
       expect(mockTriggers.preSignUp).not.toHaveBeenCalled();
     });
   });
 
-  describe('messages', () => {
-    describe('UserPool.AutoVerifiedAttributes=default', () => {
+  describe("messages", () => {
+    describe("UserPool.AutoVerifiedAttributes=default", () => {
       beforeEach(() => {
         mockUserPoolService.options.AutoVerifiedAttributes = undefined;
       });
 
-      it('does not send a confirmation code', async () => {
+      it("does not send a confirmation code", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-        mockOtp.mockReturnValue('123456');
+        mockOtp.mockReturnValue("123456");
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
         });
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('UserPool.AutoVerifiedAttributes=email', () => {
+    describe("UserPool.AutoVerifiedAttributes=email", () => {
       beforeEach(() => {
-        mockUserPoolService.options.AutoVerifiedAttributes = ['email'];
+        mockUserPoolService.options.AutoVerifiedAttributes = ["email"];
       });
 
       it("sends a confirmation code to the user's email address", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-        mockOtp.mockReturnValue('123456');
+        mockOtp.mockReturnValue("123456");
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
         });
 
         const createdUser = {
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'email', Value: 'example@example.com' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "email", Value: "example@example.com" },
           ],
           Enabled: true,
-          Password: 'pwd',
+          Password: "pwd",
           UserCreateDate: now,
           UserLastModifiedDate: now,
-          UserStatus: 'UNCONFIRMED',
-          Username: 'user-supplied',
+          UserStatus: "UNCONFIRMED",
+          Username: "user-supplied",
           RefreshTokens: [],
         };
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'SignUp',
-          'clientId',
-          'test',
+          "SignUp",
+          "clientId",
+          "test",
           createdUser,
-          '123456',
+          "123456",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'email',
-            DeliveryMedium: 'EMAIL',
-            Destination: 'example@example.com',
-          }
+            AttributeName: "email",
+            DeliveryMedium: "EMAIL",
+            Destination: "example@example.com",
+          },
         );
       });
 
       it("fails if user doesn't have an email", async () => {
         await expect(
           signUp(TestContext, {
-            ClientId: 'clientId',
-            Password: 'pwd',
-            Username: 'user-supplied',
+            ClientId: "clientId",
+            Password: "pwd",
+            Username: "user-supplied",
             UserAttributes: [],
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            'User has no attribute matching desired auto verified attributes'
-          )
+            "User has no attribute matching desired auto verified attributes",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('UserPool.AutoVerifiedAttributes=phone_number', () => {
+    describe("UserPool.AutoVerifiedAttributes=phone_number", () => {
       beforeEach(() => {
-        mockUserPoolService.options.AutoVerifiedAttributes = ['phone_number'];
+        mockUserPoolService.options.AutoVerifiedAttributes = ["phone_number"];
       });
 
       it("sends a confirmation code to the user's phone number", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-        mockOtp.mockReturnValue('123456');
+        mockOtp.mockReturnValue("123456");
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'phone_number', Value: '0400000000' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
         });
 
         const createdUser = {
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'phone_number', Value: '0400000000' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "phone_number", Value: "0400000000" },
           ],
           Enabled: true,
-          Password: 'pwd',
+          Password: "pwd",
           UserCreateDate: now,
           UserLastModifiedDate: now,
-          UserStatus: 'UNCONFIRMED',
-          Username: 'user-supplied',
+          UserStatus: "UNCONFIRMED",
+          Username: "user-supplied",
           RefreshTokens: [],
         };
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'SignUp',
-          'clientId',
-          'test',
+          "SignUp",
+          "clientId",
+          "test",
           createdUser,
-          '123456',
+          "123456",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'phone_number',
-            DeliveryMedium: 'SMS',
-            Destination: '0400000000',
-          }
+            AttributeName: "phone_number",
+            DeliveryMedium: "SMS",
+            Destination: "0400000000",
+          },
         );
       });
 
       it("fails if user doesn't have a phone_number", async () => {
         await expect(
           signUp(TestContext, {
-            ClientId: 'clientId',
-            Password: 'pwd',
-            Username: 'user-supplied',
+            ClientId: "clientId",
+            Password: "pwd",
+            Username: "user-supplied",
             UserAttributes: [],
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            'User has no attribute matching desired auto verified attributes'
-          )
+            "User has no attribute matching desired auto verified attributes",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
       });
     });
 
-    describe('UserPool.AutoVerifiedAttributes=phone_number and email', () => {
+    describe("UserPool.AutoVerifiedAttributes=phone_number and email", () => {
       beforeEach(() => {
-        mockUserPoolService.options.AutoVerifiedAttributes = ['email', 'phone_number'];
+        mockUserPoolService.options.AutoVerifiedAttributes = [
+          "email",
+          "phone_number",
+        ];
       });
 
       it("sends a confirmation code to the user's phone number if they have both attributes", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-        mockOtp.mockReturnValue('123456');
+        mockOtp.mockReturnValue("123456");
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
+          Password: "pwd",
+          Username: "user-supplied",
           UserAttributes: [
-            { Name: 'email', Value: 'example@example.com' },
-            { Name: 'phone_number', Value: '0400000000' },
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
           ],
         });
 
         const createdUser = {
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'email', Value: 'example@example.com' },
-            { Name: 'phone_number', Value: '0400000000' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "email", Value: "example@example.com" },
+            { Name: "phone_number", Value: "0400000000" },
           ],
           Enabled: true,
-          Password: 'pwd',
+          Password: "pwd",
           UserCreateDate: now,
           UserLastModifiedDate: now,
-          UserStatus: 'UNCONFIRMED',
-          Username: 'user-supplied',
+          UserStatus: "UNCONFIRMED",
+          Username: "user-supplied",
           RefreshTokens: [],
         };
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'SignUp',
-          'clientId',
-          'test',
+          "SignUp",
+          "clientId",
+          "test",
           createdUser,
-          '123456',
+          "123456",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'phone_number',
-            DeliveryMedium: 'SMS',
-            Destination: '0400000000',
-          }
+            AttributeName: "phone_number",
+            DeliveryMedium: "SMS",
+            Destination: "0400000000",
+          },
         );
       });
 
       it("sends a confirmation code to the user's email if they only have an email", async () => {
         mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-        mockOtp.mockReturnValue('123456');
+        mockOtp.mockReturnValue("123456");
 
         await signUp(TestContext, {
-          ClientId: 'clientId',
+          ClientId: "clientId",
           ClientMetadata: {
-            client: 'metadata',
+            client: "metadata",
           },
-          Password: 'pwd',
-          Username: 'user-supplied',
-          UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+          Password: "pwd",
+          Username: "user-supplied",
+          UserAttributes: [{ Name: "email", Value: "example@example.com" }],
         });
 
         const createdUser = {
           Attributes: [
-            { Name: 'sub', Value: expect.stringMatching(UUID) },
-            { Name: 'email', Value: 'example@example.com' },
+            { Name: "sub", Value: expect.stringMatching(UUID) },
+            { Name: "email", Value: "example@example.com" },
           ],
           Enabled: true,
-          Password: 'pwd',
+          Password: "pwd",
           UserCreateDate: now,
           UserLastModifiedDate: now,
-          UserStatus: 'UNCONFIRMED',
-          Username: 'user-supplied',
+          UserStatus: "UNCONFIRMED",
+          Username: "user-supplied",
           RefreshTokens: [],
         };
 
         expect(mockMessages.deliver).toHaveBeenCalledWith(
           TestContext,
-          'SignUp',
-          'clientId',
-          'test',
+          "SignUp",
+          "clientId",
+          "test",
           createdUser,
-          '123456',
+          "123456",
           {
-            client: 'metadata',
+            client: "metadata",
           },
           {
-            AttributeName: 'email',
-            DeliveryMedium: 'EMAIL',
-            Destination: 'example@example.com',
-          }
+            AttributeName: "email",
+            DeliveryMedium: "EMAIL",
+            Destination: "example@example.com",
+          },
         );
       });
 
       it("fails if user doesn't have a phone_number or an email", async () => {
         await expect(
           signUp(TestContext, {
-            ClientId: 'clientId',
-            Password: 'pwd',
-            Username: 'user-supplied',
+            ClientId: "clientId",
+            Password: "pwd",
+            Username: "user-supplied",
             UserAttributes: [],
-          })
+          }),
         ).rejects.toEqual(
           new InvalidParameterError(
-            'User has no attribute matching desired auto verified attributes'
-          )
+            "User has no attribute matching desired auto verified attributes",
+          ),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -693,29 +826,29 @@ describe('SignUp target', () => {
     });
   });
 
-  it('saves the confirmation code on the user for comparison when confirming', async () => {
+  it("saves the confirmation code on the user for comparison when confirming", async () => {
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-    mockOtp.mockReturnValue('123456');
+    mockOtp.mockReturnValue("123456");
 
     await signUp(TestContext, {
-      ClientId: 'clientId',
-      Password: 'pwd',
-      Username: 'user-supplied',
-      UserAttributes: [{ Name: 'email', Value: 'example@example.com' }],
+      ClientId: "clientId",
+      Password: "pwd",
+      Username: "user-supplied",
+      UserAttributes: [{ Name: "email", Value: "example@example.com" }],
     });
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       Attributes: [
-        { Name: 'sub', Value: expect.stringMatching(UUID) },
-        { Name: 'email', Value: 'example@example.com' },
+        { Name: "sub", Value: expect.stringMatching(UUID) },
+        { Name: "email", Value: "example@example.com" },
       ],
-      ConfirmationCode: '123456',
+      ConfirmationCode: "123456",
       Enabled: true,
-      Password: 'pwd',
+      Password: "pwd",
       UserCreateDate: now,
       UserLastModifiedDate: now,
-      UserStatus: 'UNCONFIRMED',
-      Username: 'user-supplied',
+      UserStatus: "UNCONFIRMED",
+      Username: "user-supplied",
       RefreshTokens: [],
     });
   });

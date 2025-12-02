@@ -1,6 +1,7 @@
-import { TestContext } from "../../__tests__/testContext.js";
-import { ConsoleMessageSender } from "./consoleMessageSender.js";
-import * as TDB from "../../__tests__/testDataBuilder.js";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { TestContext } from "../../__tests__/testContext";
+import * as TDB from "../../__tests__/testDataBuilder";
+import { ConsoleMessageSender } from "./consoleMessageSender";
 
 describe("consoleMessageSender", () => {
   const user = TDB.user();
@@ -8,7 +9,7 @@ describe("consoleMessageSender", () => {
   const sender = new ConsoleMessageSender();
 
   beforeEach(() => {
-    jest.resetAllMocks();
+    vi.resetAllMocks();
   });
 
   describe.each(["sendEmail", "sendSms"] as const)("%s", (fn) => {

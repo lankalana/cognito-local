@@ -1,19 +1,21 @@
-import { UpdateGroupRequest, UpdateGroupResponse } from '@aws-sdk/client-cognito-identity-provider';
-
-import { GroupNotFoundError, MissingParameterError } from '../errors.js';
-import { Services } from '../services/index.js';
-import { groupToResponseObject } from './responses.js';
-import { Target } from './Target.js';
+import type {
+  UpdateGroupRequest,
+  UpdateGroupResponse,
+} from "@aws-sdk/client-cognito-identity-provider";
+import { GroupNotFoundError, MissingParameterError } from "../errors";
+import type { Services } from "../services";
+import { groupToResponseObject } from "./responses";
+import type { Target } from "./Target";
 
 export type UpdateGroupTarget = Target<UpdateGroupRequest, UpdateGroupResponse>;
 
-type UpdateGroupServices = Pick<Services, 'clock' | 'cognito'>;
+type UpdateGroupServices = Pick<Services, "clock" | "cognito">;
 
 export const UpdateGroup =
   ({ clock, cognito }: UpdateGroupServices): UpdateGroupTarget =>
   async (ctx, req) => {
-    if (!req.UserPoolId) throw new MissingParameterError('UserPoolId');
-    if (!req.GroupName) throw new MissingParameterError('GroupName');
+    if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
+    if (!req.GroupName) throw new MissingParameterError("GroupName");
 
     const userPool = await cognito.getUserPool(ctx, req.UserPoolId);
     const group = await userPool.getGroupByGroupName(ctx, req.GroupName);

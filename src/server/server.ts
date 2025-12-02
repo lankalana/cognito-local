@@ -1,38 +1,43 @@
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import express from 'express';
-import * as http from 'http';
-import type { Logger } from 'pino';
-import { pinoHttp } from 'pino-http';
-import * as uuid from 'uuid';
+import { readFileSync } from "node:fs";
+import * as http from "node:http";
+import * as https from "node:https";
+import bodyParser from "body-parser";
+import cors from "cors";
+import express from "express";
+import type { Logger } from "pino";
+import pinoHttp from "pino-http";
+import * as uuid from "uuid";
+import { CognitoError, UnsupportedError } from "../errors";
+import PublicKey from "../keys/cognitoLocal.public.json";
+import type { Router } from "./Router";
 
-import { CognitoError, UnsupportedError } from '../errors.js';
-import PublicKey from '../keys/cognitoLocal.public.json' with { type: 'json' };
-import { Router } from './Router.js';
-
-export interface ServerOptions {
-  port: number;
-  hostname: string;
-  development: boolean;
-}
+export type ServerOptions = {
+  port?: number;
+  hostname?: string;
+  development?: boolean;
+} & (
+  | { https: true; key?: string; ca?: string; cert?: string }
+  | { https?: false }
+);
 
 export interface Server {
-  application: any; // eslint-disable-line
-  start(options?: Partial<ServerOptions>): Promise<http.Server>;
+  // biome-ignore lint/suspicious/noExplicitAny: don't want to export express types
+  application: any;
+  start(): Promise<http.Server | https.Server>;
 }
 
 export const createServer = (
   router: Router,
   logger: Logger,
-  options: Partial<ServerOptions> = {}
+  options: ServerOptions,
 ): Server => {
   const pino = pinoHttp({
     logger,
-    useLevel: 'debug',
-    genReqId: () => uuid.v4().split('-')[0],
+    useLevel: "debug",
+    genReqId: () => uuid.v4().split("-")[0],
     quietReqLogger: true,
     autoLogging: {
-      ignore: (req) => req.method === 'OPTIONS',
+      ignore: (req) => req.method === "OPTIONS",
     },
   });
   const app = express();
@@ -41,54 +46,56 @@ export const createServer = (
 
   app.use(
     cors({
-      origin: '*',
-    })
+      origin: "*",
+    }),
   );
   app.use(
     bodyParser.json({
-      type: 'application/x-amz-json-1.1',
-    })
+      type: "application/x-amz-json-1.1",
+    }),
   );
 
-  app.get('/:userPoolId/.well-known/jwks.json', (req, res) => {
+  app.get("/:userPoolId/.well-known/jwks.json", (_req, res) => {
     res.status(200).json({
       keys: [PublicKey.jwk],
     });
   });
 
-  app.get('/:userPoolId/.well-known/openid-configuration', (req, res) => {
+  app.get("/:userPoolId/.well-known/openid-configuration", (req, res) => {
     res.status(200).json({
-      id_token_signing_alg_values_supported: ['RS256'],
+      id_token_signing_alg_values_supported: ["RS256"],
       jwks_uri: `http://localhost:9229/${req.params.userPoolId}/.well-known/jwks.json`,
       issuer: `http://localhost:9229/${req.params.userPoolId}`,
     });
   });
 
-  app.get('/health', (req, res) => {
+  app.get("/health", (_req, res) => {
     res.status(200).json({ ok: true });
   });
 
-  app.post('/', (req, res) => {
-    const xAmzTarget = req.headers['x-amz-target'];
+  app.post("/", (req, res) => {
+    const xAmzTarget = req.headers["x-amz-target"];
 
     if (!xAmzTarget) {
-      res.status(400).json({ message: 'Missing x-amz-target header' });
+      res.status(400).json({ message: "Missing x-amz-target header" });
       return;
-    } else if (xAmzTarget instanceof Array) {
-      res.status(400).json({ message: 'Too many x-amz-target headers' });
+    } else if (Array.isArray(xAmzTarget)) {
+      res.status(400).json({ message: "Too many x-amz-target headers" });
       return;
     }
 
-    const [, target] = xAmzTarget.split('.');
+    const [, target] = xAmzTarget.split(".");
     if (!target) {
-      res.status(400).json({ message: 'Invalid x-amz-target header' });
+      res.status(400).json({ message: "Invalid x-amz-target header" });
       return;
     }
 
     const route = router(target);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const replacer: (this: any, key: string, value: any) => any = function (key, value) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    // biome-ignore lint/suspicious/noExplicitAny: generic wrapper
+    const replacer: (this: any, key: string, value: any) => any = function (
+      key,
+      value,
+    ) {
       if (this[key] instanceof Date) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return Math.floor(this[key].getTime() / 1000);
@@ -98,24 +105,28 @@ export const createServer = (
     };
 
     route({ logger: req.log }, req.body).then(
-      (output) => res.status(200).type('json').send(JSON.stringify(output, replacer)),
+      (output) =>
+        res
+          .status(200)
+          .type("application/x-amz-json-1.1")
+          .send(JSON.stringify(output, replacer)),
       (ex) => {
         if (ex instanceof UnsupportedError) {
           if (options.development) {
-            req.log.info('======');
-            req.log.info('');
-            req.log.info('Unsupported target');
-            req.log.info('');
+            req.log.info("======");
+            req.log.info("");
+            req.log.info("Unsupported target");
+            req.log.info("");
             req.log.info(`x-amz-target: ${xAmzTarget}`);
-            req.log.info('Body:');
+            req.log.info("Body:");
             req.log.info(JSON.stringify(req.body, undefined, 2));
-            req.log.info('');
-            req.log.info('======');
+            req.log.info("");
+            req.log.info("======");
           }
 
           req.log.error(`Cognito Local unsupported feature: ${ex.message}`);
           res.status(500).json({
-            __type: 'CognitoLocal#Unsupported',
+            __type: "CognitoLocal#Unsupported",
             message: `Cognito Local unsupported feature: ${ex.message}`,
           });
           return;
@@ -131,26 +142,34 @@ export const createServer = (
           res.status(500).json(ex);
           return;
         }
-      }
+      },
     );
   });
 
   return {
     application: app,
-    start(startOptions) {
-      const actualOptions: ServerOptions = {
-        port: options?.port ?? 9229,
-        hostname: options?.hostname ?? 'localhost',
-        development: options?.development ?? false,
-        ...options,
-        ...startOptions,
-      };
+    start() {
+      const hostname = options.hostname;
+      const port = options.port;
 
-      return new Promise((resolve, reject) => {
-        const httpServer = app.listen(actualOptions.port, actualOptions.hostname, () =>
-          resolve(httpServer)
-        );
-        httpServer.on('error', reject);
+      return new Promise<http.Server | https.Server>((resolve, reject) => {
+        const server = options.https
+          ? https.createServer(
+              {
+                ca: options.ca ? readFileSync(options.ca, "utf-8") : undefined,
+                cert: options.cert
+                  ? readFileSync(options.cert, "utf-8")
+                  : undefined,
+                key: options.key
+                  ? readFileSync(options.key, "utf-8")
+                  : undefined,
+              },
+              app,
+            )
+          : http.createServer(app);
+
+        server.listen(port, hostname, () => resolve(server));
+        server.on("error", reject);
       });
     },
   };

@@ -1,62 +1,78 @@
-import { KMSClientConfig } from '@aws-sdk/client-kms';
-import { LambdaClientConfig } from '@aws-sdk/client-lambda';
-import mergeWith from 'lodash.mergewith';
+import type { KMSClientConfig } from "@aws-sdk/client-kms";
+import type { LambdaClientConfig } from "@aws-sdk/client-lambda";
+import mergeWith from "lodash.mergewith";
+import type { Context } from "../services/context.js";
+import type { KMSConfig } from "../services/crypto.js";
+import type { DataStoreFactory } from "../services/dataStore/factory.js";
+import type { FunctionConfig } from "../services/lambda.js";
+import type { TokenConfig } from "../services/tokenGenerator.js";
+import type { UserPool } from "../services/userPoolService.js";
+import type { ServerOptions } from "./server";
 
-import { Context } from '../services/context.js';
-import { KMSConfig } from '../services/crypto.js';
-import { DataStoreFactory } from '../services/dataStore/factory.js';
-import { FunctionConfig } from '../services/lambda.js';
-import { TokenConfig } from '../services/tokenGenerator.js';
-import { UserPool } from '../services/userPoolService.js';
-
-export type UserPoolDefaults = Omit<UserPool, 'Id' | 'CreationDate' | 'LastModifiedDate'>;
+export type UserPoolDefaults = Omit<
+  UserPool,
+  "Id" | "CreationDate" | "LastModifiedDate"
+>;
 
 export interface Config {
   LambdaClient: LambdaClientConfig;
   TriggerFunctions: FunctionConfig;
   UserPoolDefaults: UserPoolDefaults;
   KMSConfig?: KMSClientConfig & KMSConfig;
+  ServerConfig: ServerOptions;
   TokenConfig: TokenConfig;
 }
+
+const port = parseInt(process.env.PORT ?? "9229", 10);
+const hostname = process.env.HOST ?? "localhost";
 
 export const DefaultConfig: Config = {
   LambdaClient: {
     credentials: {
-      accessKeyId: 'local',
-      secretAccessKey: 'local',
+      accessKeyId: "local",
+      secretAccessKey: "local",
     },
-    region: 'local',
+    region: "local",
   },
   TriggerFunctions: {},
   UserPoolDefaults: {
-    UsernameAttributes: ['email'],
+    UsernameAttributes: ["email"],
   },
   TokenConfig: {
-    // TODO: this needs to match the actual host/port we started the server on
-    IssuerDomain: 'http://localhost:9229',
+    IssuerDomain: `http://${hostname}:${port}`,
   },
   KMSConfig: {
     credentials: {
-      accessKeyId: 'local',
-      secretAccessKey: 'local',
+      accessKeyId: "local",
+      secretAccessKey: "local",
     },
-    region: 'local',
+    region: "local",
+  },
+  ServerConfig: {
+    port,
+    hostname,
+    development: !!process.env.COGNITO_LOCAL_DEVMODE,
+    https: false,
   },
 };
 
 export const loadConfig = async (
   ctx: Context,
-  dataStoreFactory: DataStoreFactory
+  dataStoreFactory: DataStoreFactory,
 ): Promise<Config> => {
-  ctx.logger.debug('loadConfig');
-  const dataStore = await dataStoreFactory.create(ctx, 'config', {});
+  ctx.logger.debug("loadConfig");
+  const dataStore = await dataStoreFactory.create(ctx, "config", {});
 
   const config = await dataStore.getRoot<Config>(ctx);
 
-  return mergeWith({}, DefaultConfig, config ?? {}, function customizer(objValue, srcValue) {
-    if (Array.isArray(srcValue)) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      return srcValue;
-    }
-  });
+  return mergeWith(
+    {},
+    DefaultConfig,
+    config ?? {},
+    function customizer(_objValue, srcValue) {
+      if (Array.isArray(srcValue)) {
+        return srcValue;
+      }
+    },
+  );
 };
