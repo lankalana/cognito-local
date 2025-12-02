@@ -9,6 +9,7 @@ import pinoHttp from "pino-http";
 import * as uuid from "uuid";
 import { CognitoError, UnsupportedError } from "../errors";
 import PublicKey from "../keys/cognitoLocal.public.json";
+import { registerHostedUi } from "./hostedUi";
 import type { Router } from "./Router";
 
 export type ServerOptions = {
@@ -55,6 +56,8 @@ export const createServer = (
     }),
   );
 
+  app.use(bodyParser.urlencoded({ extended: true }));
+
   app.get("/:userPoolId/.well-known/jwks.json", (_req, res) => {
     res.status(200).json({
       keys: [PublicKey.jwk],
@@ -72,6 +75,8 @@ export const createServer = (
   app.get("/health", (_req, res) => {
     res.status(200).json({ ok: true });
   });
+
+  registerHostedUi(app, router);
 
   app.post("/", (req, res) => {
     const xAmzTarget = req.headers["x-amz-target"];

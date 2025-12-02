@@ -34,6 +34,7 @@ export const withCognitoSdk =
       services: {
         readonly dataStoreFactory: () => DataStoreFactory;
         readonly messageDelivery: () => FakeMessageDeliveryService;
+        readonly baseUrl: () => string;
       },
     ) => void,
     {
@@ -47,6 +48,7 @@ export const withCognitoSdk =
     let cognitoSdk: CognitoIdentityProvider;
     let dataStoreFactory: DataStoreFactory;
     let fakeMessageDeliveryService: FakeMessageDeliveryService;
+    let url: string;
 
     beforeEach(async () => {
       dataDirectory = await mkdtemp("/tmp/cognito-local:");
@@ -70,19 +72,28 @@ export const withCognitoSdk =
       );
 
       fakeMessageDeliveryService = new FakeMessageDeliveryService();
-      const router = Router({
+
+      const messages = new MessagesService(
+        triggers,
+        fakeMessageDeliveryService,
+      );
+      const tokenGenerator = new JwtTokenGenerator(
+        clock,
+        triggers,
+        DefaultConfig.TokenConfig,
+      );
+
+      const services = {
         clock,
         cognito: cognitoClient,
         config: DefaultConfig,
-        messages: new MessagesService(triggers, fakeMessageDeliveryService),
+        messages,
         otp,
+        tokenGenerator,
         triggers,
-        tokenGenerator: new JwtTokenGenerator(
-          clock,
-          triggers,
-          DefaultConfig.TokenConfig,
-        ),
-      });
+      } as const;
+
+      const router = Router(services);
       const server = createServer(router, ctx.logger, {
         development: false,
         hostname: "127.0.0.1",
@@ -95,7 +106,7 @@ export const withCognitoSdk =
       if (!address) {
         throw new Error("HttpServer has no address");
       }
-      const url =
+      url =
         typeof address === "string"
           ? address
           : `${address.address}:${address.port}`;
@@ -113,6 +124,7 @@ export const withCognitoSdk =
     fn(() => cognitoSdk, {
       dataStoreFactory: () => dataStoreFactory,
       messageDelivery: () => fakeMessageDeliveryService,
+      baseUrl: () => `http://${url}`,
     });
 
     afterEach(() => {
