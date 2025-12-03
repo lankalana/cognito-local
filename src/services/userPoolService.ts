@@ -24,6 +24,28 @@ export const attribute = (
   value: string | undefined,
 ): AttributeType => ({ Name: name, Value: value });
 
+// See https://docs.aws.amazon.com/cognito/latest/developerguide/user-pool-settings-attributes.html
+const standardAttributeNames = [
+  "name",
+  "family_name",
+  "given_name",
+  "middle_name",
+  "nickname",
+  "preferred_username",
+  "profile",
+  "picture",
+  "website",
+  "gender",
+  "birthdate",
+  "zoneinfo",
+  "locale",
+  "updated_at",
+  "address",
+  "email",
+  "phone_number",
+  "sub",
+];
+
 export const attributesIncludeMatch = (
   attributeName: string,
   attributeValue: string,
@@ -85,6 +107,13 @@ export const attributesRemove = (
   ...toRemove: readonly string[]
 ): AttributeType[] =>
   attributes?.filter((x) => x.Name && !toRemove.includes(x.Name)) ?? [];
+
+export const standardAttributes = (
+  attributes: AttributeType[] | undefined,
+): AttributeType[] =>
+  (attributes ?? []).filter((attr) =>
+    standardAttributeNames.includes(attr.Name ?? ""),
+  );
 
 export const customAttributes = (
   attributes: AttributeType[] | undefined,
