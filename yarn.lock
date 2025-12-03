@@ -3766,13 +3766,12 @@ setprototypeof@~1.2.0:
   resolved "https://registry.yarnpkg.com/setprototypeof/-/setprototypeof-1.2.0.tgz#66c9a24a73f9fc28cbe66b09fed3d33dcaf1b424"
   integrity sha512-E5LDX7Wrp85Kil5bhZv46j8jOeboKq5JMmYM3gVGdGH8xFpPWXUMsNrlODCrkoxMEeNi/XZIwuRvY4XNwYMJpw==
 
-short-uuid@^5.2.0:
-  version "5.2.0"
-  resolved "https://registry.yarnpkg.com/short-uuid/-/short-uuid-5.2.0.tgz#49378f8c5335a603bc801c279ae521c5d22532dc"
-  integrity sha512-296/Nzi4DmANh93iYBwT4NoYRJuHnKEzefrkSagQbTH/A6NTaB68hSPDjm5IlbI5dx9FXdmtqPcj6N5H+CPm6w==
+short-uuid@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/short-uuid/-/short-uuid-6.0.3.tgz#6cbb02acc6879d9540cd5735ff2166ce2ff63459"
+  integrity sha512-UMZ3rYOoid307EqWsPTnoBUSOB51Fi28vUMPigUsSCmbaSvslyf/SlXZWOn4btj8tokhBTBkPFKVKKlIolEG1w==
   dependencies:
     any-base "^1.1.0"
-    uuid "^9.0.1"
 
 side-channel-list@^1.0.0:
   version "1.0.0"
@@ -4137,11 +4136,6 @@ uuid@^13.0.0:
   version "13.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-13.0.0.tgz#263dc341b19b4d755eb8fe36b78d95a6b65707e8"
   integrity sha512-XQegIaBTVUjSHliKqcnFqYypAd4S+WCYt5NIeRs6w/UAry7z8Y9j5ZwRRL4kzq9U3sD6v+85er9FvkEaBpji2w==
-
-uuid@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
-  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 vary@^1, vary@^1.1.2:
   version "1.1.2"
