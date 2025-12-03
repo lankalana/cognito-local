@@ -45,7 +45,7 @@
     "@aws-crypto/client-node": "^4.2.1",
     "@aws-sdk/client-cognito-identity-provider": "^3.940.0",
     "@aws-sdk/client-kms": "^3.940.0",
-    "@aws-sdk/client-lambda": "^3.942.0",
+    "@aws-sdk/client-lambda": "^3.943.0",
     "body-parser": "^2.2.1",
     "boxen": "^8.0.1",
     "cors": "^2.8.5",
