@@ -1,6 +1,10 @@
 import type { TimeUnitsType } from "@aws-sdk/client-cognito-identity-provider";
 import type { StringMap } from "aws-lambda/trigger/cognito-user-pool-trigger/_common";
 import type { GroupOverrideDetails } from "aws-lambda/trigger/cognito-user-pool-trigger/pre-token-generation";
+import type {
+  AccessTokenGeneration,
+  IdTokenGeneration,
+} from "aws-lambda/trigger/cognito-user-pool-trigger/pre-token-generation-v2";
 import jwt, { type SignOptions } from "jsonwebtoken";
 import type { StringValue, UnitAnyCase } from "ms";
 import * as uuid from "uuid";
@@ -13,6 +17,7 @@ import {
   attributesToRecord,
   attributeValue,
   customAttributes,
+  standardAttributes,
   type User,
 } from "./userPoolService";
 
@@ -82,6 +87,26 @@ const applyTokenOverrides = (
       ([claim]) => !claimsToSuppress.includes(claim),
     ),
   );
+};
+
+const applyV2TokenOverrides = (
+  token: RawToken,
+  overrides: IdTokenGeneration | AccessTokenGeneration,
+): RawToken => {
+  const claimsToSuppress = (overrides?.claimsToSuppress ?? []).filter(
+    (claim) => !RESERVED_CLAIMS.includes(claim),
+  );
+
+  const claimsToOverride = Object.entries(
+    overrides?.claimsToAddOrOverride ?? [],
+  ).filter(([claim]) => !RESERVED_CLAIMS.includes(claim));
+
+  return Object.fromEntries(
+    [...Object.entries(token), ...claimsToOverride].filter(
+      ([claim]) => !claimsToSuppress.includes(claim),
+    ),
+  );
+  // TODO: scopesToAdd and scopesToSuppress
 };
 
 export interface Tokens {
@@ -158,7 +183,7 @@ export class JwtTokenGenerator implements TokenGenerator {
     const authTime = Math.floor(this.clock.get().getTime() / 1000);
     const sub = attributeValue("sub", user.Attributes);
 
-    const accessToken: RawToken = {
+    let accessToken: RawToken = {
       auth_time: authTime,
       client_id: userPoolClient.ClientId,
       event_id: eventId,
@@ -181,14 +206,45 @@ export class JwtTokenGenerator implements TokenGenerator {
       jti: uuid.v4(),
       sub,
       token_use: "id",
+      ...attributesToRecord(standardAttributes(user.Attributes)),
       ...attributesToRecord(customAttributes(user.Attributes)),
     };
 
-    if (userGroups.length) {
-      accessToken["cognito:groups"] = userGroups;
-      idToken["cognito:groups"] = userGroups;
-    }
+    if (this.triggers.enabled("PreTokenGenerationV2")) {
+      const result = await this.triggers.preTokenGenerationV2(ctx, {
+        clientId: userPoolClient.ClientId,
+        clientMetadata,
+        source,
+        userAttributes: user.Attributes,
+        username: user.Username,
+        groupConfiguration: {
+          groupsToOverride: [...userGroups],
+          iamRolesToOverride: undefined,
+          preferredRole: undefined,
+        },
+        userPoolId: userPoolClient.UserPoolId,
+        // TODO: provide actual scopes
+        scopes: undefined,
+      });
 
+      if (result.claimsAndScopeOverrideDetails?.idTokenGeneration) {
+        idToken = applyV2TokenOverrides(
+          idToken,
+          result.claimsAndScopeOverrideDetails?.idTokenGeneration,
+        );
+      }
+      if (result.claimsAndScopeOverrideDetails?.accessTokenGeneration) {
+        accessToken = applyV2TokenOverrides(
+          accessToken,
+          result.claimsAndScopeOverrideDetails?.accessTokenGeneration,
+        );
+      }
+      if (result.claimsAndScopeOverrideDetails?.groupOverrideDetails) {
+        userGroups =
+          result.claimsAndScopeOverrideDetails.groupOverrideDetails
+            .groupsToOverride ?? userGroups;
+      }
+    }
     if (this.triggers.enabled("PreTokenGeneration")) {
       const result = await this.triggers.preTokenGeneration(ctx, {
         clientId: userPoolClient.ClientId,
@@ -197,8 +253,7 @@ export class JwtTokenGenerator implements TokenGenerator {
         userAttributes: user.Attributes,
         username: user.Username,
         groupConfiguration: {
-          // TODO: this should be populated from the user's groups
-          groupsToOverride: undefined,
+          groupsToOverride: [...userGroups],
           iamRolesToOverride: undefined,
           preferredRole: undefined,
         },
@@ -206,6 +261,16 @@ export class JwtTokenGenerator implements TokenGenerator {
       });
 
       idToken = applyTokenOverrides(idToken, result.claimsOverrideDetails);
+      if (result.claimsOverrideDetails.groupOverrideDetails?.groupsToOverride) {
+        userGroups =
+          result.claimsOverrideDetails.groupOverrideDetails.groupsToOverride ??
+          userGroups;
+      }
+    }
+
+    if (userGroups.length) {
+      accessToken["cognito:groups"] = userGroups;
+      idToken["cognito:groups"] = userGroups;
     }
 
     const issuer = `${this.tokenConfig.IssuerDomain}/${userPoolClient.UserPoolId}`;

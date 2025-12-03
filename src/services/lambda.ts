@@ -13,6 +13,7 @@ import type {
   PreAuthenticationTriggerEvent,
   PreSignUpTriggerEvent,
   PreTokenGenerationTriggerEvent,
+  PreTokenGenerationV2TriggerEvent,
   UserMigrationTriggerEvent,
   VerifyAuthChallengeResponseTriggerEvent,
 } from "aws-lambda";
@@ -34,6 +35,7 @@ type CognitoUserPoolEvent =
   | PreAuthenticationTriggerEvent
   | PreSignUpTriggerEvent
   | PreTokenGenerationTriggerEvent
+  | PreTokenGenerationV2TriggerEvent
   | UserMigrationTriggerEvent
   | VerifyAuthChallengeResponseTriggerEvent;
 
@@ -127,6 +129,10 @@ interface PreTokenGenerationEvent extends EventCommonParameters {
   };
 }
 
+interface PreTokenGenerationV2Event extends PreTokenGenerationEvent {
+  scopes: readonly string[] | undefined;
+}
+
 interface PostAuthenticationEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
   triggerSource: "PostAuthentication_Authentication";
@@ -147,6 +153,7 @@ export interface FunctionConfig {
   PostConfirmation?: string;
   PreSignUp?: string;
   PreTokenGeneration?: string;
+  PreTokenGenerationV2?: string;
   UserMigration?: string;
   CustomEmailSender?: string;
 }
@@ -158,6 +165,8 @@ export type UserMigrationTriggerResponse =
 export type PreSignUpTriggerResponse = PreSignUpTriggerEvent["response"];
 export type PreTokenGenerationTriggerResponse =
   PreTokenGenerationTriggerEvent["response"];
+export type PreTokenGenerationV2TriggerResponse =
+  PreTokenGenerationV2TriggerEvent["response"];
 export type PostAuthenticationTriggerResponse =
   PostAuthenticationTriggerEvent["response"];
 export type PostConfirmationTriggerResponse =
@@ -187,6 +196,11 @@ export interface Lambda {
     lambda: "PreTokenGeneration",
     event: PreTokenGenerationEvent,
   ): Promise<PreTokenGenerationTriggerResponse>;
+  invoke(
+    ctx: Context,
+    lambda: "PreTokenGenerationV2",
+    event: PreTokenGenerationV2Event,
+  ): Promise<PreTokenGenerationV2TriggerResponse>;
   invoke(
     ctx: Context,
     lambda: "PostAuthentication",
@@ -228,6 +242,7 @@ export class LambdaService implements Lambda {
       | PostConfirmationEvent
       | PreSignUpEvent
       | PreTokenGenerationEvent
+      | PreTokenGenerationV2Event
       | UserMigrationEvent,
   ) {
     const functionName = this.config[trigger];
@@ -301,9 +316,11 @@ export class LambdaService implements Lambda {
       | PostConfirmationEvent
       | PreSignUpEvent
       | PreTokenGenerationEvent
+      | PreTokenGenerationV2Event
       | UserMigrationEvent,
+    lambdaVersion?: string,
   ): CognitoUserPoolEvent {
-    const version = "0"; // TODO: how do we know what this is?
+    const version = lambdaVersion ?? "0";
     const callerContext = {
       awsSdkVersion,
 
@@ -375,25 +392,61 @@ export class LambdaService implements Lambda {
       case "TokenGeneration_HostedAuth":
       case "TokenGeneration_NewPasswordChallenge":
       case "TokenGeneration_RefreshTokens": {
-        return {
-          version,
-          callerContext,
-          region,
-          userPoolId: event.userPoolId,
-          triggerSource: event.triggerSource,
-          userName: event.username,
-          request: {
-            userAttributes: event.userAttributes,
-            groupConfiguration: {},
-            clientMetadata: event.clientMetadata,
-          },
-          response: {
-            claimsOverrideDetails: {},
-          },
-        };
+        if ("scopes" in event) {
+          return {
+            version,
+            callerContext,
+            region,
+            userPoolId: event.userPoolId,
+            triggerSource: event.triggerSource,
+            userName: event.username,
+            request: {
+              userAttributes: event.userAttributes,
+              scopes: event.scopes,
+              groupConfiguration: {
+                groupsToOverride: [
+                  ...(event.groupConfiguration?.groupsToOverride ?? []),
+                ],
+                iamRolesToOverride: [
+                  ...(event.groupConfiguration?.iamRolesToOverride ?? []),
+                ],
+                preferredRole: event.groupConfiguration?.preferredRole,
+              },
+              clientMetadata: event.clientMetadata,
+            },
+            response: {
+              claimsAndScopeOverrideDetails: {},
+            },
+          } as PreTokenGenerationV2TriggerEvent;
+        } else {
+          return {
+            version,
+            callerContext,
+            region,
+            userPoolId: event.userPoolId,
+            triggerSource: event.triggerSource,
+            userName: event.username,
+            request: {
+              userAttributes: event.userAttributes,
+              groupConfiguration: {
+                groupsToOverride: [
+                  ...(event.groupConfiguration?.groupsToOverride ?? []),
+                ],
+                iamRolesToOverride: [
+                  ...(event.groupConfiguration?.iamRolesToOverride ?? []),
+                ],
+                preferredRole: event.groupConfiguration?.preferredRole,
+              },
+              clientMetadata: event.clientMetadata,
+            },
+            response: {
+              claimsOverrideDetails: {},
+            },
+          } as PreTokenGenerationTriggerEvent;
+        }
       }
 
-      case "UserMigration_Authentication": {
+      case "UserMigration_Authentication":
         return {
           version,
           callerContext,
@@ -414,7 +467,6 @@ export class LambdaService implements Lambda {
             userAttributes: {},
           },
         };
-      }
 
       case "CustomMessage_SignUp":
       case "CustomMessage_AdminCreateUser":
@@ -422,7 +474,7 @@ export class LambdaService implements Lambda {
       case "CustomMessage_ForgotPassword":
       case "CustomMessage_UpdateUserAttribute":
       case "CustomMessage_VerifyUserAttribute":
-      case "CustomMessage_Authentication": {
+      case "CustomMessage_Authentication":
         return {
           version,
           callerContext,
@@ -442,7 +494,6 @@ export class LambdaService implements Lambda {
             emailSubject: "",
           },
         } as CustomMessageTriggerEvent;
-      }
 
       case "CustomEmailSender_SignUp":
       case "CustomEmailSender_ResendCode":
@@ -465,9 +516,8 @@ export class LambdaService implements Lambda {
           },
           response: {},
         };
-      default: {
+      default:
         throw new Error("Unsupported Trigger Source");
-      }
     }
   }
 }

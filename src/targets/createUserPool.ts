@@ -9,8 +9,8 @@ import type { Services } from "../services/index.js";
 import { userPoolToResponseObject } from "./responses.js";
 import type { Target } from "./Target.js";
 
-const REGION = "local";
-const ACCOUNT_ID = "000000000000";
+const REGION = process.env.AWS_REGION ?? "local";
+const ACCOUNT_ID = process.env.AWS_ACCOUNT_ID ?? "000000000000";
 const generator = shortUUID(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 );

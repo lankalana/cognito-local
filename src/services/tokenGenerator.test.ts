@@ -177,6 +177,97 @@ describe("JwtTokenGenerator", () => {
         });
       });
     });
+
+    describe("PreTokenGeneration v2 shape", () => {
+      it("can add and override claims to the id token (v2)", async () => {
+        mockTriggers.enabled.mockImplementation((name) => {
+          return name === "PreTokenGenerationV2";
+        });
+
+        mockTriggers.preTokenGenerationV2.mockResolvedValue({
+          claimsAndScopeOverrideDetails: {
+            accessTokenGeneration: {
+              claimsToAddOrOverride: {
+                newclaim: "value",
+              },
+            },
+            idTokenGeneration: {
+              claimsToAddOrOverride: {
+                email: "something else",
+              },
+            },
+            groupOverrideDetails: {
+              groupsToOverride: ["group1"],
+            },
+          },
+        } as any);
+
+        const tokens = await tokenGenerator.generate(
+          TestContext,
+          user,
+          [],
+          TDB.appClient(),
+          { client: "metadata" },
+          "RefreshTokens",
+        );
+
+        // id token and access token have new claims added
+        expect(jwt.decode(tokens.IdToken)).toMatchObject({
+          email: "something else",
+        });
+        expect(jwt.decode(tokens.AccessToken)).toMatchObject({
+          newclaim: "value",
+        });
+        expect(jwt.decode(tokens.IdToken)).toHaveProperty("cognito:groups", [
+          "group1",
+        ]);
+        expect(jwt.decode(tokens.AccessToken)).toHaveProperty(
+          "cognito:groups",
+          ["group1"],
+        );
+
+        // refresh tokens cannot be changed by the trigger
+        expect(jwt.decode(tokens.RefreshToken)).not.toMatchObject({
+          newclaim: "value",
+          email: "something else",
+        });
+      });
+
+      it("can suppress claims in the id token (v2)", async () => {
+        mockTriggers.enabled.mockImplementation((name) => {
+          return name === "PreTokenGenerationV2";
+        });
+        mockTriggers.preTokenGenerationV2.mockResolvedValue({
+          claimsAndScopeOverrideDetails: {
+            accessTokenGeneration: {
+              claimsToSuppress: ["email"],
+            },
+            idTokenGeneration: {
+              claimsToSuppress: ["email"],
+            },
+          },
+        } as any);
+
+        const tokens = await tokenGenerator.generate(
+          TestContext,
+          user,
+          [],
+          TDB.appClient(),
+          { client: "metadata" },
+          "RefreshTokens",
+        );
+
+        // id token and access token have email removed
+        expect(jwt.decode(tokens.IdToken)).not.toHaveProperty("email");
+        expect(jwt.decode(tokens.AccessToken)).not.toHaveProperty("email");
+
+        // refresh tokens cannot be changed by the trigger
+        expect(jwt.decode(tokens.RefreshToken)).toHaveProperty(
+          "email",
+          attributeValue("email", user.Attributes),
+        );
+      });
+    });
   });
 
   describe("TokenGeneration lambda is not configured", () => {
