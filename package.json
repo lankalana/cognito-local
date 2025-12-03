@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@aws-crypto/client-node": "^4.2.1",
-    "@aws-sdk/client-cognito-identity-provider": "^3.940.0",
+    "@aws-sdk/client-cognito-identity-provider": "^3.943.0",
     "@aws-sdk/client-kms": "^3.940.0",
     "@aws-sdk/client-lambda": "^3.942.0",
     "body-parser": "^2.2.1",
