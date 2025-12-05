@@ -9,7 +9,7 @@ RUN yarn --frozen-lockfile
 COPY src src
 
 # bundle
-RUN yarn esbuild src/bin/start.ts --outdir=lib --platform=node --target=node24 --bundle
+RUN yarn esbuild src/bin/start.ts --outdir=lib --platform=node --target=node24 --bundle --minify 
 
 FROM node:24-alpine
 WORKDIR /app
