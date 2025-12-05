@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 
 # dependencies
@@ -11,7 +11,7 @@ COPY src src
 # bundle
 RUN yarn esbuild src/bin/start.ts --outdir=lib --platform=node --target=node24 --bundle --minify 
 
-FROM node:24-alpine
+FROM node:25-alpine
 WORKDIR /app
 COPY --from=builder /app/lib .
 
