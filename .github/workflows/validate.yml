@@ -8,7 +8,7 @@ env:
   TEST_TAG: ${{ github.repository }}:test
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}-validate
   cancel-in-progress: true
 
 jobs:
