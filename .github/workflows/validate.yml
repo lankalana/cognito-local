@@ -98,8 +98,8 @@ jobs:
         with:
           load: true
           tags: ${{ env.TEST_TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=global
+          cache-to: type=gha,mode=max,scope=global
 
       - name: Get a free port
         run: echo "PORT=$(scripts/get-free-port.sh)" >> $GITHUB_ENV
