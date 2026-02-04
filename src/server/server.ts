@@ -32,7 +32,7 @@ export const createServer = (
   logger: Logger,
   options: ServerOptions,
 ): Server => {
-  const pino = pinoHttp({
+  const pino = pinoHttp<http.IncomingMessage, http.ServerResponse>({
     logger,
     useLevel: "debug",
     genReqId: () => uuid.v4().split("-")[0],

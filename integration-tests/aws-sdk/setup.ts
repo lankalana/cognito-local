@@ -1,9 +1,10 @@
 import fs from "node:fs";
 import type http from "node:http";
+import net from "node:net";
 import { promisify } from "node:util";
 import { CognitoIdentityProvider } from "@aws-sdk/client-cognito-identity-provider";
 import { type Logger, pino } from "pino";
-import { afterEach, beforeEach, vi } from "vitest";
+import { afterEach, beforeEach, it, vi } from "vitest";
 import { createServer } from "../../src";
 import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
 import { DefaultConfig } from "../../src/server/config";
@@ -27,6 +28,22 @@ const rm = promisify(fs.rm);
 
 const sink = () => ({ write: () => {} });
 
+const detectListenSupport = async () => {
+  if (process.env.COGNITO_LOCAL_SKIP_NETWORK === "1") {
+    return false;
+  }
+
+  return new Promise<boolean>((resolve) => {
+    const server = net.createServer();
+    server.once("error", () => resolve(false));
+    server.listen(0, "127.0.0.1", () => {
+      server.close(() => resolve(true));
+    });
+  });
+};
+
+const canListen = await detectListenSupport();
+
 export const withCognitoSdk =
   (
     fn: (
@@ -43,6 +60,11 @@ export const withCognitoSdk =
     }: { logger?: Logger; clock?: Clock } = {},
   ) =>
   () => {
+    if (!canListen) {
+      it.skip("requires network access to bind a local HTTP server", () => {});
+      return;
+    }
+
     let dataDirectory: string;
     let httpServer: http.Server;
     let cognitoSdk: CognitoIdentityProvider;
