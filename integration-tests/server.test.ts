@@ -1,3 +1,5 @@
+import type http from "node:http";
+import net from "node:net";
 import pino from "pino";
 import { sink } from "pino-test";
 import supertest from "supertest";
@@ -12,13 +14,48 @@ import {
   UsernameExistsError,
 } from "../src/errors";
 
-describe("HTTP server", () => {
+const detectListenSupport = async () => {
+  if (process.env.COGNITO_LOCAL_SKIP_NETWORK === "1") {
+    return false;
+  }
+
+  return new Promise<boolean>((resolve) => {
+    const server = net.createServer();
+    server.once("error", () => resolve(false));
+    server.listen(0, "127.0.0.1", () => {
+      server.close(() => resolve(true));
+    });
+  });
+};
+
+const canListen = await detectListenSupport();
+const describeIfNetwork = canListen ? describe : describe.skip;
+
+const startTestServer = async (router: Parameters<typeof createServer>[0]) => {
+  const server = createServer(router, pino(sink()), {
+    hostname: "127.0.0.1",
+    https: false,
+    port: 0,
+  });
+
+  const httpServer = (await server.start()) as http.Server;
+  const request = supertest(httpServer);
+
+  return { httpServer, request };
+};
+
+const stopTestServer = (httpServer: http.Server) =>
+  new Promise<void>((resolve) => {
+    httpServer.close(() => resolve());
+  });
+
+describeIfNetwork("HTTP server", () => {
   describe("/", () => {
     it("errors with missing x-azm-target header", async () => {
       const router = vi.fn();
-      const server = createServer(router, pino(sink()), {});
-
-      const response = await supertest(server.application).post("/");
+      const { httpServer, request } = await startTestServer(router);
+      const response = await request.post("/");
+      await stopTestServer(httpServer);
 
       expect(response.status).toEqual(400);
       expect(response.body).toEqual({ message: "Missing x-amz-target header" });
@@ -26,11 +63,11 @@ describe("HTTP server", () => {
 
     it("errors with an poorly formatted x-azm-target header", async () => {
       const router = vi.fn();
-      const server = createServer(router, pino(sink()), {});
-
-      const response = await supertest(server.application)
+      const { httpServer, request } = await startTestServer(router);
+      const response = await request
         .post("/")
         .set("x-amz-target", "bad-format");
+      await stopTestServer(httpServer);
 
       expect(response.status).toEqual(400);
       expect(response.body).toEqual({
@@ -45,11 +82,11 @@ describe("HTTP server", () => {
         });
         const router = (target: string) =>
           target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, pino(sink()), {});
-
-        const response = await supertest(server.application)
+        const { httpServer, request } = await startTestServer(router);
+        const response = await request
           .post("/")
           .set("x-amz-target", "prefix.valid");
+        await stopTestServer(httpServer);
 
         expect(response.status).toEqual(200);
         expect(response.text).toEqual('{"ok":true}');
@@ -61,11 +98,11 @@ describe("HTTP server", () => {
           .mockRejectedValue(new UnsupportedError("integration test"));
         const router = (target: string) =>
           target === "valid" ? route : () => Promise.reject();
-        const server = createServer(router, pino(sink()), {});
-
-        const response = await supertest(server.application)
+        const { httpServer, request } = await startTestServer(router);
+        const response = await request
           .post("/")
           .set("x-amz-target", "prefix.valid");
+        await stopTestServer(httpServer);
 
         expect(response.status).toEqual(500);
         expect(response.body).toEqual({
@@ -87,11 +124,11 @@ describe("HTTP server", () => {
           const route = vi.fn().mockRejectedValue(error);
           const router = (target: string) =>
             target === "valid" ? route : () => Promise.reject();
-          const server = createServer(router, pino(sink()), {});
-
-          const response = await supertest(server.application)
+          const { httpServer, request } = await startTestServer(router);
+          const response = await request
             .post("/")
             .set("x-amz-target", "prefix.valid");
+          await stopTestServer(httpServer);
 
           expect(response.status).toEqual(400);
           expect(response.body).toEqual({
@@ -105,11 +142,11 @@ describe("HTTP server", () => {
 
   describe("jwks endpoint", () => {
     it("responds with our public key", async () => {
-      const server = createServer(vi.fn(), pino(sink()), {});
-
-      const response = await supertest(server.application).get(
+      const { httpServer, request } = await startTestServer(vi.fn());
+      const response = await request.get(
         "/any-user-pool/.well-known/jwks.json",
       );
+      await stopTestServer(httpServer);
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
@@ -129,11 +166,11 @@ describe("HTTP server", () => {
 
   describe("OpenId Configuration Endpoint", () => {
     it("responds with open id configuration", async () => {
-      const server = createServer(vi.fn(), pino(sink()), {});
-
-      const response = await supertest(server.application).get(
+      const { httpServer, request } = await startTestServer(vi.fn());
+      const response = await request.get(
         "/any-user-pool/.well-known/openid-configuration",
       );
+      await stopTestServer(httpServer);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({
         id_token_signing_alg_values_supported: ["RS256"],

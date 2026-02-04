@@ -4,7 +4,6 @@ import {
   KMS,
   KmsKeyringNode,
 } from "@aws-crypto/client-node";
-import type { KMSClientConfig } from "@aws-sdk/client-kms";
 import type { Context } from "./context";
 
 export interface KMSConfig {
@@ -16,7 +15,7 @@ const { encrypt } = buildClient(CommitmentPolicy.REQUIRE_ENCRYPT_ALLOW_DECRYPT);
 
 export class CryptoService {
   _keyringNode?: KmsKeyringNode;
-  config?: KMSConfig & KMSClientConfig;
+  config?: KMSConfig & ConstructorParameters<typeof KMS>[0];
 
   constructor(config?: KMSConfig) {
     this.config = config;

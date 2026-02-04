@@ -3,7 +3,7 @@ import type {
   AdminCreateUserResponse,
   DeliveryMediumType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import shortUUID from "short-uuid";
+import { createTranslator } from "short-uuid";
 import * as uuid from "uuid";
 
 import {
@@ -23,7 +23,7 @@ import {
 import { userToResponseObject } from "./responses";
 import type { Target } from "./Target";
 
-const generator = shortUUID(
+const translator = createTranslator(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!",
 );
 
@@ -127,7 +127,7 @@ export const AdminCreateUser =
     const temporaryPassword =
       req.TemporaryPassword ??
       process.env.CODE ??
-      generator.generate().slice(0, 6);
+      translator.generate().slice(0, 6);
 
     let username = req.Username;
     if (userPool.options.UsernameAttributes?.includes("email")) {
