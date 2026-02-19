@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Lint
     timeout-minutes: 5
 
@@ -30,7 +30,7 @@ jobs:
       - run: yarn lint
 
   type-check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Type Check
     timeout-minutes: 5
 
@@ -44,7 +44,7 @@ jobs:
       - run: yarn type-check
 
   unit_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Unit Test
     timeout-minutes: 5
 
@@ -58,7 +58,7 @@ jobs:
       - run: yarn vitest --run --dir src
 
   integration_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Integration Test
     timeout-minutes: 5
 
@@ -72,7 +72,7 @@ jobs:
       - run: yarn vitest --run --dir integration-tests
 
   smoke_test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Smoke test
     timeout-minutes: 5
 
@@ -86,10 +86,13 @@ jobs:
       - run: scripts/local-smoke-test.sh
 
   docker_test:
-    runs-on: ubuntu-latest
     name: Smoke test on Docker container
     timeout-minutes: 5
     needs: smoke_test
+    strategy:
+      matrix:
+        platform: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v6
 

@@ -23,7 +23,7 @@ jobs:
     uses: ./.github/workflows/validate.yml
 
   publish:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     name: Publish to Docker Hub
     needs: validate
     steps:
