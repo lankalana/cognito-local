@@ -1,10 +1,14 @@
 name: Publish docker container
+
 on:
   push:
     branches: 
       - master
     tags:
       - v*
+
+permissions:
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}-publish
