@@ -43,7 +43,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | AdminGetDevice                   | ❌                   |
 | AdminGetUser                     | ✅                   |
 | AdminInitiateAuth                | 🕒 (partial support) |
-| AdminLinkProviderForUser         | ❌                   |
+| AdminLinkProviderForUser         | 🕒 (partial support) |
 | AdminListDevices                 | ❌                   |
 | AdminListGroupsForUser           | ✅                   |
 | AdminListUserAuthEvents          | ❌                   |
@@ -63,21 +63,21 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | ConfirmForgotPassword            | 🕒 (partial support) |
 | ConfirmSignUp                    | 🕒 (partial support) |
 | CreateGroup                      | ✅                   |
-| CreateIdentityProvider           | ❌                   |
+| CreateIdentityProvider           | ✅                   |
 | CreateResourceServer             | ❌                   |
 | CreateUserImportJob              | ❌                   |
 | CreateUserPool                   | ✅                   |
 | CreateUserPoolClient             | ✅                   |
 | CreateUserPoolDomain             | ❌                   |
 | DeleteGroup                      | ✅                   |
-| DeleteIdentityProvider           | ❌                   |
+| DeleteIdentityProvider           | ✅                   |
 | DeleteResourceServer             | ❌                   |
 | DeleteUser                       | ✅²                  |
 | DeleteUserAttributes             | ✅                   |
 | DeleteUserPool                   | ✅²                  |
 | DeleteUserPoolClient             | ✅²                  |
 | DeleteUserPoolDomain             | ❌                   |
-| DescribeIdentityProvider         | ❌                   |
+| DescribeIdentityProvider         | ✅                   |
 | DescribeResourceServer           | ❌                   |
 | DescribeRiskConfiguration        | ❌                   |
 | DescribeUserImportJob            | ❌                   |
@@ -89,7 +89,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | GetCSVHeader                     | ❌                   |
 | GetDevice                        | ❌                   |
 | GetGroup                         | ✅²                  |
-| GetIdentityProviderByIdentifier  | ❌                   |
+| GetIdentityProviderByIdentifier  | ✅                   |
 | GetSigningCertificate            | ❌                   |
 | GetUICustomization               | ❌                   |
 | GetUser                          | ✅                   |
@@ -99,7 +99,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | InitiateAuth                     | 🕒 (partial support) |
 | ListDevices                      | ❌                   |
 | ListGroups                       | ✅¹                  |
-| ListIdentityProviders            | ❌                   |
+| ListIdentityProviders            | ✅¹                  |
 | ListResourceServers              | ❌                   |
 | ListTagsForResource              | ❌                   |
 | ListUserImportJobs               | ❌                   |
@@ -123,7 +123,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | UpdateAuthEventFeedback          | ❌                   |
 | UpdateDeviceStatus               | ❌                   |
 | UpdateGroup                      | ✅                   |
-| UpdateIdentityProvider           | ❌                   |
+| UpdateIdentityProvider           | ✅                   |
 | UpdateResourceServer             | ❌                   |
 | UpdateUserAttributes             | ✅                   |
 | UpdateUserPool                   | ✅                   |
