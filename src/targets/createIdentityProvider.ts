@@ -17,10 +17,7 @@ export type CreateIdentityProviderTarget = Target<
 type CreateIdentityProviderServices = Pick<Services, "clock" | "cognito">;
 
 export const CreateIdentityProvider =
-  ({
-    cognito,
-    clock,
-  }: CreateIdentityProviderServices): CreateIdentityProviderTarget =>
+  ({ cognito, clock }: CreateIdentityProviderServices): CreateIdentityProviderTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ProviderName) throw new MissingParameterError("ProviderName");
@@ -42,8 +39,6 @@ export const CreateIdentityProvider =
     await userPool.saveIdentityProvider(ctx, identityProvider);
 
     return {
-      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
-        identityProvider,
-      ),
+      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(identityProvider),
     };
   };

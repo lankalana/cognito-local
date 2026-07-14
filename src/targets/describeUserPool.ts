@@ -7,10 +7,7 @@ import type { Services } from "../services/index.js";
 import { userPoolToResponseObject } from "./responses.js";
 import type { Target } from "./Target.js";
 
-export type DescribeUserPoolTarget = Target<
-  DescribeUserPoolRequest,
-  DescribeUserPoolResponse
->;
+export type DescribeUserPoolTarget = Target<DescribeUserPoolRequest, DescribeUserPoolResponse>;
 
 export const DescribeUserPool =
   ({ cognito }: Pick<Services, "cognito">): DescribeUserPoolTarget =>

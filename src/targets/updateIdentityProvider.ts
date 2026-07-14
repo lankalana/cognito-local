@@ -3,10 +3,7 @@ import type {
   UpdateIdentityProviderResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 
-import {
-  IdentityProviderNotFoundError,
-  MissingParameterError,
-} from "../errors.js";
+import { IdentityProviderNotFoundError, MissingParameterError } from "../errors.js";
 import type { Services } from "../services/index.js";
 import { identityProviderToResponseObject } from "./responses.js";
 import type { Target } from "./Target.js";
@@ -19,10 +16,7 @@ export type UpdateIdentityProviderTarget = Target<
 type UpdateIdentityProviderServices = Pick<Services, "clock" | "cognito">;
 
 export const UpdateIdentityProvider =
-  ({
-    clock,
-    cognito,
-  }: UpdateIdentityProviderServices): UpdateIdentityProviderTarget =>
+  ({ clock, cognito }: UpdateIdentityProviderServices): UpdateIdentityProviderTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ProviderName) throw new MissingParameterError("ProviderName");
@@ -39,8 +33,7 @@ export const UpdateIdentityProvider =
     const updatedIdentityProvider = {
       ...identityProvider,
       ProviderDetails: req.ProviderDetails ?? identityProvider.ProviderDetails,
-      AttributeMapping:
-        req.AttributeMapping ?? identityProvider.AttributeMapping,
+      AttributeMapping: req.AttributeMapping ?? identityProvider.AttributeMapping,
       IdpIdentifiers: req.IdpIdentifiers ?? identityProvider.IdpIdentifiers,
       LastModifiedDate: clock.get(),
     };
@@ -48,8 +41,6 @@ export const UpdateIdentityProvider =
     await userPool.saveIdentityProvider(ctx, updatedIdentityProvider);
 
     return {
-      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
-        updatedIdentityProvider,
-      ),
+      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(updatedIdentityProvider),
     };
   };

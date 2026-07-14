@@ -8,10 +8,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import { CodeMismatchError, UserNotFoundError } from "../errors";
 import type { Triggers, UserPoolService } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
-import {
-  ConfirmForgotPassword,
-  type ConfirmForgotPasswordTarget,
-} from "./confirmForgotPassword";
+import { ConfirmForgotPassword, type ConfirmForgotPasswordTarget } from "./confirmForgotPassword";
 
 const currentDate = new Date();
 
@@ -114,22 +111,19 @@ describe("ConfirmForgotPassword target", () => {
           Password: "newPassword",
         });
 
-        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
-          TestContext,
-          {
-            clientId: "clientId",
-            clientMetadata: {
-              client: "metadata",
-            },
-            source: "PostConfirmation_ConfirmForgotPassword",
-            userAttributes: attributesAppend(
-              user.Attributes,
-              attribute("cognito:user_status", "CONFIRMED"),
-            ),
-            userPoolId: "test",
-            username: user.Username,
+        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
+          clientId: "clientId",
+          clientMetadata: {
+            client: "metadata",
           },
-        );
+          source: "PostConfirmation_ConfirmForgotPassword",
+          userAttributes: attributesAppend(
+            user.Attributes,
+            attribute("cognito:user_status", "CONFIRMED"),
+          ),
+          userPoolId: "test",
+          username: user.Username,
+        });
       });
     });
 

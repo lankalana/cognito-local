@@ -13,9 +13,7 @@ export function assertRequiredParameter<T>(
   message?: string,
 ): asserts parameter is NonNullable<T> {
   if (!parameter) {
-    throw new InvalidParameterError(
-      message ?? `Missing required parameter ${name}`,
-    );
+    throw new InvalidParameterError(message ?? `Missing required parameter ${name}`);
   }
 }
 

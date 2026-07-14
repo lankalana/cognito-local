@@ -13,7 +13,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -22,7 +22,7 @@ describe(
 
       await expect(
         client.initiateAuth({
-          ClientId: upc.UserPoolClient?.ClientId!,
+          ClientId: upc.UserPoolClient!.ClientId!,
           AuthFlow: "USER_PASSWORD_AUTH",
           AuthParameters: {
             USERNAME: "example@example.com",
@@ -40,7 +40,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -54,10 +54,7 @@ describe(
         Username: "abc",
         UserPoolId: userPoolId,
       });
-      const userSub = attributeValue(
-        "sub",
-        createUserResponse.User?.Attributes,
-      );
+      const userSub = attributeValue("sub", createUserResponse.User?.Attributes);
 
       const response = await client.initiateAuth({
         ClientId: upc.UserPoolClient?.ClientId,
@@ -86,7 +83,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -102,7 +99,7 @@ describe(
 
       await expect(
         client.initiateAuth({
-          ClientId: upc.UserPoolClient?.ClientId!,
+          ClientId: upc.UserPoolClient!.ClientId!,
           AuthFlow: "USER_PASSWORD_AUTH",
           AuthParameters: {
             USERNAME: "abc",
@@ -121,7 +118,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -135,10 +132,7 @@ describe(
         Username: "abc",
         UserPoolId: userPoolId,
       });
-      const userSub = attributeValue(
-        "sub",
-        createUserResponse.User?.Attributes,
-      );
+      const userSub = attributeValue("sub", createUserResponse.User?.Attributes);
 
       await client.adminSetUserPassword({
         UserPoolId: userPoolId,
@@ -156,9 +150,7 @@ describe(
         },
       });
 
-      expect(
-        jwt.decode(response.AuthenticationResult?.AccessToken as string),
-      ).toEqual({
+      expect(jwt.decode(response.AuthenticationResult?.AccessToken as string)).toEqual({
         auth_time: expect.any(Number),
         client_id: upc.UserPoolClient?.ClientId,
         event_id: expect.stringMatching(UUID),
@@ -172,9 +164,7 @@ describe(
         username: "abc",
       });
 
-      expect(
-        jwt.decode(response.AuthenticationResult?.IdToken as string),
-      ).toEqual({
+      expect(jwt.decode(response.AuthenticationResult?.IdToken as string)).toEqual({
         "cognito:username": "abc",
         aud: upc.UserPoolClient?.ClientId,
         auth_time: expect.any(Number),
@@ -189,9 +179,7 @@ describe(
         token_use: "id",
       });
 
-      expect(
-        jwt.decode(response.AuthenticationResult?.RefreshToken as string),
-      ).toEqual({
+      expect(jwt.decode(response.AuthenticationResult?.RefreshToken as string)).toEqual({
         "cognito:username": "abc",
         email: "example@example.com",
         exp: expect.any(Number),
@@ -207,7 +195,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -221,10 +209,7 @@ describe(
         Username: "abc",
         UserPoolId: userPoolId,
       });
-      const userSub = attributeValue(
-        "sub",
-        createUserResponse.User?.Attributes,
-      );
+      const userSub = attributeValue("sub", createUserResponse.User?.Attributes);
 
       await client.adminSetUserPassword({
         UserPoolId: userPoolId,
@@ -246,15 +231,12 @@ describe(
         ClientId: upc.UserPoolClient?.ClientId,
         AuthFlow: "REFRESH_TOKEN_AUTH",
         AuthParameters: {
-          REFRESH_TOKEN: initialLoginResponse.AuthenticationResult
-            ?.RefreshToken as string,
+          REFRESH_TOKEN: initialLoginResponse.AuthenticationResult?.RefreshToken as string,
         },
       });
 
       expect(
-        jwt.decode(
-          refreshTokenLoginResponse.AuthenticationResult?.AccessToken as string,
-        ),
+        jwt.decode(refreshTokenLoginResponse.AuthenticationResult?.AccessToken as string),
       ).toEqual({
         auth_time: expect.any(Number),
         client_id: upc.UserPoolClient?.ClientId,
@@ -269,28 +251,24 @@ describe(
         username: "abc",
       });
 
-      expect(
-        jwt.decode(
-          refreshTokenLoginResponse.AuthenticationResult?.IdToken as string,
-        ),
-      ).toEqual({
-        "cognito:username": "abc",
-        aud: upc.UserPoolClient?.ClientId,
-        auth_time: expect.any(Number),
-        email: "example@example.com",
-        email_verified: false,
-        event_id: expect.stringMatching(UUID),
-        exp: expect.any(Number),
-        iat: expect.any(Number),
-        iss: `http://localhost:9229/${userPoolId}`,
-        jti: expect.stringMatching(UUID),
-        sub: userSub,
-        token_use: "id",
-      });
+      expect(jwt.decode(refreshTokenLoginResponse.AuthenticationResult?.IdToken as string)).toEqual(
+        {
+          "cognito:username": "abc",
+          aud: upc.UserPoolClient?.ClientId,
+          auth_time: expect.any(Number),
+          email: "example@example.com",
+          email_verified: false,
+          event_id: expect.stringMatching(UUID),
+          exp: expect.any(Number),
+          iat: expect.any(Number),
+          iss: `http://localhost:9229/${userPoolId}`,
+          jti: expect.stringMatching(UUID),
+          sub: userSub,
+          token_use: "id",
+        },
+      );
 
-      expect(
-        refreshTokenLoginResponse.AuthenticationResult?.RefreshToken,
-      ).not.toBeDefined();
+      expect(refreshTokenLoginResponse.AuthenticationResult?.RefreshToken).not.toBeDefined();
     });
   }),
 );

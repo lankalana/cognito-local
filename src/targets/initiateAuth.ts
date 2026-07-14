@@ -25,10 +25,7 @@ import {
 } from "../services/userPoolService";
 import type { Target } from "./Target";
 
-export type InitiateAuthTarget = Target<
-  InitiateAuthRequest,
-  InitiateAuthResponse
->;
+export type InitiateAuthTarget = Target<InitiateAuthRequest, InitiateAuthResponse>;
 
 type InitiateAuthServices = Pick<
   Services,
@@ -48,17 +45,13 @@ const verifyMfaChallenge = async (
     throw new NotAuthorizedError();
   }
   const smsMfaOption = user.MFAOptions?.find(
-    (x): x is MFAOption & { DeliveryMedium: DeliveryMediumType } =>
-      x.DeliveryMedium === "SMS",
+    (x): x is MFAOption & { DeliveryMedium: DeliveryMediumType } => x.DeliveryMedium === "SMS",
   );
   if (!smsMfaOption) {
     throw new UnsupportedError("MFA challenge without SMS");
   }
 
-  const deliveryDestination = attributeValue(
-    smsMfaOption.AttributeName,
-    user.Attributes,
-  );
+  const deliveryDestination = attributeValue(smsMfaOption.AttributeName, user.Attributes);
   if (!deliveryDestination) {
     throw new UnsupportedError(`SMS_MFA without ${smsMfaOption.AttributeName}`);
   }
@@ -146,9 +139,7 @@ const userPasswordAuthFlow = async (
   if (!req.ClientId) throw new MissingParameterError("ClientId");
 
   if (!req.AuthParameters) {
-    throw new InvalidParameterError(
-      "Missing required parameter authParameters",
-    );
+    throw new InvalidParameterError("Missing required parameter authParameters");
   }
 
   let user = await userPool.getUserByUsername(ctx, req.AuthParameters.USERNAME);
@@ -192,8 +183,7 @@ const userPasswordAuthFlow = async (
   }
 
   if (
-    (userPool.options.MfaConfiguration === "OPTIONAL" &&
-      (user.MFAOptions ?? []).length > 0) ||
+    (userPool.options.MfaConfiguration === "OPTIONAL" && (user.MFAOptions ?? []).length > 0) ||
     userPool.options.MfaConfiguration === "ON"
   ) {
     return verifyMfaChallenge(ctx, user, req, userPool, services);
@@ -212,14 +202,7 @@ const userPasswordAuthFlow = async (
     });
   }
 
-  return verifyPasswordChallenge(
-    ctx,
-    user,
-    req,
-    userPool,
-    userPoolClient,
-    services,
-  );
+  return verifyPasswordChallenge(ctx, user, req, userPool, userPoolClient, services);
 };
 
 const refreshTokenAuthFlow = async (
@@ -230,19 +213,14 @@ const refreshTokenAuthFlow = async (
   services: InitiateAuthServices,
 ): Promise<InitiateAuthResponse> => {
   if (!req.AuthParameters) {
-    throw new InvalidParameterError(
-      "Missing required parameter authParameters",
-    );
+    throw new InvalidParameterError("Missing required parameter authParameters");
   }
 
   if (!req.AuthParameters.REFRESH_TOKEN) {
     throw new InvalidParameterError("AuthParameters REFRESH_TOKEN is required");
   }
 
-  const user = await userPool.getUserByRefreshToken(
-    ctx,
-    req.AuthParameters.REFRESH_TOKEN,
-  );
+  const user = await userPool.getUserByRefreshToken(ctx, req.AuthParameters.REFRESH_TOKEN);
   if (!user) {
     throw new NotAuthorizedError();
   }
@@ -281,24 +259,15 @@ export const InitiateAuth =
   (services: InitiateAuthServices): InitiateAuthTarget =>
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
-    const userPool = await services.cognito.getUserPoolForClientId(
-      ctx,
-      req.ClientId,
-    );
-    const userPoolClient = await services.cognito.getAppClient(
-      ctx,
-      req.ClientId,
-    );
+    const userPool = await services.cognito.getUserPoolForClientId(ctx, req.ClientId);
+    const userPoolClient = await services.cognito.getAppClient(ctx, req.ClientId);
     if (!userPoolClient) {
       throw new NotAuthorizedError();
     }
 
     if (req.AuthFlow === "USER_PASSWORD_AUTH") {
       return userPasswordAuthFlow(ctx, req, userPool, userPoolClient, services);
-    } else if (
-      req.AuthFlow === "REFRESH_TOKEN" ||
-      req.AuthFlow === "REFRESH_TOKEN_AUTH"
-    ) {
+    } else if (req.AuthFlow === "REFRESH_TOKEN" || req.AuthFlow === "REFRESH_TOKEN_AUTH") {
       return refreshTokenAuthFlow(ctx, req, userPool, userPoolClient, services);
     } else {
       throw new UnsupportedError(`InitAuth with AuthFlow=${req.AuthFlow}`);

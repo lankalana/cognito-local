@@ -3,11 +3,7 @@ import type {
   DeleteUserAttributesResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  NotAuthorizedError,
-} from "../errors";
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Services } from "../services";
 import type { Token } from "../services/tokenGenerator";
 import { attributesRemove } from "../services/userPoolService";
@@ -21,14 +17,10 @@ export type DeleteUserAttributesTarget = Target<
 type DeleteUserAttributesServices = Pick<Services, "clock" | "cognito">;
 
 export const DeleteUserAttributes =
-  ({
-    clock,
-    cognito,
-  }: DeleteUserAttributesServices): DeleteUserAttributesTarget =>
+  ({ clock, cognito }: DeleteUserAttributesServices): DeleteUserAttributesTarget =>
   async (ctx, req) => {
     if (!req.AccessToken) throw new MissingParameterError("AccessToken");
-    if (!req.UserAttributeNames)
-      throw new MissingParameterError("UserAttributeNames");
+    if (!req.UserAttributeNames) throw new MissingParameterError("UserAttributeNames");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
@@ -36,10 +28,7 @@ export const DeleteUserAttributes =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();

@@ -16,14 +16,10 @@ export type AddCustomAttributesTarget = Target<
 type AddCustomAttributesServices = Pick<Services, "clock" | "cognito">;
 
 export const AddCustomAttributes =
-  ({
-    clock,
-    cognito,
-  }: AddCustomAttributesServices): AddCustomAttributesTarget =>
+  ({ clock, cognito }: AddCustomAttributesServices): AddCustomAttributesTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
-    if (!req.CustomAttributes)
-      throw new MissingParameterError("CustomAttributes");
+    if (!req.CustomAttributes) throw new MissingParameterError("CustomAttributes");
 
     assertParameterLength("CustomAttributes", 1, 25, req.CustomAttributes);
 

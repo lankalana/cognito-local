@@ -25,10 +25,7 @@ createDefaultServer(logger)
     if (!address) {
       throw new Error("Server started without address");
     }
-    const url =
-      typeof address === "string"
-        ? address
-        : `${address.address}:${address.port}`;
+    const url = typeof address === "string" ? address : `${address.address}:${address.port}`;
 
     const proto = server instanceof https.Server ? "https" : "http";
 

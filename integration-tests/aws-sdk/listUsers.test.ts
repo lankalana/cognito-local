@@ -12,7 +12,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         const createUserResult = await client.adminCreateUser({
           UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
@@ -45,7 +45,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         await client.adminCreateUser({
           UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
@@ -71,8 +71,7 @@ describe(
               Attributes: createUserResult2.User?.Attributes,
               Enabled: true,
               UserCreateDate: createUserResult2.User?.UserCreateDate,
-              UserLastModifiedDate:
-                createUserResult2.User?.UserLastModifiedDate,
+              UserLastModifiedDate: createUserResult2.User?.UserLastModifiedDate,
               UserStatus: "FORCE_CHANGE_PASSWORD",
               Username: "abc2",
             },
@@ -86,7 +85,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         const result = await client.listUsers({
           UserPoolId: userPoolId,
@@ -107,7 +106,7 @@ describe(
           PoolName: "test",
           UsernameAttributes: ["email"],
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         const createUserResult = await client.adminCreateUser({
           UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],

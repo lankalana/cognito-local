@@ -4,10 +4,7 @@ import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import type { UserPoolService } from "../services";
-import {
-  GetUserPoolMfaConfig,
-  type GetUserPoolMfaConfigTarget,
-} from "./getUserPoolMfaConfig";
+import { GetUserPoolMfaConfig, type GetUserPoolMfaConfigTarget } from "./getUserPoolMfaConfig";
 
 describe("GetUserPoolMfaConfig target", () => {
   let getUserPoolMfaConfig: GetUserPoolMfaConfigTarget;

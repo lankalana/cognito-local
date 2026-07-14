@@ -6,11 +6,7 @@ import { newMockTriggers } from "../__tests__/mockTriggers";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
-import {
-  CodeMismatchError,
-  InvalidParameterError,
-  NotAuthorizedError,
-} from "../errors";
+import { CodeMismatchError, InvalidParameterError, NotAuthorizedError } from "../errors";
 import type { Triggers, UserPoolService } from "../services";
 import type { TokenGenerator } from "../services/tokenGenerator";
 import {
@@ -69,11 +65,7 @@ describe("RespondToAuthChallenge target", () => {
         ClientId: "clientId",
         ChallengeName: "SMS_MFA",
       }),
-    ).rejects.toEqual(
-      new InvalidParameterError(
-        "Missing required parameter challenge responses",
-      ),
-    );
+    ).rejects.toEqual(new InvalidParameterError("Missing required parameter challenge responses"));
   });
 
   it("throws if ChallengeResponses.USERNAME is missing", async () => {
@@ -83,9 +75,7 @@ describe("RespondToAuthChallenge target", () => {
         ChallengeName: "SMS_MFA",
         ChallengeResponses: {},
       }),
-    ).rejects.toEqual(
-      new InvalidParameterError("Missing required parameter USERNAME"),
-    );
+    ).rejects.toEqual(new InvalidParameterError("Missing required parameter USERNAME"));
   });
 
   it("throws if Session is missing", async () => {
@@ -99,9 +89,7 @@ describe("RespondToAuthChallenge target", () => {
           USERNAME: "abc",
         },
       }),
-    ).rejects.toEqual(
-      new InvalidParameterError("Missing required parameter Session"),
-    );
+    ).rejects.toEqual(new InvalidParameterError("Missing required parameter Session"));
   });
 
   describe("ChallengeName=SMS_MFA", () => {
@@ -175,9 +163,7 @@ describe("RespondToAuthChallenge target", () => {
 
       describe("when Post Authentication trigger is enabled", () => {
         it("does invokes the trigger", async () => {
-          mockTriggers.enabled.mockImplementation(
-            (trigger) => trigger === "PostAuthentication",
-          );
+          mockTriggers.enabled.mockImplementation((trigger) => trigger === "PostAuthentication");
 
           await respondToAuthChallenge(TestContext, {
             ClientId: userPoolClient.ClientId,
@@ -192,19 +178,16 @@ describe("RespondToAuthChallenge target", () => {
             Session: "Session",
           });
 
-          expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
-            TestContext,
-            {
-              clientId: userPoolClient.ClientId,
-              clientMetadata: {
-                client: "metadata",
-              },
-              source: "PostAuthentication_Authentication",
-              userAttributes: user.Attributes,
-              username: user.Username,
-              userPoolId: userPoolClient.UserPoolId,
+          expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(TestContext, {
+            clientId: userPoolClient.ClientId,
+            clientMetadata: {
+              client: "metadata",
             },
-          );
+            source: "PostAuthentication_Authentication",
+            userAttributes: user.Attributes,
+            username: user.Username,
+            userPoolId: userPoolClient.UserPoolId,
+          });
         });
       });
     });
@@ -245,9 +228,7 @@ describe("RespondToAuthChallenge target", () => {
           },
           Session: "session",
         }),
-      ).rejects.toEqual(
-        new InvalidParameterError("Missing required parameter NEW_PASSWORD"),
-      );
+      ).rejects.toEqual(new InvalidParameterError("Missing required parameter NEW_PASSWORD"));
     });
 
     it("updates the user's password and status", async () => {
@@ -310,9 +291,7 @@ describe("RespondToAuthChallenge target", () => {
 
     describe("when Post Authentication trigger is enabled", () => {
       it("does invokes the trigger", async () => {
-        mockTriggers.enabled.mockImplementation(
-          (trigger) => trigger === "PostAuthentication",
-        );
+        mockTriggers.enabled.mockImplementation((trigger) => trigger === "PostAuthentication");
 
         await respondToAuthChallenge(TestContext, {
           ClientId: userPoolClient.ClientId,
@@ -324,16 +303,13 @@ describe("RespondToAuthChallenge target", () => {
           Session: "Session",
         });
 
-        expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
-          TestContext,
-          {
-            clientId: userPoolClient.ClientId,
-            source: "PostAuthentication_Authentication",
-            userAttributes: user.Attributes,
-            username: user.Username,
-            userPoolId: userPoolClient.UserPoolId,
-          },
-        );
+        expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(TestContext, {
+          clientId: userPoolClient.ClientId,
+          source: "PostAuthentication_Authentication",
+          userAttributes: user.Attributes,
+          username: user.Username,
+          userPoolId: userPoolClient.UserPoolId,
+        });
       });
     });
   });

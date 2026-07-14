@@ -1,8 +1,5 @@
 import type { Context } from "./context";
-import type {
-  DeliveryDetails,
-  MessageDelivery,
-} from "./messageDelivery/messageDelivery";
+import type { DeliveryDetails, MessageDelivery } from "./messageDelivery/messageDelivery";
 import type { Triggers } from "./triggers";
 import type { User } from "./userPoolService";
 
@@ -56,19 +53,8 @@ export class MessagesService implements Messages {
     clientMetadata: Record<string, string> | undefined,
     deliveryDetails: DeliveryDetails,
   ): Promise<void> {
-    if (
-      this.triggers.enabled("CustomEmailSender") &&
-      source !== "Authentication"
-    ) {
-      return this.customDelivery(
-        ctx,
-        source,
-        clientId,
-        userPoolId,
-        user,
-        code,
-        clientMetadata,
-      );
+    if (this.triggers.enabled("CustomEmailSender") && source !== "Authentication") {
+      return this.customDelivery(ctx, source, clientId, userPoolId, user, code, clientMetadata);
     }
 
     const message = await this.create(

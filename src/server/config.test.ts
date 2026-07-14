@@ -1,8 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  newMockDataStore,
-  newMockDataStoreFactory,
-} from "../__tests__/mockDataStore";
+import { newMockDataStore, newMockDataStoreFactory } from "../__tests__/mockDataStore";
 import { TestContext } from "../__tests__/testContext";
 import { DefaultConfig, loadConfig } from "./config";
 

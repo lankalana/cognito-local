@@ -10,8 +10,7 @@ expect.extend({
 
     return {
       pass,
-      message: () =>
-        `expected ${actual} to equal ${expected} when parsed as JSON`,
+      message: () => `expected ${actual} to equal ${expected} when parsed as JSON`,
     };
   },
 });

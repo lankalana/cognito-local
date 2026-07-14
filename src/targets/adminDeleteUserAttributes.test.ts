@@ -38,10 +38,7 @@ describe("AdminDeleteUserAttributes target", () => {
 
   it("saves the updated attributes on the user", async () => {
     const user = TDB.user({
-      Attributes: [
-        attribute("email", "example@example.com"),
-        attribute("custom:example", "1"),
-      ],
+      Attributes: [attribute("email", "example@example.com"), attribute("custom:example", "1")],
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);

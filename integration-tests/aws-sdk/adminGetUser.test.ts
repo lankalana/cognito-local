@@ -21,7 +21,7 @@ describe(
           const pool = await client.createUserPool({
             PoolName: "test",
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           // create the user
           const createUserResult = await client.adminCreateUser({
@@ -31,9 +31,9 @@ describe(
           });
 
           expect(createUserResult.User?.Username).toEqual("abc");
-          expect(
-            attributeValue("sub", createUserResult.User?.Attributes),
-          ).toEqual(expect.stringMatching(UUID));
+          expect(attributeValue("sub", createUserResult.User?.Attributes)).toEqual(
+            expect.stringMatching(UUID),
+          );
 
           // verify they exist
           const result = await client.adminGetUser({
@@ -61,7 +61,7 @@ describe(
             PoolName: "test",
             UsernameAttributes: ["email"],
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           // create the user
           const createUserResult = await client.adminCreateUser({
@@ -70,12 +70,10 @@ describe(
             UserPoolId: userPoolId,
           });
 
-          expect(createUserResult.User?.Username).toEqual(
+          expect(createUserResult.User?.Username).toEqual(expect.stringMatching(UUID));
+          expect(attributeValue("sub", createUserResult.User?.Attributes)).toEqual(
             expect.stringMatching(UUID),
           );
-          expect(
-            attributeValue("sub", createUserResult.User?.Attributes),
-          ).toEqual(expect.stringMatching(UUID));
 
           // verify they exist by email
           let result = await client.adminGetUser({

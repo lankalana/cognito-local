@@ -64,9 +64,7 @@ describeIfNetwork("HTTP server", () => {
     it("errors with an poorly formatted x-azm-target header", async () => {
       const router = vi.fn();
       const { httpServer, request } = await startTestServer(router);
-      const response = await request
-        .post("/")
-        .set("x-amz-target", "bad-format");
+      const response = await request.post("/").set("x-amz-target", "bad-format");
       await stopTestServer(httpServer);
 
       expect(response.status).toEqual(400);
@@ -80,12 +78,9 @@ describeIfNetwork("HTTP server", () => {
         const route = vi.fn().mockResolvedValue({
           ok: true,
         });
-        const router = (target: string) =>
-          target === "valid" ? route : () => Promise.reject();
+        const router = (target: string) => (target === "valid" ? route : () => Promise.reject());
         const { httpServer, request } = await startTestServer(router);
-        const response = await request
-          .post("/")
-          .set("x-amz-target", "prefix.valid");
+        const response = await request.post("/").set("x-amz-target", "prefix.valid");
         await stopTestServer(httpServer);
 
         expect(response.status).toEqual(200);
@@ -93,15 +88,10 @@ describeIfNetwork("HTTP server", () => {
       });
 
       it("converts UnsupportedErrors from within a target route to a 500 error", async () => {
-        const route = vi
-          .fn()
-          .mockRejectedValue(new UnsupportedError("integration test"));
-        const router = (target: string) =>
-          target === "valid" ? route : () => Promise.reject();
+        const route = vi.fn().mockRejectedValue(new UnsupportedError("integration test"));
+        const router = (target: string) => (target === "valid" ? route : () => Promise.reject());
         const { httpServer, request } = await startTestServer(router);
-        const response = await request
-          .post("/")
-          .set("x-amz-target", "prefix.valid");
+        const response = await request.post("/").set("x-amz-target", "prefix.valid");
         await stopTestServer(httpServer);
 
         expect(response.status).toEqual(500);
@@ -118,34 +108,26 @@ describeIfNetwork("HTTP server", () => {
         ${new UsernameExistsError()}                   | ${"UsernameExistsException"}  | ${"User already exists"}
         ${new CodeMismatchError()}                     | ${"CodeMismatchException"}    | ${"Incorrect confirmation code"}
         ${new InvalidPasswordError()}                  | ${"InvalidPasswordException"} | ${"Invalid password"}
-      `(
-        "it converts $code to the format Cognito SDK expects",
-        async ({ error, code, message }) => {
-          const route = vi.fn().mockRejectedValue(error);
-          const router = (target: string) =>
-            target === "valid" ? route : () => Promise.reject();
-          const { httpServer, request } = await startTestServer(router);
-          const response = await request
-            .post("/")
-            .set("x-amz-target", "prefix.valid");
-          await stopTestServer(httpServer);
+      `("it converts $code to the format Cognito SDK expects", async ({ error, code, message }) => {
+        const route = vi.fn().mockRejectedValue(error);
+        const router = (target: string) => (target === "valid" ? route : () => Promise.reject());
+        const { httpServer, request } = await startTestServer(router);
+        const response = await request.post("/").set("x-amz-target", "prefix.valid");
+        await stopTestServer(httpServer);
 
-          expect(response.status).toEqual(400);
-          expect(response.body).toEqual({
-            __type: `${code}`,
-            message,
-          });
-        },
-      );
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual({
+          __type: `${code}`,
+          message,
+        });
+      });
     });
   });
 
   describe("jwks endpoint", () => {
     it("responds with our public key", async () => {
       const { httpServer, request } = await startTestServer(vi.fn());
-      const response = await request.get(
-        "/any-user-pool/.well-known/jwks.json",
-      );
+      const response = await request.get("/any-user-pool/.well-known/jwks.json");
       await stopTestServer(httpServer);
 
       expect(response.status).toEqual(200);
@@ -167,9 +149,7 @@ describeIfNetwork("HTTP server", () => {
   describe("OpenId Configuration Endpoint", () => {
     it("responds with open id configuration", async () => {
       const { httpServer, request } = await startTestServer(vi.fn());
-      const response = await request.get(
-        "/any-user-pool/.well-known/openid-configuration",
-      );
+      const response = await request.get("/any-user-pool/.well-known/openid-configuration");
       await stopTestServer(httpServer);
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({

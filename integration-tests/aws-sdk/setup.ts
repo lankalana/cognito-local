@@ -9,12 +9,7 @@ import { createServer } from "../../src";
 import { FakeMessageDeliveryService } from "../../src/__tests__/FakeMessageDeliveryService";
 import { DefaultConfig } from "../../src/server/config";
 import { Router } from "../../src/server/Router";
-import {
-  type Clock,
-  DateClock,
-  MessagesService,
-  TriggersService,
-} from "../../src/services";
+import { type Clock, DateClock, MessagesService, TriggersService } from "../../src/services";
 import { CognitoServiceFactoryImpl } from "../../src/services/cognitoService";
 import { CryptoService } from "../../src/services/crypto";
 import type { DataStoreFactory } from "../../src/services/dataStore/factory";
@@ -95,15 +90,8 @@ export const withCognitoSdk =
 
       fakeMessageDeliveryService = new FakeMessageDeliveryService();
 
-      const messages = new MessagesService(
-        triggers,
-        fakeMessageDeliveryService,
-      );
-      const tokenGenerator = new JwtTokenGenerator(
-        clock,
-        triggers,
-        DefaultConfig.TokenConfig,
-      );
+      const messages = new MessagesService(triggers, fakeMessageDeliveryService);
+      const tokenGenerator = new JwtTokenGenerator(clock, triggers, DefaultConfig.TokenConfig);
 
       const services = {
         clock,
@@ -128,10 +116,7 @@ export const withCognitoSdk =
       if (!address) {
         throw new Error("HttpServer has no address");
       }
-      url =
-        typeof address === "string"
-          ? address
-          : `${address.address}:${address.port}`;
+      url = typeof address === "string" ? address : `${address.address}:${address.port}`;
 
       cognitoSdk = new CognitoIdentityProvider({
         credentials: {

@@ -1,8 +1,4 @@
-import {
-  type InvocationResponse,
-  InvocationType,
-  type LambdaClient,
-} from "@aws-sdk/client-lambda";
+import { type InvocationResponse, InvocationType, type LambdaClient } from "@aws-sdk/client-lambda";
 import type {
   CreateAuthChallengeTriggerEvent,
   CustomEmailSenderTriggerEvent,
@@ -46,8 +42,7 @@ interface EventCommonParameters {
   userPoolId: string;
 }
 
-interface CustomEmailSenderEvent
-  extends Omit<EventCommonParameters, "clientId"> {
+interface CustomEmailSenderEvent extends Omit<EventCommonParameters, "clientId"> {
   clientId: string | undefined;
   code: string;
   clientMetadata: Record<string, string> | undefined;
@@ -60,8 +55,7 @@ interface CustomEmailSenderEvent
     | "CustomEmailSender_VerifyUserAttribute";
 }
 
-export interface CustomMessageEvent
-  extends Omit<EventCommonParameters, "clientId"> {
+export interface CustomMessageEvent extends Omit<EventCommonParameters, "clientId"> {
   clientId: string | undefined;
   clientMetadata: Record<string, string> | undefined;
   codeParameter: string;
@@ -85,10 +79,7 @@ interface UserMigrationEvent extends EventCommonParameters {
 
 interface PreSignUpEvent extends EventCommonParameters {
   clientMetadata: Record<string, string> | undefined;
-  triggerSource:
-    | "PreSignUp_AdminCreateUser"
-    | "PreSignUp_ExternalProvider"
-    | "PreSignUp_SignUp";
+  triggerSource: "PreSignUp_AdminCreateUser" | "PreSignUp_ExternalProvider" | "PreSignUp_SignUp";
   validationData: Record<string, string> | undefined;
 }
 
@@ -138,11 +129,8 @@ interface PostAuthenticationEvent extends EventCommonParameters {
   triggerSource: "PostAuthentication_Authentication";
 }
 
-interface PostConfirmationEvent
-  extends Omit<EventCommonParameters, "clientId"> {
-  triggerSource:
-    | "PostConfirmation_ConfirmSignUp"
-    | "PostConfirmation_ConfirmForgotPassword";
+interface PostConfirmationEvent extends Omit<EventCommonParameters, "clientId"> {
+  triggerSource: "PostConfirmation_ConfirmSignUp" | "PostConfirmation_ConfirmForgotPassword";
   clientMetadata: Record<string, string> | undefined;
   clientId: string | null;
 }
@@ -158,21 +146,14 @@ export interface FunctionConfig {
   CustomEmailSender?: string;
 }
 
-export type CustomMessageTriggerResponse =
-  CustomMessageTriggerEvent["response"];
-export type UserMigrationTriggerResponse =
-  UserMigrationTriggerEvent["response"];
+export type CustomMessageTriggerResponse = CustomMessageTriggerEvent["response"];
+export type UserMigrationTriggerResponse = UserMigrationTriggerEvent["response"];
 export type PreSignUpTriggerResponse = PreSignUpTriggerEvent["response"];
-export type PreTokenGenerationTriggerResponse =
-  PreTokenGenerationTriggerEvent["response"];
-export type PreTokenGenerationV2TriggerResponse =
-  PreTokenGenerationV2TriggerEvent["response"];
-export type PostAuthenticationTriggerResponse =
-  PostAuthenticationTriggerEvent["response"];
-export type PostConfirmationTriggerResponse =
-  PostConfirmationTriggerEvent["response"];
-export type CustomEmailSenderTriggerResponse =
-  CustomEmailSenderTriggerEvent["response"];
+export type PreTokenGenerationTriggerResponse = PreTokenGenerationTriggerEvent["response"];
+export type PreTokenGenerationV2TriggerResponse = PreTokenGenerationV2TriggerEvent["response"];
+export type PostAuthenticationTriggerResponse = PostAuthenticationTriggerEvent["response"];
+export type PostConfirmationTriggerResponse = PostConfirmationTriggerEvent["response"];
+export type CustomEmailSenderTriggerResponse = CustomEmailSenderTriggerEvent["response"];
 
 export interface Lambda {
   enabled(lambda: keyof FunctionConfig): boolean;
@@ -278,9 +259,7 @@ export class LambdaService implements Lambda {
     );
     if (!result.FunctionError) {
       try {
-        const parsedPayload = JSON.parse(
-          this.decoder.decode(result.Payload),
-        ) as { response: T };
+        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as { response: T };
 
         return parsedPayload.response;
       } catch (err) {
@@ -291,9 +270,7 @@ export class LambdaService implements Lambda {
       ctx.logger.error({ result }, result.FunctionError);
 
       if (result.FunctionError === "Unhandled" && result.Payload) {
-        const parsedPayload = JSON.parse(
-          this.decoder.decode(result.Payload),
-        ) as {
+        const parsedPayload = JSON.parse(this.decoder.decode(result.Payload)) as {
           errorMessage: string;
         };
 
@@ -404,12 +381,8 @@ export class LambdaService implements Lambda {
               userAttributes: event.userAttributes,
               scopes: event.scopes,
               groupConfiguration: {
-                groupsToOverride: [
-                  ...(event.groupConfiguration?.groupsToOverride ?? []),
-                ],
-                iamRolesToOverride: [
-                  ...(event.groupConfiguration?.iamRolesToOverride ?? []),
-                ],
+                groupsToOverride: [...(event.groupConfiguration?.groupsToOverride ?? [])],
+                iamRolesToOverride: [...(event.groupConfiguration?.iamRolesToOverride ?? [])],
                 preferredRole: event.groupConfiguration?.preferredRole,
               },
               clientMetadata: event.clientMetadata,
@@ -429,12 +402,8 @@ export class LambdaService implements Lambda {
             request: {
               userAttributes: event.userAttributes,
               groupConfiguration: {
-                groupsToOverride: [
-                  ...(event.groupConfiguration?.groupsToOverride ?? []),
-                ],
-                iamRolesToOverride: [
-                  ...(event.groupConfiguration?.iamRolesToOverride ?? []),
-                ],
+                groupsToOverride: [...(event.groupConfiguration?.groupsToOverride ?? [])],
+                iamRolesToOverride: [...(event.groupConfiguration?.iamRolesToOverride ?? [])],
                 preferredRole: event.groupConfiguration?.preferredRole,
               },
               clientMetadata: event.clientMetadata,

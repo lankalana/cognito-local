@@ -3,10 +3,7 @@ import type {
   DescribeIdentityProviderResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 
-import {
-  IdentityProviderNotFoundError,
-  MissingParameterError,
-} from "../errors.js";
+import { IdentityProviderNotFoundError, MissingParameterError } from "../errors.js";
 import type { Services } from "../services/index.js";
 import { identityProviderToResponseObject } from "./responses.js";
 import type { Target } from "./Target.js";
@@ -32,8 +29,6 @@ export const DescribeIdentityProvider =
     }
 
     return {
-      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(
-        identityProvider,
-      ),
+      IdentityProvider: identityProviderToResponseObject(req.UserPoolId)(identityProvider),
     };
   };

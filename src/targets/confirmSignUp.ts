@@ -14,10 +14,7 @@ import type { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import type { Target } from "./Target";
 
-export type ConfirmSignUpTarget = Target<
-  ConfirmSignUpRequest,
-  ConfirmSignUpResponse
->;
+export type ConfirmSignUpTarget = Target<ConfirmSignUpRequest, ConfirmSignUpResponse>;
 
 export const ConfirmSignUp =
   ({

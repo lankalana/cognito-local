@@ -4,11 +4,7 @@ import { NotAuthorizedError, ResourceNotFoundError } from "../../errors";
 import type { Clock } from "../clock";
 import type { CognitoService } from "../cognitoService";
 import type { Lambda, UserMigrationTriggerResponse } from "../lambda";
-import {
-  attributesFromRecord,
-  attributesToRecord,
-  type User,
-} from "../userPoolService";
+import { attributesFromRecord, attributesToRecord, type User } from "../userPoolService";
 import type { Trigger } from "./trigger";
 
 export type UserMigrationTrigger = Trigger<
@@ -46,22 +42,10 @@ interface UserMigrationServices {
 }
 
 export const UserMigration =
-  ({
-    lambda,
-    cognitoClient,
-    clock,
-  }: UserMigrationServices): UserMigrationTrigger =>
+  ({ lambda, cognitoClient, clock }: UserMigrationServices): UserMigrationTrigger =>
   async (
     ctx,
-    {
-      clientId,
-      clientMetadata,
-      password,
-      userAttributes,
-      username,
-      userPoolId,
-      validationData,
-    },
+    { clientId, clientMetadata, password, userAttributes, username, userPoolId, validationData },
   ) => {
     const userPool = await cognitoClient.getUserPoolForClientId(ctx, clientId);
     if (!userPool) {
@@ -81,7 +65,7 @@ export const UserMigration =
         userPoolId,
         validationData,
       });
-    } catch (_ex) {
+    } catch {
       throw new NotAuthorizedError();
     }
 

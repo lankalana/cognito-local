@@ -18,7 +18,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         // create the user
         const createUserResult = await client.adminCreateUser({

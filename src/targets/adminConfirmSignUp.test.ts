@@ -9,10 +9,7 @@ import * as TDB from "../__tests__/testDataBuilder";
 import { NotAuthorizedError } from "../errors";
 import type { Triggers, UserPoolService } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
-import {
-  AdminConfirmSignUp,
-  type AdminConfirmSignUpTarget,
-} from "./adminConfirmSignUp";
+import { AdminConfirmSignUp, type AdminConfirmSignUpTarget } from "./adminConfirmSignUp";
 
 const currentDate = new Date();
 
@@ -70,9 +67,7 @@ describe("AdminConfirmSignUp target", () => {
         UserPoolId: "test",
       }),
     ).rejects.toEqual(
-      new NotAuthorizedError(
-        `User cannot be confirmed. Current status is ${status}`,
-      ),
+      new NotAuthorizedError(`User cannot be confirmed. Current status is ${status}`),
     );
   });
 
@@ -100,9 +95,7 @@ describe("AdminConfirmSignUp target", () => {
 
   describe("when PostConfirmation trigger is enabled", () => {
     it("invokes the trigger", async () => {
-      mockTriggers.enabled.mockImplementation(
-        (trigger) => trigger === "PostConfirmation",
-      );
+      mockTriggers.enabled.mockImplementation((trigger) => trigger === "PostConfirmation");
 
       const user = TDB.user({
         UserStatus: "UNCONFIRMED",

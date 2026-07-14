@@ -6,10 +6,7 @@ import { MissingParameterError, UserNotFoundError } from "../errors.js";
 import type { Services } from "../services/index.js";
 import type { Target } from "./Target.js";
 
-export type AdminEnableUserTarget = Target<
-  AdminEnableUserRequest,
-  AdminEnableUserResponse
->;
+export type AdminEnableUserTarget = Target<AdminEnableUserRequest, AdminEnableUserResponse>;
 
 type AdminEnableUserServices = Pick<Services, "cognito" | "clock">;
 

@@ -1,23 +1,14 @@
 import type { AdminRemoveUserFromGroupRequest } from "@aws-sdk/client-cognito-identity-provider";
-import {
-  GroupNotFoundError,
-  MissingParameterError,
-  UserNotFoundError,
-} from "../errors";
+import { GroupNotFoundError, MissingParameterError, UserNotFoundError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
 
-export type AdminRemoveUserFromGroupTarget = Target<
-  AdminRemoveUserFromGroupRequest,
-  object
->;
+export type AdminRemoveUserFromGroupTarget = Target<AdminRemoveUserFromGroupRequest, object>;
 
 type AdminRemoveUserFromGroupServices = Pick<Services, "cognito">;
 
 export const AdminRemoveUserFromGroup =
-  ({
-    cognito,
-  }: AdminRemoveUserFromGroupServices): AdminRemoveUserFromGroupTarget =>
+  ({ cognito }: AdminRemoveUserFromGroupServices): AdminRemoveUserFromGroupTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.GroupName) throw new MissingParameterError("GroupName");

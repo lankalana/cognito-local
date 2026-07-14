@@ -218,13 +218,8 @@ describe("JwtTokenGenerator", () => {
         expect(jwt.decode(tokens.AccessToken)).toMatchObject({
           newclaim: "value",
         });
-        expect(jwt.decode(tokens.IdToken)).toHaveProperty("cognito:groups", [
-          "group1",
-        ]);
-        expect(jwt.decode(tokens.AccessToken)).toHaveProperty(
-          "cognito:groups",
-          ["group1"],
-        );
+        expect(jwt.decode(tokens.IdToken)).toHaveProperty("cognito:groups", ["group1"]);
+        expect(jwt.decode(tokens.AccessToken)).toHaveProperty("cognito:groups", ["group1"]);
 
         // refresh tokens cannot be changed by the trigger
         expect(jwt.decode(tokens.RefreshToken)).not.toMatchObject({
@@ -487,12 +482,8 @@ describe("JwtTokenGenerator", () => {
         "RefreshTokens",
       );
 
-      expect(
-        (jwt.decode(tokens.AccessToken) as any)["cognito:groups"],
-      ).toBeUndefined();
-      expect(
-        (jwt.decode(tokens.IdToken) as any)["cognito:groups"],
-      ).toBeUndefined();
+      expect((jwt.decode(tokens.AccessToken) as any)["cognito:groups"]).toBeUndefined();
+      expect((jwt.decode(tokens.IdToken) as any)["cognito:groups"]).toBeUndefined();
     });
 
     it("includes a cognito:groups claim with the user's groups", async () => {
@@ -518,13 +509,11 @@ describe("JwtTokenGenerator", () => {
         "RefreshTokens",
       );
 
-      expect((jwt.decode(tokens.AccessToken) as any)["cognito:groups"]).toEqual(
-        ["group1", "group2"],
-      );
-      expect((jwt.decode(tokens.IdToken) as any)["cognito:groups"]).toEqual([
+      expect((jwt.decode(tokens.AccessToken) as any)["cognito:groups"]).toEqual([
         "group1",
         "group2",
       ]);
+      expect((jwt.decode(tokens.IdToken) as any)["cognito:groups"]).toEqual(["group1", "group2"]);
     });
   });
 });

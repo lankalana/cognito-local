@@ -6,10 +6,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { GroupNotFoundError, UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
-import {
-  AdminAddUserToGroup,
-  type AdminAddUserToGroupTarget,
-} from "./adminAddUserToGroup";
+import { AdminAddUserToGroup, type AdminAddUserToGroupTarget } from "./adminAddUserToGroup";
 
 const originalDate = new Date();
 

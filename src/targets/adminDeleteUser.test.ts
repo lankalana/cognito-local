@@ -28,10 +28,7 @@ describe("AdminDeleteUser target", () => {
       UserPoolId: "test",
     });
 
-    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
-      TestContext,
-      existingUser,
-    );
+    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(TestContext, existingUser);
   });
 
   it("handles trying to delete an invalid user", async () => {

@@ -6,10 +6,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
-import {
-  AdminDisableUser,
-  type AdminDisableUserTarget,
-} from "./adminDisableUser";
+import { AdminDisableUser, type AdminDisableUserTarget } from "./adminDisableUser";
 
 const originalDate = new Date();
 

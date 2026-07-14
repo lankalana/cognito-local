@@ -44,10 +44,7 @@ describe("messages service", () => {
             emailMessage: "email",
           });
 
-          const messages = new MessagesService(
-            mockTriggers,
-            mockMessageDelivery,
-          );
+          const messages = new MessagesService(mockTriggers, mockMessageDelivery);
           await messages.deliver(
             TestContext,
             source,
@@ -94,10 +91,7 @@ describe("messages service", () => {
           });
           mockTriggers.customMessage.mockResolvedValue(null);
 
-          const messages = new MessagesService(
-            mockTriggers,
-            mockMessageDelivery,
-          );
+          const messages = new MessagesService(mockTriggers, mockMessageDelivery);
           await messages.deliver(
             TestContext,
             source,

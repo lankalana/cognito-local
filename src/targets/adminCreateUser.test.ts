@@ -166,9 +166,7 @@ describe("AdminCreateUser target", () => {
             UserPoolId: "test",
           }),
         ).rejects.toEqual(
-          new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums",
-          ),
+          new InvalidParameterError("User has no attribute matching desired delivery mediums"),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -216,9 +214,7 @@ describe("AdminCreateUser target", () => {
             UserPoolId: "test",
           }),
         ).rejects.toEqual(
-          new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums",
-          ),
+          new InvalidParameterError("User has no attribute matching desired delivery mediums"),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -267,9 +263,7 @@ describe("AdminCreateUser target", () => {
             UserPoolId: "test",
           }),
         ).rejects.toEqual(
-          new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums",
-          ),
+          new InvalidParameterError("User has no attribute matching desired delivery mediums"),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();
@@ -352,9 +346,7 @@ describe("AdminCreateUser target", () => {
             UserPoolId: "test",
           }),
         ).rejects.toEqual(
-          new InvalidParameterError(
-            "User has no attribute matching desired delivery mediums",
-          ),
+          new InvalidParameterError("User has no attribute matching desired delivery mediums"),
         );
 
         expect(mockMessages.deliver).not.toHaveBeenCalled();

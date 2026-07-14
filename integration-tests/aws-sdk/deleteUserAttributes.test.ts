@@ -59,8 +59,7 @@ describe(
       ]);
 
       await client.deleteUserAttributes({
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         UserAttributeNames: ["custom:example"],
       });
 

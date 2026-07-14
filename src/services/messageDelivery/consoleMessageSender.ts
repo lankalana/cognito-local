@@ -5,21 +5,11 @@ import type { User } from "../userPoolService";
 import type { MessageSender } from "./messageSender";
 
 export class ConsoleMessageSender implements MessageSender {
-  public sendEmail(
-    ctx: Context,
-    user: User,
-    destination: string,
-    message: Message,
-  ): Promise<void> {
+  public sendEmail(ctx: Context, user: User, destination: string, message: Message): Promise<void> {
     return this.sendToConsole(ctx, user, destination, message);
   }
 
-  public sendSms(
-    ctx: Context,
-    user: User,
-    destination: string,
-    message: Message,
-  ): Promise<void> {
+  public sendSms(ctx: Context, user: User, destination: string, message: Message): Promise<void> {
     return this.sendToConsole(ctx, user, destination, message);
   }
 
@@ -37,15 +27,11 @@ export class ConsoleMessageSender implements MessageSender {
       "Email Message": message.emailMessage,
       "SMS Message": message.smsMessage,
     };
-    const definedFields = Object.entries(fields).filter(
-      (kv): kv is [string, string] => !!kv[1],
-    );
+    const definedFields = Object.entries(fields).filter((kv): kv is [string, string] => !!kv[1]);
 
-    const longestDefinedFieldName = Math.max(
-      ...definedFields.map(([k]) => k.length),
-    );
+    const longestDefinedFieldName = Math.max(...definedFields.map(([k]) => k.length));
     const formattedFields = definedFields.map(
-      ([k, v]) => `${(`${k}:`).padEnd(longestDefinedFieldName + 1)} ${v}`,
+      ([k, v]) => `${`${k}:`.padEnd(longestDefinedFieldName + 1)} ${v}`,
     );
 
     ctx.logger.info(

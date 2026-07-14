@@ -9,7 +9,7 @@ describe(
       const client = Cognito();
 
       const pool = await client.createUserPool({ PoolName: "test" });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const upc = await client.createUserPoolClient({
         UserPoolId: userPoolId,
@@ -20,7 +20,7 @@ describe(
         AllowedOAuthScopes: ["openid"],
       });
 
-      const clientId = upc.UserPoolClient?.ClientId!;
+      const clientId = upc.UserPoolClient!.ClientId!;
 
       const _ = await client.adminCreateUser({
         DesiredDeliveryMediums: ["EMAIL"],

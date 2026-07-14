@@ -20,7 +20,7 @@ describe(
           const pool = await client.createUserPool({
             PoolName: "test",
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
@@ -54,7 +54,7 @@ describe(
           const pool = await client.createUserPool({
             PoolName: "test",
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             DesiredDeliveryMediums: ["EMAIL"],
@@ -102,7 +102,7 @@ describe(
           const pool = await client.createUserPool({
             PoolName: "test",
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             MessageAction: "SUPPRESS",
@@ -139,7 +139,7 @@ describe(
             PoolName: "test",
             UsernameAttributes: ["email"],
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             UserAttributes: [{ Name: "phone_number", Value: "0400000000" }],
@@ -175,7 +175,7 @@ describe(
             PoolName: "test",
             UsernameAttributes: ["email"],
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             DesiredDeliveryMediums: ["EMAIL"],
@@ -224,7 +224,7 @@ describe(
             PoolName: "test",
             UsernameAttributes: ["email"],
           });
-          const userPoolId = pool.UserPool?.Id!;
+          const userPoolId = pool.UserPool!.Id!;
 
           const createUserResult = await client.adminCreateUser({
             MessageAction: "SUPPRESS",

@@ -6,10 +6,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { ResourceNotFoundError } from "../errors";
 import type { CognitoService, UserPoolService } from "../services";
-import {
-  UpdateUserPoolClient,
-  type UpdateUserPoolClientTarget,
-} from "./updateUserPoolClient";
+import { UpdateUserPoolClient, type UpdateUserPoolClientTarget } from "./updateUserPoolClient";
 
 const originalDate = new Date();
 
@@ -52,20 +49,17 @@ describe("UpdateUserPoolClient target", () => {
       existingAppClient.ClientId,
     );
 
-    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
-      TestContext,
-      {
-        ...existingAppClient,
-        AccessTokenValidity: 50,
-        ClientName: "new client name",
-        LastModifiedDate: newDate,
-        TokenValidityUnits: {
-          AccessToken: "hours",
-          IdToken: "minutes",
-          RefreshToken: "days",
-        },
+    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(TestContext, {
+      ...existingAppClient,
+      AccessTokenValidity: 50,
+      ClientName: "new client name",
+      LastModifiedDate: newDate,
+      TokenValidityUnits: {
+        AccessToken: "hours",
+        IdToken: "minutes",
+        RefreshToken: "days",
       },
-    );
+    });
 
     expect(result.UserPoolClient).toEqual({
       ...existingAppClient,

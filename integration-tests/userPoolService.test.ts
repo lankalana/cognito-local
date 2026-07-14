@@ -2,17 +2,10 @@ import fs from "node:fs";
 import { promisify } from "node:util";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { TestContext } from "../src/__tests__/testContext";
-import {
-  type CognitoService,
-  DateClock,
-  type UserPoolService,
-} from "../src/services";
+import { type CognitoService, DateClock, type UserPoolService } from "../src/services";
 import { CognitoServiceFactoryImpl } from "../src/services/cognitoService";
 import { StormDBDataStoreFactory } from "../src/services/dataStore/stormDb";
-import {
-  type User,
-  UserPoolServiceFactoryImpl,
-} from "../src/services/userPoolService";
+import { type User, UserPoolServiceFactoryImpl } from "../src/services/userPoolService";
 
 const mkdtemp = promisify(fs.mkdtemp);
 const readFile = promisify(fs.readFile);
@@ -68,9 +61,7 @@ describe("User Pool Service", () => {
           RefreshTokens: [],
         });
 
-        const file = JSON.parse(
-          await readFile(`${dataDirectory}/local.json`, "utf-8"),
-        );
+        const file = JSON.parse(await readFile(`${dataDirectory}/local.json`, "utf-8"));
 
         expect(file.Users).toEqual({
           [username]: {
@@ -114,9 +105,7 @@ describe("User Pool Service", () => {
           RefreshTokens: [],
         });
 
-        let file = JSON.parse(
-          await readFile(`${dataDirectory}/local.json`, "utf-8"),
-        );
+        let file = JSON.parse(await readFile(`${dataDirectory}/local.json`, "utf-8"));
 
         expect(file.Users).toEqual({
           [username]: {
@@ -149,9 +138,7 @@ describe("User Pool Service", () => {
           RefreshTokens: [],
         });
 
-        file = JSON.parse(
-          await readFile(`${dataDirectory}/local.json`, "utf-8"),
-        );
+        file = JSON.parse(await readFile(`${dataDirectory}/local.json`, "utf-8"));
 
         expect(file.Users).toEqual({
           [username]: {
@@ -249,10 +236,7 @@ describe("User Pool Service", () => {
     });
 
     it("returns user by their refresh token", async () => {
-      const user = await userPool.getUserByRefreshToken(
-        TestContext,
-        "refresh token",
-      );
+      const user = await userPool.getUserByRefreshToken(TestContext, "refresh token");
 
       expect(user).not.toBeNull();
       expect(user?.Username).toEqual(username);
@@ -291,10 +275,7 @@ describe("User Pool Service", () => {
     it("saves a refresh token on the user", async () => {
       await userPool.storeRefreshToken(TestContext, "refresh token", user);
 
-      const foundUser = await userPool.getUserByRefreshToken(
-        TestContext,
-        "refresh token",
-      );
+      const foundUser = await userPool.getUserByRefreshToken(TestContext, "refresh token");
 
       expect(foundUser).toMatchObject({
         Username: "User",

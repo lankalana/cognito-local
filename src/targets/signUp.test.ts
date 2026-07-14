@@ -1,12 +1,4 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type Mock,
-  type MockedObject,
-  vi,
-} from "vitest";
+import { beforeEach, describe, expect, it, type Mock, type MockedObject, vi } from "vitest";
 import { ClockFake } from "../__tests__/clockFake";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockMessages } from "../__tests__/mockMessages";
@@ -15,11 +7,7 @@ import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { UUID } from "../__tests__/patterns";
 import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
-import {
-  InvalidParameterError,
-  UserLambdaValidationError,
-  UsernameExistsError,
-} from "../errors";
+import { InvalidParameterError, UserLambdaValidationError, UsernameExistsError } from "../errors";
 import { type Config, DefaultConfig } from "../server/config";
 import type { Messages, Triggers, UserPoolService } from "../services";
 import { SignUp, type SignUpTarget } from "./signUp";
@@ -106,9 +94,7 @@ describe("SignUp target", () => {
         Username: "user-supplied",
         UserAttributes: [{ Name: "email", Value: "example@example.com" }],
       }),
-    ).rejects.toEqual(
-      new InvalidParameterError("Username should be an email."),
-    );
+    ).rejects.toEqual(new InvalidParameterError("Username should be an email."));
 
     expect(mockUserPoolService.saveUser).not.toHaveBeenCalled();
 
@@ -139,9 +125,7 @@ describe("SignUp target", () => {
 
   describe("when PreSignUp trigger is enabled", () => {
     beforeEach(() => {
-      mockTriggers.enabled.mockImplementation(
-        (trigger) => trigger === "PreSignUp",
-      );
+      mockTriggers.enabled.mockImplementation((trigger) => trigger === "PreSignUp");
     });
 
     it("calls the trigger lambda with the user's username if the user pool has no username attributes", async () => {
@@ -266,8 +250,7 @@ describe("SignUp target", () => {
       describe("when PostConfirmation trigger is enabled", () => {
         beforeEach(() => {
           mockTriggers.enabled.mockImplementation(
-            (trigger) =>
-              trigger === "PreSignUp" || trigger === "PostConfirmation",
+            (trigger) => trigger === "PreSignUp" || trigger === "PostConfirmation",
           );
         });
 
@@ -283,24 +266,21 @@ describe("SignUp target", () => {
             ValidationData: [{ Name: "another", Value: "attribute" }],
           });
 
-          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
-            TestContext,
-            {
-              clientId: "clientId",
-              clientMetadata: {
-                client: "metadata",
-              },
-              source: "PostConfirmation_ConfirmSignUp",
-              userAttributes: [
-                { Name: "cognito:user_status", Value: "CONFIRMED" },
-                { Name: "email", Value: "example@example.com" },
-                { Name: "sub", Value: expect.stringMatching(UUID) },
-              ],
-              userPoolId: "test",
-              username: "user-supplied",
-              validationData: undefined,
+          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
+            clientId: "clientId",
+            clientMetadata: {
+              client: "metadata",
             },
-          );
+            source: "PostConfirmation_ConfirmSignUp",
+            userAttributes: [
+              { Name: "cognito:user_status", Value: "CONFIRMED" },
+              { Name: "email", Value: "example@example.com" },
+              { Name: "sub", Value: expect.stringMatching(UUID) },
+            ],
+            userPoolId: "test",
+            username: "user-supplied",
+            validationData: undefined,
+          });
         });
 
         it("calls the PostConfirmation trigger lambda with the user's sub if the user pool has email as a username attribute", async () => {
@@ -317,31 +297,26 @@ describe("SignUp target", () => {
             ValidationData: [{ Name: "another", Value: "attribute" }],
           });
 
-          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
-            TestContext,
-            {
-              clientId: "clientId",
-              clientMetadata: {
-                client: "metadata",
-              },
-              source: "PostConfirmation_ConfirmSignUp",
-              userAttributes: [
-                { Name: "cognito:user_status", Value: "CONFIRMED" },
-                { Name: "email", Value: "example@example.com" },
-                { Name: "sub", Value: expect.stringMatching(UUID) },
-              ],
-              userPoolId: "test",
-              username: expect.stringMatching(UUID),
-              validationData: undefined,
+          expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
+            clientId: "clientId",
+            clientMetadata: {
+              client: "metadata",
             },
-          );
+            source: "PostConfirmation_ConfirmSignUp",
+            userAttributes: [
+              { Name: "cognito:user_status", Value: "CONFIRMED" },
+              { Name: "email", Value: "example@example.com" },
+              { Name: "sub", Value: expect.stringMatching(UUID) },
+            ],
+            userPoolId: "test",
+            username: expect.stringMatching(UUID),
+            validationData: undefined,
+          });
         });
 
         it("throws if the PostConfirmation lambda fails", async () => {
           mockUserPoolService.getUserByUsername.mockResolvedValue(null);
-          mockTriggers.postConfirmation.mockRejectedValue(
-            new UserLambdaValidationError(),
-          );
+          mockTriggers.postConfirmation.mockRejectedValue(new UserLambdaValidationError());
 
           await expect(
             signUp(TestContext, {
@@ -705,10 +680,7 @@ describe("SignUp target", () => {
 
     describe("UserPool.AutoVerifiedAttributes=phone_number and email", () => {
       beforeEach(() => {
-        mockUserPoolService.options.AutoVerifiedAttributes = [
-          "email",
-          "phone_number",
-        ];
+        mockUserPoolService.options.AutoVerifiedAttributes = ["email", "phone_number"];
       });
 
       it("sends a confirmation code to the user's phone number if they have both attributes", async () => {

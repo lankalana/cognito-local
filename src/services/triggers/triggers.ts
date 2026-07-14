@@ -2,19 +2,10 @@ import type { Clock } from "../clock";
 import type { CognitoService } from "../cognitoService";
 import type { CryptoService } from "../crypto";
 import type { Lambda } from "../lambda";
-import {
-  CustomEmailSender,
-  type CustomEmailSenderTrigger,
-} from "./customEmailSender";
+import { CustomEmailSender, type CustomEmailSenderTrigger } from "./customEmailSender";
 import { CustomMessage, type CustomMessageTrigger } from "./customMessage";
-import {
-  PostAuthentication,
-  type PostAuthenticationTrigger,
-} from "./postAuthentication";
-import {
-  PostConfirmation,
-  type PostConfirmationTrigger,
-} from "./postConfirmation";
+import { PostAuthentication, type PostAuthenticationTrigger } from "./postAuthentication";
+import { PostConfirmation, type PostConfirmationTrigger } from "./postConfirmation";
 import { PreSignUp, type PreSignUpTrigger } from "./preSignUp";
 import {
   PreTokenGeneration,

@@ -107,22 +107,19 @@ describe("ConfirmSignUp target", () => {
           ForceAliasCreation: false,
         });
 
-        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(
-          TestContext,
-          {
-            clientId: "clientId",
-            clientMetadata: {
-              client: "metadata",
-            },
-            source: "PostConfirmation_ConfirmSignUp",
-            userAttributes: attributesAppend(
-              user.Attributes,
-              attribute("cognito:user_status", "CONFIRMED"),
-            ),
-            userPoolId: "test",
-            username: user.Username,
+        expect(mockTriggers.postConfirmation).toHaveBeenCalledWith(TestContext, {
+          clientId: "clientId",
+          clientMetadata: {
+            client: "metadata",
           },
-        );
+          source: "PostConfirmation_ConfirmSignUp",
+          userAttributes: attributesAppend(
+            user.Attributes,
+            attribute("cognito:user_status", "CONFIRMED"),
+          ),
+          userPoolId: "test",
+          username: user.Username,
+        });
       });
     });
 

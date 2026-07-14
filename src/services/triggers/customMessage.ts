@@ -1,9 +1,5 @@
 import type { AttributeType } from "@aws-sdk/client-cognito-identity-provider";
-import type {
-  CustomMessageEvent,
-  CustomMessageTriggerResponse,
-  Lambda,
-} from "../lambda";
+import type { CustomMessageEvent, CustomMessageTriggerResponse, Lambda } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
 import type { Trigger } from "./trigger";
 
@@ -53,18 +49,7 @@ interface CustomMessageServices {
 
 export const CustomMessage =
   ({ lambda }: CustomMessageServices): CustomMessageTrigger =>
-  async (
-    ctx,
-    {
-      clientId,
-      clientMetadata,
-      code,
-      source,
-      userAttributes,
-      username,
-      userPoolId,
-    },
-  ) => {
+  async (ctx, { clientId, clientMetadata, code, source, userAttributes, username, userPoolId }) => {
     try {
       const response = await lambda.invoke(ctx, "CustomMessage", {
         clientId,

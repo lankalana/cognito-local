@@ -48,10 +48,7 @@ describe("DeleteUser target", () => {
       ),
     });
 
-    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(
-      TestContext,
-      user,
-    );
+    expect(mockUserPoolService.deleteUser).toHaveBeenCalledWith(TestContext, user);
   });
 
   it("throws if token isn't valid", async () => {

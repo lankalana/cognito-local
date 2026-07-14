@@ -9,10 +9,7 @@ import type { TokenConfig } from "../services/tokenGenerator.js";
 import type { UserPool } from "../services/userPoolService.js";
 import type { ServerOptions } from "./server";
 
-export type UserPoolDefaults = Omit<
-  UserPool,
-  "Id" | "CreationDate" | "LastModifiedDate"
->;
+export type UserPoolDefaults = Omit<UserPool, "Id" | "CreationDate" | "LastModifiedDate">;
 
 export interface Config {
   LambdaClient: LambdaClientConfig;
@@ -65,14 +62,9 @@ export const loadConfig = async (
 
   const config = await dataStore.getRoot<Config>(ctx);
 
-  return mergeWith(
-    {},
-    DefaultConfig,
-    config ?? {},
-    function customizer(_objValue, srcValue) {
-      if (Array.isArray(srcValue)) {
-        return srcValue;
-      }
-    },
-  );
+  return mergeWith({}, DefaultConfig, config ?? {}, function customizer(_objValue, srcValue) {
+    if (Array.isArray(srcValue)) {
+      return srcValue;
+    }
+  });
 };

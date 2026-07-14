@@ -1,3 +1,4 @@
 #!/bin/sh
 
-yarn lint
+aube run lint
+aube run type-check

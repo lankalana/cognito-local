@@ -1,9 +1,4 @@
-import {
-  buildClient,
-  CommitmentPolicy,
-  KMS,
-  KmsKeyringNode,
-} from "@aws-crypto/client-node";
+import { buildClient, CommitmentPolicy, KMS, KmsKeyringNode } from "@aws-crypto/client-node";
 import type { Context } from "./context";
 
 export interface KMSConfig {

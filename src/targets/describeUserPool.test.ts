@@ -4,10 +4,7 @@ import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import type { CognitoService } from "../services";
-import {
-  DescribeUserPool,
-  type DescribeUserPoolTarget,
-} from "./describeUserPool";
+import { DescribeUserPool, type DescribeUserPoolTarget } from "./describeUserPool";
 
 describe("DescribeUserPool target", () => {
   let describeUserPool: DescribeUserPoolTarget;
@@ -22,9 +19,7 @@ describe("DescribeUserPool target", () => {
 
   it("returns an existing user pool", async () => {
     const existingUserPool = TDB.userPool();
-    mockCognitoService.getUserPool.mockResolvedValue(
-      newMockUserPoolService(existingUserPool),
-    );
+    mockCognitoService.getUserPool.mockResolvedValue(newMockUserPoolService(existingUserPool));
 
     const result = await describeUserPool(TestContext, {
       UserPoolId: existingUserPool.Id,

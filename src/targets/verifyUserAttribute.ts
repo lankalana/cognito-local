@@ -23,10 +23,7 @@ export type VerifyUserAttributeTarget = Target<
 type VerifyUserAttributeServices = Pick<Services, "clock" | "cognito">;
 
 export const VerifyUserAttribute =
-  ({
-    clock,
-    cognito,
-  }: VerifyUserAttributeServices): VerifyUserAttributeTarget =>
+  ({ clock, cognito }: VerifyUserAttributeServices): VerifyUserAttributeTarget =>
   async (ctx, req) => {
     if (!req.AccessToken) throw new MissingParameterError("AccessToken");
 
@@ -36,10 +33,7 @@ export const VerifyUserAttribute =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();
@@ -49,18 +43,12 @@ export const VerifyUserAttribute =
       throw new CodeMismatchError();
     }
 
-    const attributesToUpdate = [
-      ...user.Attributes,
-      ...(user.UnverifiedAttributeChanges ?? []),
-    ];
+    const attributesToUpdate = [...user.Attributes, ...(user.UnverifiedAttributeChanges ?? [])];
 
     if (req.AttributeName === "email") {
       await userPool.saveUser(ctx, {
         ...user,
-        Attributes: attributesAppend(
-          attributesToUpdate,
-          attribute("email_verified", "true"),
-        ),
+        Attributes: attributesAppend(attributesToUpdate, attribute("email_verified", "true")),
         UserLastModifiedDate: clock.get(),
         UnverifiedAttributeChanges: undefined,
         AttributeVerificationCode: undefined,

@@ -309,7 +309,7 @@ Before starting Cognito Local, create a config file if one doesn't already exist
 You can edit that `.cognito/config.json` and add any of the following settings:
 
 | Setting                                    | Type       | Default                 | Description                                                 |
-|--------------------------------------------|------------|-------------------------|-------------------------------------------------------------|
+| ------------------------------------------ | ---------- | ----------------------- | ----------------------------------------------------------- |
 | `LambdaClient`                             | `object`   |                         | Any setting you would pass to the AWS.Lambda Node.js client |
 | `LambdaClient.credentials.accessKeyId`     | `string`   | `local`                 |                                                             |
 | `LambdaClient.credentials.secretAccessKey` | `string`   | `local`                 |                                                             |
@@ -429,9 +429,7 @@ However, make sure to use the same `local-kms` endpoint, KMS Key and KMS Alias w
 ```ts
 const kmsKeyringNode = new kmsSdk.KmsKeyringNode({
   generatorKeyId: "arn:aws:kms:us-west-2:999999999:alias/testing",
-  keyIds: [
-    "arn:aws:kms:us-west-2:999999999:key/bc436485-5092-42b8-92a3-0aa8b93536c",
-  ],
+  keyIds: ["arn:aws:kms:us-west-2:999999999:key/bc436485-5092-42b8-92a3-0aa8b93536c"],
   clientProvider: () => new AWS.KMS({ endpoint: "http://local-kms:8080" }),
 });
 ```
@@ -489,7 +487,7 @@ For example:
 
 If a Custom Message lambda is configured, the output of the function invocation will be printed in the console too (verbosely!).
 
-By default, confirmation codes are randomly generated.  If set, the value assigned to the `CODE` environment variable will always be returned instead.
+By default, confirmation codes are randomly generated. If set, the value assigned to the `CODE` environment variable will always be returned instead.
 
 ## Advanced
 

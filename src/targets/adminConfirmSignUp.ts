@@ -13,17 +13,10 @@ export type AdminConfirmSignUpTarget = Target<
   AdminConfirmSignUpResponse
 >;
 
-type AdminConfirmSignUpServices = Pick<
-  Services,
-  "clock" | "cognito" | "triggers"
->;
+type AdminConfirmSignUpServices = Pick<Services, "clock" | "cognito" | "triggers">;
 
 export const AdminConfirmSignUp =
-  ({
-    clock,
-    cognito,
-    triggers,
-  }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
+  ({ clock, cognito, triggers }: AdminConfirmSignUpServices): AdminConfirmSignUpTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.Username) throw new MissingParameterError("Username");

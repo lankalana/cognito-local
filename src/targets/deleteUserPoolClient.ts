@@ -3,10 +3,7 @@ import { MissingParameterError, ResourceNotFoundError } from "../errors";
 import type { Services } from "../services";
 import type { Target } from "./Target";
 
-export type DeleteUserPoolClientTarget = Target<
-  DeleteUserPoolClientRequest,
-  object
->;
+export type DeleteUserPoolClientTarget = Target<DeleteUserPoolClientRequest, object>;
 
 type DeleteUserPoolClientServices = Pick<Services, "cognito">;
 

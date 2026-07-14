@@ -39,22 +39,19 @@ describe("CreateIdentityProvider target", () => {
       IdpIdentifiers: ["identifier"],
     });
 
-    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(
-      TestContext,
-      {
-        UserPoolId: "test",
-        ProviderName: "theProviderName",
-        ProviderType: IdentityProviderTypeType.OIDC,
-        ProviderDetails: {
-          detailKey: "detailValue",
-        },
-        AttributeMapping: {
-          attributeKey: "attributeValue",
-        },
-        IdpIdentifiers: ["identifier"],
-        LastModifiedDate: originalDate,
-        CreationDate: originalDate,
+    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(TestContext, {
+      UserPoolId: "test",
+      ProviderName: "theProviderName",
+      ProviderType: IdentityProviderTypeType.OIDC,
+      ProviderDetails: {
+        detailKey: "detailValue",
       },
-    );
+      AttributeMapping: {
+        attributeKey: "attributeValue",
+      },
+      IdpIdentifiers: ["identifier"],
+      LastModifiedDate: originalDate,
+      CreationDate: originalDate,
+    });
   });
 });

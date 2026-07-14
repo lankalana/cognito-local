@@ -7,10 +7,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import type { CognitoService, Triggers, UserPoolService } from "../services";
 import type { TokenGenerator } from "../services/tokenGenerator";
-import {
-  AdminInitiateAuth,
-  type AdminInitiateAuthTarget,
-} from "./adminInitiateAuth";
+import { AdminInitiateAuth, type AdminInitiateAuthTarget } from "./adminInitiateAuth";
 
 describe("AdminInitiateAuth target", () => {
   let adminInitiateAuth: AdminInitiateAuthTarget;

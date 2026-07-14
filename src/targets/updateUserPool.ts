@@ -7,10 +7,7 @@ import type { Services } from "../services/index.js";
 import type { UserPool } from "../services/userPoolService.js";
 import type { Target } from "./Target.js";
 
-export type UpdateUserPoolTarget = Target<
-  UpdateUserPoolRequest,
-  UpdateUserPoolResponse
->;
+export type UpdateUserPoolTarget = Target<UpdateUserPoolRequest, UpdateUserPoolResponse>;
 
 type UpdateUserPoolServices = Pick<Services, "cognito">;
 

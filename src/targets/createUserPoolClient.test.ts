@@ -4,10 +4,7 @@ import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { TestContext } from "../__tests__/testContext";
 import type { UserPoolService } from "../services";
-import {
-  CreateUserPoolClient,
-  type CreateUserPoolClientTarget,
-} from "./createUserPoolClient";
+import { CreateUserPoolClient, type CreateUserPoolClientTarget } from "./createUserPoolClient";
 
 const originalDate = new Date();
 
@@ -29,21 +26,18 @@ describe("CreateUserPoolClient target", () => {
       UserPoolId: "userPoolId",
     });
 
-    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(
-      TestContext,
-      {
-        ClientId: expect.any(String),
-        ClientName: "clientName",
-        CreationDate: originalDate,
-        LastModifiedDate: originalDate,
-        UserPoolId: "userPoolId",
-        TokenValidityUnits: {
-          AccessToken: "hours",
-          IdToken: "minutes",
-          RefreshToken: "days",
-        },
+    expect(mockUserPoolService.saveAppClient).toHaveBeenCalledWith(TestContext, {
+      ClientId: expect.any(String),
+      ClientName: "clientName",
+      CreationDate: originalDate,
+      LastModifiedDate: originalDate,
+      UserPoolId: "userPoolId",
+      TokenValidityUnits: {
+        AccessToken: "hours",
+        IdToken: "minutes",
+        RefreshToken: "days",
       },
-    );
+    });
 
     expect(result).toEqual({
       UserPoolClient: {

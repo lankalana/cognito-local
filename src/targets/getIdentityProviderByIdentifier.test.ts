@@ -28,18 +28,17 @@ describe("GetIdentityProviderByIdentifier target", () => {
       IdpIdentifiers: [IdpIdentifier],
     });
 
-    mockUserPoolService.getIdentityProviderByIdentifier.mockResolvedValue(
-      existingIdentityProvider,
-    );
+    mockUserPoolService.getIdentityProviderByIdentifier.mockResolvedValue(existingIdentityProvider);
 
     const result = await getIdentityProviderByIdentifier(TestContext, {
       IdpIdentifier: IdpIdentifier,
       UserPoolId: "test",
     });
 
-    expect(
-      mockUserPoolService.getIdentityProviderByIdentifier,
-    ).toHaveBeenCalledWith(TestContext, IdpIdentifier);
+    expect(mockUserPoolService.getIdentityProviderByIdentifier).toHaveBeenCalledWith(
+      TestContext,
+      IdpIdentifier,
+    );
 
     expect(result.IdentityProvider).toEqual({
       ProviderName: existingIdentityProvider.ProviderName,

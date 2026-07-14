@@ -28,10 +28,7 @@ describe("AdminListGroupsForUser target", () => {
     const existingGroup2 = TDB.group();
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([
-      existingGroup1,
-      existingGroup2,
-    ]);
+    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
@@ -51,10 +48,7 @@ describe("AdminListGroupsForUser target", () => {
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
-    mockUserPoolService.listGroups.mockResolvedValue([
-      existingGroup1,
-      existingGroup2,
-    ]);
+    mockUserPoolService.listGroups.mockResolvedValue([existingGroup1, existingGroup2]);
 
     const result = await adminListGroupsForUser(TestContext, {
       Username: existingUser.Username,
