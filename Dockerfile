@@ -1,6 +1,13 @@
 FROM node:24-alpine AS builder
 ARG MISE_VERSION=v2026.7.5
-RUN wget "https://github.com/jdx/mise/releases/download/${MISE_VERSION}/mise-${MISE_VERSION}-linux-x64-musl" -O /usr/local/bin/mise \
+ARG TARGETARCH
+RUN case "${TARGETARCH}" in \
+      amd64) MISE_ARCH="x64" ;; \
+      arm64) MISE_ARCH="arm64" ;; \
+      *) echo "Unsupported architecture: ${TARGETARCH}" && exit 1 ;; \
+    esac \
+    && wget "https://github.com/jdx/mise/releases/download/${MISE_VERSION}/mise-${MISE_VERSION}-linux-${MISE_ARCH}-musl" \
+      -O /usr/local/bin/mise \
 	&& chmod +x /usr/local/bin/mise \
 	&& mise use --global aube
 
