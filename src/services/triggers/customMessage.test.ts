@@ -53,33 +53,27 @@ describe("CustomMessage trigger", () => {
         userPoolId: "userPoolId",
       });
 
-      expect(mockLambda.invoke).toHaveBeenCalledWith(
-        TestContext,
-        "CustomMessage",
-        {
-          clientId: "clientId",
-          clientMetadata: {
-            client: "metadata",
-          },
-          codeParameter: "{####}",
-          triggerSource: "CustomMessage_ForgotPassword",
-          userAttributes: {
-            user: "attribute",
-          },
-          username: "example@example.com",
-          usernameParameter: "{username}",
-          userPoolId: "userPoolId",
+      expect(mockLambda.invoke).toHaveBeenCalledWith(TestContext, "CustomMessage", {
+        clientId: "clientId",
+        clientMetadata: {
+          client: "metadata",
         },
-      );
+        codeParameter: "{####}",
+        triggerSource: "CustomMessage_ForgotPassword",
+        userAttributes: {
+          user: "attribute",
+        },
+        username: "example@example.com",
+        usernameParameter: "{username}",
+        userPoolId: "userPoolId",
+      });
 
       expect(message).not.toBeNull();
       expect(message?.emailMessage).toEqual(
         "hi example@example.com your code is 123456. via email",
       );
       expect(message?.emailSubject).toEqual("email subject");
-      expect(message?.smsMessage).toEqual(
-        "hi example@example.com your code is 123456. via sms",
-      );
+      expect(message?.smsMessage).toEqual("hi example@example.com your code is 123456. via sms");
     });
   });
 });

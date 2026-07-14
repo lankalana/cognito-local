@@ -20,8 +20,10 @@ export function registerHostedUi(app: Express, router: Router) {
     routeLogger.debug("start");
 
     try {
-      const { response_type, client_id, redirect_uri, state, scope } =
-        req.query as Record<string, string | undefined>;
+      const { response_type, client_id, redirect_uri, state, scope } = req.query as Record<
+        string,
+        string | undefined
+      >;
 
       if (response_type !== "code") {
         res.status(400).send("Only response_type=code is supported");
@@ -57,8 +59,10 @@ export function registerHostedUi(app: Express, router: Router) {
 
     try {
       // TODO validate redirect_uri
-      const { username, password, client_id, redirect_uri, state, scope } =
-        req.body as Record<string, string | undefined>;
+      const { username, password, client_id, redirect_uri, state, scope } = req.body as Record<
+        string,
+        string | undefined
+      >;
 
       if (!client_id) {
         res.status(400).send("Missing client_id");
@@ -80,9 +84,7 @@ export function registerHostedUi(app: Express, router: Router) {
 
       const authResult = authResp.AuthenticationResult;
       if (!authResult) {
-        res
-          .status(401)
-          .send("Invalid username or password or challenge required");
+        res.status(401).send("Invalid username or password or challenge required");
         return;
       }
 
@@ -124,30 +126,21 @@ export function registerHostedUi(app: Express, router: Router) {
         return;
       }
 
-      const { code, redirect_uri, client_id } = req.body as Record<
-        string,
-        string | undefined
-      >;
+      const { code, redirect_uri, client_id } = req.body as Record<string, string | undefined>;
 
       if (!code) {
-        res
-          .status(400)
-          .json({ error: "invalid_request", message: "Missing code" });
+        res.status(400).json({ error: "invalid_request", message: "Missing code" });
         return;
       }
 
       if (!client_id) {
-        res
-          .status(400)
-          .json({ error: "invalid_request", message: "Missing client_id" });
+        res.status(400).json({ error: "invalid_request", message: "Missing client_id" });
         return;
       }
 
       const stored = authCodes.consume(code);
       if (!stored) {
-        res
-          .status(400)
-          .json({ error: "invalid_grant", message: "Invalid code" });
+        res.status(400).json({ error: "invalid_grant", message: "Invalid code" });
         return;
       }
 
@@ -159,11 +152,7 @@ export function registerHostedUi(app: Express, router: Router) {
         return;
       }
 
-      if (
-        stored.redirectUri &&
-        redirect_uri &&
-        stored.redirectUri !== redirect_uri
-      ) {
+      if (stored.redirectUri && redirect_uri && stored.redirectUri !== redirect_uri) {
         res.status(400).json({
           error: "invalid_grant",
           message: "Redirect URI does not match",
@@ -172,9 +161,7 @@ export function registerHostedUi(app: Express, router: Router) {
       }
 
       if (!stored.tokens) {
-        res
-          .status(400)
-          .json({ error: "invalid_grant", message: "No tokens available" });
+        res.status(400).json({ error: "invalid_grant", message: "No tokens available" });
         return;
       }
 

@@ -95,7 +95,7 @@ jobs:
       - name: Start the Docker container
         run: docker run -d --rm --name test-container -p ${{ env.PORT }}:9229 ${{ env.TEST_TAG }}
 
-      - name: Test 
+      - name: Test
         run: scripts/smoke-test.sh
         env:
           PORT: ${{ env.PORT }}

@@ -1,12 +1,4 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type Mock,
-  type MockedObject,
-  vi,
-} from "vitest";
+import { beforeEach, describe, expect, it, type Mock, type MockedObject, vi } from "vitest";
 import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockMessages } from "../__tests__/mockMessages";
 import { newMockTokenGenerator } from "../__tests__/mockTokenGenerator";
@@ -63,9 +55,7 @@ describe("InitiateAuth target", () => {
           ClientId: userPoolClient.ClientId,
           AuthFlow: "USER_PASSWORD_AUTH",
         }),
-      ).rejects.toEqual(
-        new InvalidParameterError("Missing required parameter authParameters"),
-      );
+      ).rejects.toEqual(new InvalidParameterError("Missing required parameter authParameters"));
     });
 
     it("throws if password is incorrect", async () => {
@@ -220,13 +210,10 @@ describe("InitiateAuth target", () => {
             );
 
             // also saves the code on the user for comparison later
-            expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
-              TestContext,
-              {
-                ...user,
-                MFACode: "123456",
-              },
-            );
+            expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+              ...user,
+              MFACode: "123456",
+            });
           });
 
           describe("when Post Authentication trigger is enabled", () => {
@@ -330,13 +317,10 @@ describe("InitiateAuth target", () => {
             );
 
             // also saves the code on the user for comparison later
-            expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
-              TestContext,
-              {
-                ...user,
-                MFACode: "123456",
-              },
-            );
+            expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+              ...user,
+              MFACode: "123456",
+            });
           });
 
           describe("when Post Authentication trigger is enabled", () => {
@@ -392,9 +376,7 @@ describe("InitiateAuth target", () => {
 
             expect(output.AuthenticationResult?.AccessToken).toEqual("access");
             expect(output.AuthenticationResult?.IdToken).toEqual("id");
-            expect(output.AuthenticationResult?.RefreshToken).toEqual(
-              "refresh",
-            );
+            expect(output.AuthenticationResult?.RefreshToken).toEqual("refresh");
 
             expect(mockTokenGenerator.generate).toHaveBeenCalledWith(
               TestContext,
@@ -460,9 +442,7 @@ describe("InitiateAuth target", () => {
               RefreshToken: "refresh",
             });
 
-            mockTriggers.enabled.mockImplementation(
-              (trigger) => trigger === "PostAuthentication",
-            );
+            mockTriggers.enabled.mockImplementation((trigger) => trigger === "PostAuthentication");
 
             await initiateAuth(TestContext, {
               ClientId: userPoolClient.ClientId,
@@ -473,16 +453,13 @@ describe("InitiateAuth target", () => {
               },
             });
 
-            expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(
-              TestContext,
-              {
-                clientId: userPoolClient.ClientId,
-                source: "PostAuthentication_Authentication",
-                userAttributes: user.Attributes,
-                username: user.Username,
-                userPoolId: userPoolClient.UserPoolId,
-              },
-            );
+            expect(mockTriggers.postAuthentication).toHaveBeenCalledWith(TestContext, {
+              clientId: userPoolClient.ClientId,
+              source: "PostAuthentication_Authentication",
+              userAttributes: user.Attributes,
+              username: user.Username,
+              userPoolId: userPoolClient.UserPoolId,
+            });
 
             expect(mockTriggers.postAuthentication).toHaveBeenCalledBefore(
               mockTokenGenerator.generate,
@@ -524,9 +501,7 @@ describe("InitiateAuth target", () => {
 
       describe("when Post Authentication trigger is enabled", () => {
         it("does not invoke the trigger", async () => {
-          mockTriggers.enabled.mockImplementation(
-            (trigger) => trigger === "PostAuthentication",
-          );
+          mockTriggers.enabled.mockImplementation((trigger) => trigger === "PostAuthentication");
 
           await initiateAuth(TestContext, {
             ClientId: userPoolClient.ClientId,

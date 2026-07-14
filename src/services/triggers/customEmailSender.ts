@@ -47,18 +47,7 @@ interface CustomEmailSenderServices {
 
 export const CustomEmailSender =
   ({ lambda, crypto }: CustomEmailSenderServices): CustomEmailSenderTrigger =>
-  async (
-    ctx,
-    {
-      clientId,
-      clientMetadata,
-      code,
-      source,
-      userAttributes,
-      username,
-      userPoolId,
-    },
-  ) => {
+  async (ctx, { clientId, clientMetadata, code, source, userAttributes, username, userPoolId }) => {
     try {
       const encrypted = await crypto.encrypt(ctx, code);
 

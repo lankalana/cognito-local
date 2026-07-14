@@ -10,10 +10,7 @@ import { InvalidParameterError, NotAuthorizedError } from "../errors";
 import PrivateKey from "../keys/cognitoLocal.private.json";
 import type { UserPoolService } from "../services";
 import { attribute } from "../services/userPoolService";
-import {
-  DeleteUserAttributes,
-  type DeleteUserAttributesTarget,
-} from "./deleteUserAttributes";
+import { DeleteUserAttributes, type DeleteUserAttributesTarget } from "./deleteUserAttributes";
 
 const clock = new ClockFake(new Date());
 
@@ -71,10 +68,7 @@ describe("DeleteUserAttributes target", () => {
 
   it("saves the updated attributes on the user", async () => {
     const user = TDB.user({
-      Attributes: [
-        attribute("email", "example@example.com"),
-        attribute("custom:example", "1"),
-      ],
+      Attributes: [attribute("email", "example@example.com"), attribute("custom:example", "1")],
     });
 
     mockUserPoolService.getUserByUsername.mockResolvedValue(user);

@@ -29,10 +29,7 @@ describe("DeleteGroup target", () => {
       UserPoolId: "test",
     });
 
-    expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(
-      TestContext,
-      existingGroup,
-    );
+    expect(mockUserPoolService.deleteGroup).toHaveBeenCalledWith(TestContext, existingGroup);
   });
 
   it("throws if the group doesn't exist", async () => {

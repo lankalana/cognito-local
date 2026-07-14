@@ -15,11 +15,7 @@ import {
 import type { Messages, Services, UserPoolService } from "../services";
 import type { Context } from "../services/context";
 import type { DeliveryDetails } from "../services/messageDelivery/messageDelivery";
-import {
-  attributesInclude,
-  attributeValue,
-  type User,
-} from "../services/userPoolService";
+import { attributesInclude, attributeValue, type User } from "../services/userPoolService";
 import { userToResponseObject } from "./responses";
 import type { Target } from "./Target";
 
@@ -27,15 +23,9 @@ const translator = createTranslator(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!",
 );
 
-export type AdminCreateUserTarget = Target<
-  AdminCreateUserRequest,
-  AdminCreateUserResponse
->;
+export type AdminCreateUserTarget = Target<AdminCreateUserRequest, AdminCreateUserResponse>;
 
-type AdminCreateUserServices = Pick<
-  Services,
-  "clock" | "cognito" | "messages" | "config"
->;
+type AdminCreateUserServices = Pick<Services, "clock" | "cognito" | "messages" | "config">;
 
 const selectAppropriateDeliveryMethod = (
   desiredDeliveryMediums: DeliveryMediumType[],
@@ -80,9 +70,7 @@ const deliverWelcomeMessage = async (
   );
   if (!deliveryDetails) {
     // TODO: I don't know what the real error message should be for this
-    throw new InvalidParameterError(
-      "User has no attribute matching desired delivery mediums",
-    );
+    throw new InvalidParameterError("User has no attribute matching desired delivery mediums");
   }
 
   await messages.deliver(
@@ -98,11 +86,7 @@ const deliverWelcomeMessage = async (
 };
 
 export const AdminCreateUser =
-  ({
-    clock,
-    cognito,
-    messages,
-  }: AdminCreateUserServices): AdminCreateUserTarget =>
+  ({ clock, cognito, messages }: AdminCreateUserServices): AdminCreateUserTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.Username) throw new MissingParameterError("Username");
@@ -125,9 +109,7 @@ export const AdminCreateUser =
     const now = clock.get();
 
     const temporaryPassword =
-      req.TemporaryPassword ??
-      process.env.CODE ??
-      translator.generate().slice(0, 6);
+      req.TemporaryPassword ?? process.env.CODE ?? translator.generate().slice(0, 6);
 
     let username = req.Username;
     if (userPool.options.UsernameAttributes?.includes("email")) {
@@ -149,9 +131,7 @@ export const AdminCreateUser =
     const user: User = {
       Username: username,
       Password: temporaryPassword,
-      Attributes: attributes.sort((a, b) =>
-        a.Name && b.Name ? a.Name.localeCompare(b.Name) : 0,
-      ),
+      Attributes: attributes.sort((a, b) => (a.Name && b.Name ? a.Name.localeCompare(b.Name) : 0)),
       Enabled: true,
       UserStatus: "FORCE_CHANGE_PASSWORD",
       ConfirmationCode: undefined,
@@ -168,14 +148,7 @@ export const AdminCreateUser =
     // TODO: support PreSignIn lambda and ValidationData
 
     if (!supressWelcomeMessage) {
-      await deliverWelcomeMessage(
-        ctx,
-        req,
-        temporaryPassword,
-        user,
-        messages,
-        userPool,
-      );
+      await deliverWelcomeMessage(ctx, req, temporaryPassword, user, messages, userPool);
     }
 
     return {

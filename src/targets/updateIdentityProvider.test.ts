@@ -1,11 +1,4 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type MockedObject,
-  vi,
-} from "vitest";
+import { beforeEach, describe, expect, it, type MockedObject, vi } from "vitest";
 import { ClockFake } from "../__tests__/clockFake.js";
 import { newMockCognitoService } from "../__tests__/mockCognitoService.js";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService.js";
@@ -53,20 +46,18 @@ describe("UpdateGroup target", () => {
       ProviderDetails: { newProviderDetailKey: "new provider detail" },
     });
 
-    expect(
-      mockUserPoolService.getIdentityProviderByProviderName,
-    ).toHaveBeenCalledWith(TestContext, existingIdentityProvider.ProviderName);
-
-    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(
+    expect(mockUserPoolService.getIdentityProviderByProviderName).toHaveBeenCalledWith(
       TestContext,
-      {
-        ...existingIdentityProvider,
-        LastModifiedDate: newDate,
-        AttributeMapping: { newAttributeKey: "new attribute value" },
-        IdpIdentifiers: ["newIdentifier"],
-        ProviderDetails: { newProviderDetailKey: "new provider detail" },
-      },
+      existingIdentityProvider.ProviderName,
     );
+
+    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(TestContext, {
+      ...existingIdentityProvider,
+      LastModifiedDate: newDate,
+      AttributeMapping: { newAttributeKey: "new attribute value" },
+      IdpIdentifiers: ["newIdentifier"],
+      ProviderDetails: { newProviderDetailKey: "new provider detail" },
+    });
 
     expect(result.IdentityProvider).toEqual({
       UserPoolId: "test",
@@ -98,18 +89,16 @@ describe("UpdateGroup target", () => {
       IdpIdentifiers: ["newIdentifier"],
     });
 
-    expect(
-      mockUserPoolService.getIdentityProviderByProviderName,
-    ).toHaveBeenCalledWith(TestContext, existingIdentityProvider.ProviderName);
-
-    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(
+    expect(mockUserPoolService.getIdentityProviderByProviderName).toHaveBeenCalledWith(
       TestContext,
-      {
-        ...existingIdentityProvider,
-        LastModifiedDate: newDate,
-        IdpIdentifiers: ["newIdentifier"],
-      },
+      existingIdentityProvider.ProviderName,
     );
+
+    expect(mockUserPoolService.saveIdentityProvider).toHaveBeenCalledWith(TestContext, {
+      ...existingIdentityProvider,
+      LastModifiedDate: newDate,
+      IdpIdentifiers: ["newIdentifier"],
+    });
 
     expect(result.IdentityProvider).toEqual({
       UserPoolId: "test",
@@ -124,9 +113,7 @@ describe("UpdateGroup target", () => {
   });
 
   it("throws if the identity provider doesn't exist", async () => {
-    mockUserPoolService.getIdentityProviderByProviderName.mockReturnValue(
-      Promise.resolve(null),
-    );
+    mockUserPoolService.getIdentityProviderByProviderName.mockReturnValue(Promise.resolve(null));
 
     await expect(
       updateIdentityProvider(TestContext, {

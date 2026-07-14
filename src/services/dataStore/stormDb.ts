@@ -14,9 +14,7 @@ export class StormDBDataStore implements DataStore {
 
   async delete(ctx: Context, key: string | string[]) {
     ctx.logger.debug({ key }, "DataStore.delete");
-    (Array.isArray(key) ? key : [key])
-      .reduce((acc, k) => acc.get([k]), this.db)
-      .delete(false);
+    (Array.isArray(key) ? key : [key]).reduce((acc, k) => acc.get([k]), this.db).delete(false);
 
     ctx.logger.debug({ store: this.db.value() }, "DataStore.save");
     await this.db.save();
@@ -60,9 +58,7 @@ const replaceDatesWithISOStrings: (
   const val = this[key];
   if (!(val instanceof Date)) {
     throw new Error(
-      `Serialize: Expected ${key} field to contain a Date, received a ${typeof this[
-        key
-      ]}`,
+      `Serialize: Expected ${key} field to contain a Date, received a ${typeof this[key]}`,
     );
   }
 
@@ -88,8 +84,7 @@ const reviveDates = (key: string, value: unknown): unknown => {
 const createStormDBInstance = (directory: string, id: string): StormDB => {
   const engine = new StormDB.localFileEngine(`${directory}/${id}.json`, {
     async: true,
-    serialize: (obj: unknown) =>
-      JSON.stringify(obj, replaceDatesWithISOStrings, 2),
+    serialize: (obj: unknown) => JSON.stringify(obj, replaceDatesWithISOStrings, 2),
     deserialize: (obj: string) => JSON.parse(obj, reviveDates),
   });
 
@@ -103,11 +98,7 @@ export class StormDBDataStoreFactory implements DataStoreFactory {
     this.directory = directory;
   }
 
-  public async create(
-    ctx: Context,
-    id: string,
-    defaults: object,
-  ): Promise<DataStore> {
+  public async create(ctx: Context, id: string, defaults: object): Promise<DataStore> {
     ctx.logger.debug({ id }, "createDataStore");
     await mkdir(this.directory, { recursive: true });
 

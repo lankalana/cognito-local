@@ -16,10 +16,7 @@ export type ServerOptions = {
   port?: number;
   hostname?: string;
   development?: boolean;
-} & (
-  | { https: true; key?: string; ca?: string; cert?: string }
-  | { https?: false }
-);
+} & ({ https: true; key?: string; ca?: string; cert?: string } | { https?: false });
 
 export interface Server {
   // biome-ignore lint/suspicious/noExplicitAny: don't want to export express types
@@ -27,11 +24,7 @@ export interface Server {
   start(): Promise<http.Server | https.Server>;
 }
 
-export const createServer = (
-  router: Router,
-  logger: Logger,
-  options: ServerOptions,
-): Server => {
+export const createServer = (router: Router, logger: Logger, options: ServerOptions): Server => {
   const pino = pinoHttp<http.IncomingMessage, http.ServerResponse>({
     logger,
     useLevel: "debug",
@@ -97,10 +90,7 @@ export const createServer = (
 
     const route = router(target);
     // biome-ignore lint/suspicious/noExplicitAny: generic wrapper
-    const replacer: (this: any, key: string, value: any) => any = function (
-      key,
-      value,
-    ) {
+    const replacer: (this: any, key: string, value: any) => any = function (key, value) {
       if (this[key] instanceof Date) {
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         return Math.floor(this[key].getTime() / 1000);
@@ -111,10 +101,7 @@ export const createServer = (
 
     route({ logger: req.log }, req.body).then(
       (output) =>
-        res
-          .status(200)
-          .type("application/x-amz-json-1.1")
-          .send(JSON.stringify(output, replacer)),
+        res.status(200).type("application/x-amz-json-1.1").send(JSON.stringify(output, replacer)),
       (ex) => {
         if (ex instanceof UnsupportedError) {
           if (options.development) {
@@ -162,12 +149,8 @@ export const createServer = (
           ? https.createServer(
               {
                 ca: options.ca ? readFileSync(options.ca, "utf-8") : undefined,
-                cert: options.cert
-                  ? readFileSync(options.cert, "utf-8")
-                  : undefined,
-                key: options.key
-                  ? readFileSync(options.key, "utf-8")
-                  : undefined,
+                cert: options.cert ? readFileSync(options.cert, "utf-8") : undefined,
+                key: options.key ? readFileSync(options.key, "utf-8") : undefined,
               },
               app,
             )

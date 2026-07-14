@@ -65,24 +65,20 @@ describe("UserMigration trigger", () => {
         },
       });
 
-      expect(mockLambda.invoke).toHaveBeenCalledWith(
-        TestContext,
-        "UserMigration",
-        {
-          clientId: "clientId",
-          clientMetadata: {
-            client: "metadata",
-          },
-          password: "password",
-          triggerSource: "UserMigration_Authentication",
-          userAttributes: {},
-          userPoolId: "userPoolId",
-          username: "example@example.com",
-          validationData: {
-            validation: "data",
-          },
+      expect(mockLambda.invoke).toHaveBeenCalledWith(TestContext, "UserMigration", {
+        clientId: "clientId",
+        clientMetadata: {
+          client: "metadata",
         },
-      );
+        password: "password",
+        triggerSource: "UserMigration_Authentication",
+        userAttributes: {},
+        userPoolId: "userPoolId",
+        username: "example@example.com",
+        validationData: {
+          validation: "data",
+        },
+      });
 
       expect(user).not.toBeNull();
       expect(user.Username).toEqual(expect.stringMatching(UUID));

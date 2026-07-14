@@ -5,10 +5,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { GroupNotFoundError, UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
-import {
-  ListUsersInGroup,
-  type ListUsersInGroupTarget,
-} from "./listUsersInGroup";
+import { ListUsersInGroup, type ListUsersInGroupTarget } from "./listUsersInGroup";
 
 describe("ListUsersInGroup target", () => {
   let listUsersInGroup: ListUsersInGroupTarget;
@@ -30,16 +27,14 @@ describe("ListUsersInGroup target", () => {
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
-    mockUserPoolService.getUserByUsername.mockImplementation(
-      (_ctx, username) => {
-        if (username === existingUser1.Username) {
-          return Promise.resolve(existingUser1);
-        } else if (username === existingUser2.Username) {
-          return Promise.resolve(existingUser2);
-        }
-        return Promise.resolve(null);
-      },
-    );
+    mockUserPoolService.getUserByUsername.mockImplementation((_ctx, username) => {
+      if (username === existingUser1.Username) {
+        return Promise.resolve(existingUser1);
+      } else if (username === existingUser2.Username) {
+        return Promise.resolve(existingUser2);
+      }
+      return Promise.resolve(null);
+    });
 
     const result = await listUsersInGroup(TestContext, {
       GroupName: existingGroup.GroupName,
@@ -110,15 +105,13 @@ describe("ListUsersInGroup target", () => {
     });
 
     mockUserPoolService.getGroupByGroupName.mockResolvedValue(existingGroup);
-    mockUserPoolService.getUserByUsername.mockImplementation(
-      (_ctx, username) => {
-        if (username === existingUser1.Username) {
-          return Promise.resolve(existingUser1);
-        }
-        // don't ever return a value for existingUser2
-        return Promise.resolve(null);
-      },
-    );
+    mockUserPoolService.getUserByUsername.mockImplementation((_ctx, username) => {
+      if (username === existingUser1.Username) {
+        return Promise.resolve(existingUser1);
+      }
+      // don't ever return a value for existingUser2
+      return Promise.resolve(null);
+    });
 
     await expect(
       listUsersInGroup(TestContext, {

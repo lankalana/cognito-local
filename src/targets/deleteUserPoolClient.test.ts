@@ -5,10 +5,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { ResourceNotFoundError } from "../errors";
 import type { CognitoService, UserPoolService } from "../services";
-import {
-  DeleteUserPoolClient,
-  type DeleteUserPoolClientTarget,
-} from "./deleteUserPoolClient";
+import { DeleteUserPoolClient, type DeleteUserPoolClientTarget } from "./deleteUserPoolClient";
 
 describe("DeleteUserPoolClient target", () => {
   let deleteUserPoolClient: DeleteUserPoolClientTarget;

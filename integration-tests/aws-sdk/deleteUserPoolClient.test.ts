@@ -10,7 +10,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       // create the user pool client
       const upc = await client.createUserPoolClient({
@@ -19,20 +19,20 @@ describe(
       });
 
       const describeResponse = await client.describeUserPoolClient({
-        ClientId: upc.UserPoolClient?.ClientId!,
+        ClientId: upc.UserPoolClient!.ClientId!,
         UserPoolId: userPoolId,
       });
 
       expect(describeResponse.UserPoolClient).toBeDefined();
 
       await client.deleteUserPoolClient({
-        ClientId: upc.UserPoolClient?.ClientId!,
+        ClientId: upc.UserPoolClient!.ClientId!,
         UserPoolId: userPoolId,
       });
 
       await expect(
         client.describeUserPoolClient({
-          ClientId: upc.UserPoolClient?.ClientId!,
+          ClientId: upc.UserPoolClient!.ClientId!,
           UserPoolId: userPoolId,
         }),
       ).rejects.toMatchObject({

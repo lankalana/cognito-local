@@ -61,10 +61,7 @@ describe("ListUsers target", () => {
     expect(output).toBeDefined();
     expect(output.Users).toEqual([]);
 
-    expect(mockUserPoolService.listUsers).toHaveBeenCalledWith(
-      TestContext,
-      'username = "abc"',
-    );
+    expect(mockUserPoolService.listUsers).toHaveBeenCalledWith(TestContext, 'username = "abc"');
   });
 
   it.todo("supports Limit to specify the number of users to return");

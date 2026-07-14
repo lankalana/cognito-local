@@ -24,8 +24,6 @@ export const ListIdentityProviders =
     const identityProviders = await userPool.listIdentityProviders(ctx);
 
     return {
-      Providers: identityProviders.map(
-        identityProviderToResponseObject(req.UserPoolId),
-      ),
+      Providers: identityProviders.map(identityProviderToResponseObject(req.UserPoolId)),
     };
   };

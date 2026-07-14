@@ -4,10 +4,7 @@ import { TestContext } from "../../__tests__/testContext";
 import * as TDB from "../../__tests__/testDataBuilder";
 import type { Lambda } from "../lambda";
 import { attributesToRecord } from "../userPoolService";
-import {
-  PostAuthentication,
-  type PostAuthenticationTrigger,
-} from "./postAuthentication";
+import { PostAuthentication, type PostAuthenticationTrigger } from "./postAuthentication";
 
 describe("PostAuthentication trigger", () => {
   let mockLambda: MockedObject<Lambda>;
@@ -54,20 +51,16 @@ describe("PostAuthentication trigger", () => {
         userPoolId: "userPoolId",
       });
 
-      expect(mockLambda.invoke).toHaveBeenCalledWith(
-        TestContext,
-        "PostAuthentication",
-        {
-          clientId: "clientId",
-          clientMetadata: {
-            client: "metadata",
-          },
-          triggerSource: "PostAuthentication_Authentication",
-          userAttributes: attributesToRecord(user.Attributes),
-          userPoolId: "userPoolId",
-          username: user.Username,
+      expect(mockLambda.invoke).toHaveBeenCalledWith(TestContext, "PostAuthentication", {
+        clientId: "clientId",
+        clientMetadata: {
+          client: "metadata",
         },
-      );
+        triggerSource: "PostAuthentication_Authentication",
+        userAttributes: attributesToRecord(user.Attributes),
+        userPoolId: "userPoolId",
+        username: user.Username,
+      });
     });
   });
 });

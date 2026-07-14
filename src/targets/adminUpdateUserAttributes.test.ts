@@ -7,11 +7,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { InvalidParameterError, NotAuthorizedError } from "../errors";
 import type { Messages, UserPoolService } from "../services";
-import {
-  attribute,
-  attributesAppend,
-  attributeValue,
-} from "../services/userPoolService";
+import { attribute, attributesAppend, attributeValue } from "../services/userPoolService";
 import {
   AdminUpdateUserAttributes,
   type AdminUpdateUserAttributesTarget,
@@ -70,10 +66,7 @@ describe("AdminUpdateUserAttributes target", () => {
 
     expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
       ...user,
-      Attributes: attributesAppend(
-        user.Attributes,
-        attribute("custom:example", "1"),
-      ),
+      Attributes: attributesAppend(user.Attributes, attribute("custom:example", "1")),
       UserLastModifiedDate: clock.get(),
     });
   });
@@ -86,13 +79,7 @@ describe("AdminUpdateUserAttributes target", () => {
     ${"phone_number_verified without an phone_number attribute"} | ${"phone_number_verified"} | ${"Phone Number is required to verify/un-verify a phone number"}
   `(
     "req.UserAttributes contains $desc",
-    ({
-      attribute,
-      expectedError,
-    }: {
-      attribute: string;
-      expectedError: string;
-    }) => {
+    ({ attribute, expectedError }: { attribute: string; expectedError: string }) => {
       it("throws an invalid parameter error", async () => {
         // Default user
         let user = TDB.user();
@@ -136,35 +123,35 @@ describe("AdminUpdateUserAttributes target", () => {
     },
   );
 
-  describe.each([
-    "email",
-    "phone_number",
-  ])("%s is in req.UserAttributes without the relevant verified attribute", (attr) => {
-    it(`sets the ${attr}_verified attribute to false`, async () => {
-      const user = TDB.user();
+  describe.each(["email", "phone_number"])(
+    "%s is in req.UserAttributes without the relevant verified attribute",
+    (attr) => {
+      it(`sets the ${attr}_verified attribute to false`, async () => {
+        const user = TDB.user();
 
-      mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+        mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
-      await adminUpdateUserAttributes(TestContext, {
-        ClientMetadata: {
-          client: "metadata",
-        },
-        UserPoolId: "test",
-        UserAttributes: [attribute(attr, "new value")],
-        Username: "abc",
+        await adminUpdateUserAttributes(TestContext, {
+          ClientMetadata: {
+            client: "metadata",
+          },
+          UserPoolId: "test",
+          UserAttributes: [attribute(attr, "new value")],
+          Username: "abc",
+        });
+
+        expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
+          ...user,
+          Attributes: attributesAppend(
+            user.Attributes,
+            attribute(attr, "new value"),
+            attribute(`${attr}_verified`, "false"),
+          ),
+          UserLastModifiedDate: clock.get(),
+        });
       });
-
-      expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(TestContext, {
-        ...user,
-        Attributes: attributesAppend(
-          user.Attributes,
-          attribute(attr, "new value"),
-          attribute(`${attr}_verified`, "false"),
-        ),
-        UserLastModifiedDate: clock.get(),
-      });
-    });
-  });
+    },
+  );
 
   describe("user pool has auto verified attributes enabled", () => {
     beforeEach(() => {
@@ -176,102 +163,91 @@ describe("AdminUpdateUserAttributes target", () => {
       ${["email"]}
       ${["phone_number"]}
       ${["email", "phone_number"]}
-    `(
-      "when $attributes is unverified",
-      ({ attributes }: { attributes: string[] }) => {
-        describe("the verification status was not affected by the update", () => {
-          it("does not deliver a OTP code to the user", async () => {
-            const user = TDB.user({
-              Attributes: attributes.map((attr: string) =>
-                attribute(`${attr}_verified`, "false"),
-              ),
-            });
+    `("when $attributes is unverified", ({ attributes }: { attributes: string[] }) => {
+      describe("the verification status was not affected by the update", () => {
+        it("does not deliver a OTP code to the user", async () => {
+          const user = TDB.user({
+            Attributes: attributes.map((attr: string) => attribute(`${attr}_verified`, "false")),
+          });
 
-            mockUserPoolService.getUserByUsername.mockResolvedValue(user);
-            mockUserPoolService.options.SchemaAttributes = [
-              { Name: "example", Mutable: true },
-            ];
+          mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+          mockUserPoolService.options.SchemaAttributes = [{ Name: "example", Mutable: true }];
 
-            await adminUpdateUserAttributes(TestContext, {
+          await adminUpdateUserAttributes(TestContext, {
+            ClientMetadata: {
+              client: "metadata",
+            },
+            UserPoolId: "test",
+            UserAttributes: [attribute("example", "1")],
+            Username: "abc",
+          });
+
+          expect(mockMessages.deliver).not.toHaveBeenCalled();
+        });
+      });
+
+      describe("the verification status changed because of the update", () => {
+        it("throws if the user doesn't have a valid way to contact them", async () => {
+          const user = TDB.user({
+            Attributes: [],
+          });
+
+          mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+
+          await expect(
+            adminUpdateUserAttributes(TestContext, {
               ClientMetadata: {
                 client: "metadata",
               },
               UserPoolId: "test",
-              UserAttributes: [attribute("example", "1")],
+              UserAttributes: attributes.map((attr: string) => attribute(attr, "new value")),
               Username: "abc",
-            });
-
-            expect(mockMessages.deliver).not.toHaveBeenCalled();
-          });
+            }),
+          ).rejects.toEqual(
+            new InvalidParameterError(
+              "User has no attribute matching desired auto verified attributes",
+            ),
+          );
         });
 
-        describe("the verification status changed because of the update", () => {
-          it("throws if the user doesn't have a valid way to contact them", async () => {
-            const user = TDB.user({
-              Attributes: [],
-            });
+        it("delivers a OTP code to the user", async () => {
+          const user = TDB.user();
 
-            mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+          mockUserPoolService.getUserByUsername.mockResolvedValue(user);
 
-            await expect(
-              adminUpdateUserAttributes(TestContext, {
-                ClientMetadata: {
-                  client: "metadata",
-                },
-                UserPoolId: "test",
-                UserAttributes: attributes.map((attr: string) =>
-                  attribute(attr, "new value"),
-                ),
-                Username: "abc",
-              }),
-            ).rejects.toEqual(
-              new InvalidParameterError(
-                "User has no attribute matching desired auto verified attributes",
-              ),
-            );
+          await adminUpdateUserAttributes(TestContext, {
+            ClientMetadata: {
+              client: "metadata",
+            },
+            UserPoolId: "test",
+            UserAttributes: attributes.map((attr: string) => attribute(attr, "new value")),
+            Username: "abc",
           });
 
-          it("delivers a OTP code to the user", async () => {
-            const user = TDB.user();
+          expect(mockMessages.deliver).toHaveBeenCalledWith(
+            TestContext,
+            "UpdateUserAttribute",
+            null,
+            "test",
+            user,
+            "123456",
+            { client: "metadata" },
+            {
+              AttributeName: "email",
+              DeliveryMedium: "EMAIL",
+              Destination: attributeValue("email", user.Attributes),
+            },
+          );
 
-            mockUserPoolService.getUserByUsername.mockResolvedValue(user);
-
-            await adminUpdateUserAttributes(TestContext, {
-              ClientMetadata: {
-                client: "metadata",
-              },
-              UserPoolId: "test",
-              UserAttributes: attributes.map((attr: string) =>
-                attribute(attr, "new value"),
-              ),
-              Username: "abc",
-            });
-
-            expect(mockMessages.deliver).toHaveBeenCalledWith(
-              TestContext,
-              "UpdateUserAttribute",
-              null,
-              "test",
-              user,
-              "123456",
-              { client: "metadata" },
-              {
-                AttributeName: "email",
-                DeliveryMedium: "EMAIL",
-                Destination: attributeValue("email", user.Attributes),
-              },
-            );
-
-            expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
-              TestContext,
-              expect.objectContaining({
-                AttributeVerificationCode: "123456",
-              }),
-            );
-          });
+          expect(mockUserPoolService.saveUser).toHaveBeenCalledWith(
+            TestContext,
+            expect.objectContaining({
+              AttributeVerificationCode: "123456",
+            }),
+          );
         });
-      },
-    );
+      });
+    });
   });
 
   describe("user pool does not have auto verified attributes", () => {
@@ -284,56 +260,47 @@ describe("AdminUpdateUserAttributes target", () => {
       ${["email"]}
       ${["phone_number"]}
       ${["email", "phone_number"]}
-    `(
-      "when $attributes is unverified",
-      ({ attributes }: { attributes: string[] }) => {
-        describe("the verification status was not affected by the update", () => {
-          it("does not deliver a OTP code to the user", async () => {
-            const user = TDB.user({
-              Attributes: attributes.map((attr: string) =>
-                attribute(`${attr}_verified`, "false"),
-              ),
-            });
-
-            mockUserPoolService.getUserByUsername.mockResolvedValue(user);
-            mockUserPoolService.options.SchemaAttributes = [
-              { Name: "example", Mutable: true },
-            ];
-
-            await adminUpdateUserAttributes(TestContext, {
-              ClientMetadata: {
-                client: "metadata",
-              },
-              UserPoolId: "test",
-              UserAttributes: [attribute("example", "1")],
-              Username: "abc",
-            });
-
-            expect(mockMessages.deliver).not.toHaveBeenCalled();
+    `("when $attributes is unverified", ({ attributes }: { attributes: string[] }) => {
+      describe("the verification status was not affected by the update", () => {
+        it("does not deliver a OTP code to the user", async () => {
+          const user = TDB.user({
+            Attributes: attributes.map((attr: string) => attribute(`${attr}_verified`, "false")),
           });
-        });
 
-        describe("the verification status changed because of the update", () => {
-          it("does not deliver a OTP code to the user", async () => {
-            const user = TDB.user();
+          mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+          mockUserPoolService.options.SchemaAttributes = [{ Name: "example", Mutable: true }];
 
-            mockUserPoolService.getUserByUsername.mockResolvedValue(user);
-
-            await adminUpdateUserAttributes(TestContext, {
-              ClientMetadata: {
-                client: "metadata",
-              },
-              UserPoolId: "test",
-              UserAttributes: attributes.map((attr: string) =>
-                attribute(attr, "new value"),
-              ),
-              Username: "abc",
-            });
-
-            expect(mockMessages.deliver).not.toHaveBeenCalled();
+          await adminUpdateUserAttributes(TestContext, {
+            ClientMetadata: {
+              client: "metadata",
+            },
+            UserPoolId: "test",
+            UserAttributes: [attribute("example", "1")],
+            Username: "abc",
           });
+
+          expect(mockMessages.deliver).not.toHaveBeenCalled();
         });
-      },
-    );
+      });
+
+      describe("the verification status changed because of the update", () => {
+        it("does not deliver a OTP code to the user", async () => {
+          const user = TDB.user();
+
+          mockUserPoolService.getUserByUsername.mockResolvedValue(user);
+
+          await adminUpdateUserAttributes(TestContext, {
+            ClientMetadata: {
+              client: "metadata",
+            },
+            UserPoolId: "test",
+            UserAttributes: attributes.map((attr: string) => attribute(attr, "new value")),
+            Username: "abc",
+          });
+
+          expect(mockMessages.deliver).not.toHaveBeenCalled();
+        });
+      });
+    });
   });
 });

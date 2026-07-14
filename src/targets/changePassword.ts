@@ -13,10 +13,7 @@ import type { Services } from "../services";
 import type { Token } from "../services/tokenGenerator";
 import type { Target } from "./Target";
 
-export type ChangePasswordTarget = Target<
-  ChangePasswordRequest,
-  ChangePasswordResponse
->;
+export type ChangePasswordTarget = Target<ChangePasswordRequest, ChangePasswordResponse>;
 
 type ChangePasswordServices = Pick<Services, "cognito" | "clock">;
 
@@ -24,8 +21,7 @@ export const ChangePassword =
   ({ cognito, clock }: ChangePasswordServices): ChangePasswordTarget =>
   async (ctx, req) => {
     if (!req.AccessToken) throw new MissingParameterError("AccessToken");
-    if (!req.ProposedPassword)
-      throw new MissingParameterError("ProposedPassword");
+    if (!req.ProposedPassword) throw new MissingParameterError("ProposedPassword");
 
     const decodedToken = jwt.decode(req.AccessToken) as Token | null;
     if (!decodedToken) {
@@ -33,10 +29,7 @@ export const ChangePassword =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.username);
     if (!user) {
       throw new NotAuthorizedError();

@@ -2,33 +2,18 @@ import type {
   ForgotPasswordRequest,
   ForgotPasswordResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import {
-  MissingParameterError,
-  UnsupportedError,
-  UserNotFoundError,
-} from "../errors.js";
+import { MissingParameterError, UnsupportedError, UserNotFoundError } from "../errors.js";
 import type { Services } from "../services/index.js";
 import type { DeliveryDetails } from "../services/messageDelivery/messageDelivery.js";
 import { attributeValue } from "../services/userPoolService.js";
 import type { Target } from "./Target.js";
 
-export type ForgotPasswordTarget = Target<
-  ForgotPasswordRequest,
-  ForgotPasswordResponse
->;
+export type ForgotPasswordTarget = Target<ForgotPasswordRequest, ForgotPasswordResponse>;
 
-type ForgotPasswordServices = Pick<
-  Services,
-  "cognito" | "clock" | "messages" | "otp"
->;
+type ForgotPasswordServices = Pick<Services, "cognito" | "clock" | "messages" | "otp">;
 
 export const ForgotPassword =
-  ({
-    cognito,
-    clock,
-    messages,
-    otp,
-  }: ForgotPasswordServices): ForgotPasswordTarget =>
+  ({ cognito, clock, messages, otp }: ForgotPasswordServices): ForgotPasswordTarget =>
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");

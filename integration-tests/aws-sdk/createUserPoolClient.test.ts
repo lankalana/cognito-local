@@ -10,7 +10,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       const result = await client.createUserPoolClient({
         ClientName: "test",
@@ -34,7 +34,7 @@ describe(
       });
 
       const createdClient = await client.describeUserPoolClient({
-        ClientId: result.UserPoolClient?.ClientId!,
+        ClientId: result.UserPoolClient!.ClientId!,
         UserPoolId: userPoolId,
       });
 

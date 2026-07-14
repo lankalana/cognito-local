@@ -8,11 +8,7 @@ import type { AppClient } from "./appClient.js";
 import type { Context } from "./context.js";
 import type { DataStore } from "./dataStore/dataStore.js";
 import type { DataStoreFactory } from "./dataStore/factory.js";
-import type {
-  UserPool,
-  UserPoolService,
-  UserPoolServiceFactory,
-} from "./userPoolService.js";
+import type { UserPool, UserPoolService, UserPoolServiceFactory } from "./userPoolService.js";
 
 const CLIENTS_DATABASE_NAME = "clients";
 
@@ -265,22 +261,13 @@ export interface CognitoService {
   deleteUserPool(ctx: Context, userPool: UserPool): Promise<void>;
   getAppClient(ctx: Context, clientId: string): Promise<AppClient | null>;
   getUserPool(ctx: Context, userPoolId: string): Promise<UserPoolService>;
-  getUserPoolForClientId(
-    ctx: Context,
-    clientId: string,
-  ): Promise<UserPoolService>;
-  listAppClients(
-    ctx: Context,
-    userPoolId: string,
-  ): Promise<readonly AppClient[]>;
+  getUserPoolForClientId(ctx: Context, clientId: string): Promise<UserPoolService>;
+  listAppClients(ctx: Context, userPoolId: string): Promise<readonly AppClient[]>;
   listUserPools(ctx: Context): Promise<readonly UserPool[]>;
 }
 
 export interface CognitoServiceFactory {
-  create(
-    ctx: Context,
-    userPoolDefaultConfig: UserPoolDefaults,
-  ): Promise<CognitoService>;
+  create(ctx: Context, userPoolDefaultConfig: UserPoolDefaults): Promise<CognitoService>;
 }
 
 class NotInitializedError extends Error {
@@ -308,10 +295,7 @@ export class CognitoServiceImpl implements CognitoService {
     this.userPoolServiceFactory = userPoolServiceFactory;
   }
 
-  public async createUserPool(
-    ctx: Context,
-    userPool: UserPool,
-  ): Promise<UserPool> {
+  public async createUserPool(ctx: Context, userPool: UserPool): Promise<UserPool> {
     ctx.logger.debug("CognitoServiceImpl.createUserPool");
 
     if (!this.userPools) {
@@ -321,12 +305,7 @@ export class CognitoServiceImpl implements CognitoService {
     const service = await this.userPoolServiceFactory.create(
       ctx,
       this.clients,
-      mergeWith(
-        {},
-        USER_POOL_AWS_DEFAULTS,
-        this.userPoolDefaultConfig,
-        userPool,
-      ),
+      mergeWith({}, USER_POOL_AWS_DEFAULTS, this.userPoolDefaultConfig, userPool),
     );
 
     this.userPools.push(service);
@@ -335,10 +314,7 @@ export class CognitoServiceImpl implements CognitoService {
   }
 
   public async deleteUserPool(ctx: Context, userPool: UserPool): Promise<void> {
-    ctx.logger.debug(
-      { userPoolId: userPool.Id },
-      "CognitoServiceImpl.deleteUserPool",
-    );
+    ctx.logger.debug({ userPoolId: userPool.Id }, "CognitoServiceImpl.deleteUserPool");
 
     if (!this.userPools) {
       throw new NotInitializedError();
@@ -348,10 +324,7 @@ export class CognitoServiceImpl implements CognitoService {
     this.userPools = this.userPools.filter((x) => x.options.Id !== userPool.Id);
   }
 
-  public getUserPool(
-    ctx: Context,
-    userPoolId: string,
-  ): Promise<UserPoolService> {
+  public getUserPool(ctx: Context, userPoolId: string): Promise<UserPoolService> {
     ctx.logger.debug({ userPoolId }, "CognitoServiceImpl.getUserPool");
     if (!this.userPools) {
       throw new NotInitializedError();
@@ -365,10 +338,7 @@ export class CognitoServiceImpl implements CognitoService {
     return Promise.resolve(userPool);
   }
 
-  public async getUserPoolForClientId(
-    ctx: Context,
-    clientId: string,
-  ): Promise<UserPoolService> {
+  public async getUserPoolForClientId(ctx: Context, clientId: string): Promise<UserPoolService> {
     ctx.logger.debug({ clientId }, "CognitoServiceImpl.getUserPoolForClientId");
     if (!this.userPools) {
       throw new NotInitializedError();
@@ -379,36 +349,22 @@ export class CognitoServiceImpl implements CognitoService {
       throw new ResourceNotFoundError(`App Client ${clientId} not found`);
     }
 
-    const userPool = this.userPools.find(
-      (x) => x.options.Id === appClient.UserPoolId,
-    );
+    const userPool = this.userPools.find((x) => x.options.Id === appClient.UserPoolId);
     if (!userPool) {
-      throw new ResourceNotFoundError(
-        `User Pool ${appClient.UserPoolId} not found`,
-      );
+      throw new ResourceNotFoundError(`User Pool ${appClient.UserPoolId} not found`);
     }
 
     return userPool;
   }
 
-  public async getAppClient(
-    ctx: Context,
-    clientId: string,
-  ): Promise<AppClient | null> {
+  public async getAppClient(ctx: Context, clientId: string): Promise<AppClient | null> {
     ctx.logger.debug({ clientId }, "CognitoServiceImpl.getAppClient");
     return this.clients.get(ctx, ["Clients", clientId]);
   }
 
-  public async listAppClients(
-    ctx: Context,
-    userPoolId: string,
-  ): Promise<readonly AppClient[]> {
+  public async listAppClients(ctx: Context, userPoolId: string): Promise<readonly AppClient[]> {
     ctx.logger.debug({ userPoolId }, "CognitoServiceImpl.listAppClients");
-    const clients = await this.clients.get<Record<string, AppClient>>(
-      ctx,
-      "Clients",
-      {},
-    );
+    const clients = await this.clients.get<Record<string, AppClient>>(ctx, "Clients", {});
 
     return Object.values(clients).filter((x) => x.UserPoolId === userPoolId);
   }
@@ -470,11 +426,7 @@ export class CognitoServiceFactoryImpl implements CognitoServiceFactory {
     ctx: Context,
     userPoolDefaultConfig: UserPoolDefaults,
   ): Promise<CognitoService> {
-    const clients = await this.dataStoreFactory.create(
-      ctx,
-      CLIENTS_DATABASE_NAME,
-      { Clients: {} },
-    );
+    const clients = await this.dataStoreFactory.create(ctx, CLIENTS_DATABASE_NAME, { Clients: {} });
 
     const cognitoService = new CognitoServiceImpl(
       this.dataDirectory,

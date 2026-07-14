@@ -2,11 +2,7 @@ import type {
   AdminUpdateUserAttributesRequest,
   AdminUpdateUserAttributesResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  NotAuthorizedError,
-} from "../errors";
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import type { Context } from "../services/context";
@@ -56,10 +52,7 @@ export type AdminUpdateUserAttributesTarget = Target<
   AdminUpdateUserAttributesResponse
 >;
 
-type AdminUpdateUserAttributesServices = Pick<
-  Services,
-  "clock" | "cognito" | "otp" | "messages"
->;
+type AdminUpdateUserAttributesServices = Pick<Services, "clock" | "cognito" | "otp" | "messages">;
 
 export const AdminUpdateUserAttributes =
   ({
@@ -86,9 +79,7 @@ export const AdminUpdateUserAttributes =
         // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
         // this case, otherwise checks against the schema for default attributes like email will
         // fail.
-        userPool.options.SchemaAttributes ??
-          USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-          [],
+        userPool.options.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? [],
       ),
     );
 
@@ -113,14 +104,7 @@ export const AdminUpdateUserAttributes =
         AttributeVerificationCode: code,
       });
 
-      await sendAttributeVerificationCode(
-        ctx,
-        userPool,
-        user,
-        messages,
-        req,
-        code,
-      );
+      await sendAttributeVerificationCode(ctx, userPool, user, messages, req, code);
     }
 
     return {};

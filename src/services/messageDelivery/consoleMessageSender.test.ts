@@ -24,9 +24,7 @@ describe("consoleMessageSender", () => {
       expect(TestContext.logger.info).toHaveBeenCalledWith(
         expect.stringMatching(/Destination:\s+example@example.com/),
       );
-      expect(TestContext.logger.info).toHaveBeenCalledWith(
-        expect.stringMatching(/Code:\s+123456/),
-      );
+      expect(TestContext.logger.info).toHaveBeenCalledWith(expect.stringMatching(/Code:\s+123456/));
     });
 
     it("doesn't print undefined fields", async () => {

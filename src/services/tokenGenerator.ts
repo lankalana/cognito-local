@@ -63,24 +63,18 @@ const RESERVED_CLAIMS = [
   "token_use",
 ];
 
-type RawToken = Record<
-  string,
-  string | number | boolean | undefined | readonly string[]
->;
+type RawToken = Record<string, string | number | boolean | undefined | readonly string[]>;
 
-const applyTokenOverrides = (
-  token: RawToken,
-  overrides: TokenOverrides,
-): RawToken => {
+const applyTokenOverrides = (token: RawToken, overrides: TokenOverrides): RawToken => {
   // TODO: support group overrides
 
   const claimsToSuppress = (overrides?.claimsToSuppress ?? []).filter(
     (claim) => !RESERVED_CLAIMS.includes(claim),
   );
 
-  const claimsToOverride = Object.entries(
-    overrides?.claimsToAddOrOverride ?? [],
-  ).filter(([claim]) => !RESERVED_CLAIMS.includes(claim));
+  const claimsToOverride = Object.entries(overrides?.claimsToAddOrOverride ?? []).filter(
+    ([claim]) => !RESERVED_CLAIMS.includes(claim),
+  );
 
   return Object.fromEntries(
     [...Object.entries(token), ...claimsToOverride].filter(
@@ -97,9 +91,9 @@ const applyV2TokenOverrides = (
     (claim) => !RESERVED_CLAIMS.includes(claim),
   );
 
-  const claimsToOverride = Object.entries(
-    overrides?.claimsToAddOrOverride ?? [],
-  ).filter(([claim]) => !RESERVED_CLAIMS.includes(claim));
+  const claimsToOverride = Object.entries(overrides?.claimsToAddOrOverride ?? []).filter(
+    ([claim]) => !RESERVED_CLAIMS.includes(claim),
+  );
 
   return Object.fromEntries(
     [...Object.entries(token), ...claimsToOverride].filter(
@@ -156,11 +150,7 @@ export class JwtTokenGenerator implements TokenGenerator {
   private readonly triggers: Triggers;
   private readonly tokenConfig: TokenConfig;
 
-  public constructor(
-    clock: Clock,
-    triggers: Triggers,
-    tokenConfig: TokenConfig,
-  ) {
+  public constructor(clock: Clock, triggers: Triggers, tokenConfig: TokenConfig) {
     this.clock = clock;
     this.triggers = triggers;
     this.tokenConfig = tokenConfig;
@@ -198,9 +188,7 @@ export class JwtTokenGenerator implements TokenGenerator {
       "cognito:username": user.Username,
       auth_time: authTime,
       email: attributeValue("email", user.Attributes),
-      email_verified: Boolean(
-        attributeValue("email_verified", user.Attributes) ?? false,
-      ),
+      email_verified: Boolean(attributeValue("email_verified", user.Attributes) ?? false),
       event_id: eventId,
       iat: authTime,
       jti: uuid.v4(),
@@ -241,8 +229,7 @@ export class JwtTokenGenerator implements TokenGenerator {
       }
       if (result.claimsAndScopeOverrideDetails?.groupOverrideDetails) {
         userGroups =
-          result.claimsAndScopeOverrideDetails.groupOverrideDetails
-            .groupsToOverride ?? userGroups;
+          result.claimsAndScopeOverrideDetails.groupOverrideDetails.groupsToOverride ?? userGroups;
       }
     }
     if (this.triggers.enabled("PreTokenGeneration")) {
@@ -263,8 +250,7 @@ export class JwtTokenGenerator implements TokenGenerator {
       idToken = applyTokenOverrides(idToken, result.claimsOverrideDetails);
       if (result.claimsOverrideDetails.groupOverrideDetails?.groupsToOverride) {
         userGroups =
-          result.claimsOverrideDetails.groupOverrideDetails.groupsToOverride ??
-          userGroups;
+          result.claimsOverrideDetails.groupOverrideDetails.groupsToOverride ?? userGroups;
       }
     }
 

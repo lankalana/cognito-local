@@ -6,10 +6,7 @@ import type { Trigger } from "./trigger";
 export type PreSignUpTrigger = Trigger<
   {
     clientId: string;
-    source:
-      | "PreSignUp_AdminCreateUser"
-      | "PreSignUp_ExternalProvider"
-      | "PreSignUp_SignUp";
+    source: "PreSignUp_AdminCreateUser" | "PreSignUp_ExternalProvider" | "PreSignUp_SignUp";
     userAttributes: AttributeType[];
     username: string;
     userPoolId: string;
@@ -43,15 +40,7 @@ export const PreSignUp =
   ({ lambda }: PreSignUpServices): PreSignUpTrigger =>
   async (
     ctx,
-    {
-      clientId,
-      clientMetadata,
-      source,
-      userAttributes,
-      username,
-      userPoolId,
-      validationData,
-    },
+    { clientId, clientMetadata, source, userAttributes, username, userPoolId, validationData },
   ) =>
     lambda.invoke(ctx, "PreSignUp", {
       clientId,

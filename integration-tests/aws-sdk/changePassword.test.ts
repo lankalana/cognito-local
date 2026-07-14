@@ -10,7 +10,7 @@ describe(
       const pool = await client.createUserPool({
         PoolName: "test",
       });
-      const userPoolId = pool.UserPool?.Id!;
+      const userPoolId = pool.UserPool!.Id!;
 
       // create the user pool client
       const upc = await client.createUserPoolClient({
@@ -54,7 +54,7 @@ describe(
       // (fail to) login with the old password
       await expect(
         client.initiateAuth({
-          ClientId: upc.UserPoolClient?.ClientId!,
+          ClientId: upc.UserPoolClient!.ClientId!,
           AuthFlow: "USER_PASSWORD_AUTH",
           AuthParameters: {
             USERNAME: "abc",

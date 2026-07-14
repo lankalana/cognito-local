@@ -6,10 +6,7 @@ import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
 import { UserNotFoundError } from "../errors";
 import type { UserPoolService } from "../services";
-import {
-  AdminSetUserPassword,
-  type AdminSetUserPasswordTarget,
-} from "./adminSetUserPassword";
+import { AdminSetUserPassword, type AdminSetUserPasswordTarget } from "./adminSetUserPassword";
 
 describe("AdminSetUser target", () => {
   let adminSetUserPassword: AdminSetUserPasswordTarget;

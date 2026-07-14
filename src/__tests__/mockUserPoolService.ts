@@ -1,9 +1,6 @@
 import { type MockedObject, vi } from "vitest";
 import type { UserPoolService } from "../services";
-import type {
-  UserPool,
-  UserPoolServiceFactory,
-} from "../services/userPoolService";
+import type { UserPool, UserPoolServiceFactory } from "../services/userPoolService";
 
 export const newMockUserPoolService = (
   config: UserPool = {

@@ -3,11 +3,7 @@ import type {
   UpdateUserAttributesResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  NotAuthorizedError,
-} from "../errors";
+import { InvalidParameterError, MissingParameterError, NotAuthorizedError } from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
 import type { Context } from "../services/context";
@@ -60,18 +56,10 @@ export type UpdateUserAttributesTarget = Target<
   UpdateUserAttributesResponse
 >;
 
-type UpdateUserAttributesServices = Pick<
-  Services,
-  "clock" | "cognito" | "otp" | "messages"
->;
+type UpdateUserAttributesServices = Pick<Services, "clock" | "cognito" | "otp" | "messages">;
 
 export const UpdateUserAttributes =
-  ({
-    clock,
-    cognito,
-    otp,
-    messages,
-  }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
+  ({ clock, cognito, otp, messages }: UpdateUserAttributesServices): UpdateUserAttributesTarget =>
   async (ctx, req) => {
     if (!req.AccessToken) throw new MissingParameterError("AccessToken");
     if (!req.UserAttributes) throw new MissingParameterError("UserAttributes");
@@ -82,10 +70,7 @@ export const UpdateUserAttributes =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new NotAuthorizedError();
@@ -97,24 +82,19 @@ export const UpdateUserAttributes =
       // or before we started explicitly saving the defaults. Fallback on the AWS defaults in
       // this case, otherwise checks against the schema for default attributes like email will
       // fail.
-      userPool.options.SchemaAttributes ??
-        USER_POOL_AWS_DEFAULTS.SchemaAttributes ??
-        [],
+      userPool.options.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? [],
     );
 
-    const [immediateAttributes, delayedAttributes] =
-      splitImmediateAndDelayedAttributes(
-        permittedAttributeChanges,
-        userPool.options.UserAttributeUpdateSettings
-          ?.AttributesRequireVerificationBeforeUpdate,
-      );
+    const [immediateAttributes, delayedAttributes] = splitImmediateAndDelayedAttributes(
+      permittedAttributeChanges,
+      userPool.options.UserAttributeUpdateSettings?.AttributesRequireVerificationBeforeUpdate,
+    );
 
     const updatedUser: User = {
       ...user,
       Attributes: attributesAppend(user.Attributes, ...immediateAttributes),
       UserLastModifiedDate: clock.get(),
-      UnverifiedAttributeChanges:
-        delayedAttributes.length > 0 ? delayedAttributes : undefined,
+      UnverifiedAttributeChanges: delayedAttributes.length > 0 ? delayedAttributes : undefined,
     };
 
     await userPool.saveUser(ctx, updatedUser);

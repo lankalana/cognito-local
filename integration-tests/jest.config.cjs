@@ -1,8 +1,8 @@
 module.exports = {
   roots: ["."],
-  extensionsToTreatAsEsm: ['.ts'],
+  extensionsToTreatAsEsm: [".ts"],
   moduleNameMapper: {
-    '^(\\.{1,2}/.*)\\.js$': '$1',
+    "^(\\.{1,2}/.*)\\.js$": "$1",
   },
   transform: {
     "^.+\\.ts$": "@swc/jest",

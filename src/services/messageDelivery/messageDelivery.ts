@@ -38,19 +38,9 @@ export class MessageDeliveryService implements MessageDelivery {
     message: Message,
   ): Promise<void> {
     if (deliveryDetails.DeliveryMedium === "SMS") {
-      await this.sender.sendSms(
-        ctx,
-        user,
-        deliveryDetails.Destination,
-        message,
-      );
+      await this.sender.sendSms(ctx, user, deliveryDetails.Destination, message);
     } else if (deliveryDetails.DeliveryMedium === "EMAIL") {
-      await this.sender.sendEmail(
-        ctx,
-        user,
-        deliveryDetails.Destination,
-        message,
-      );
+      await this.sender.sendEmail(ctx, user, deliveryDetails.Destination, message);
     }
   }
 }

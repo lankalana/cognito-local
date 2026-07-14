@@ -1,18 +1,8 @@
 import type { Lambda } from "@aws-sdk/client-lambda";
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type MockedObject,
-  vi,
-} from "vitest";
+import { beforeEach, describe, expect, it, type MockedObject, vi } from "vitest";
 import { TestContext } from "../__tests__/testContext";
 import { awsSdkVersion } from "../constants";
-import {
-  InvalidLambdaResponseError,
-  UserLambdaValidationError,
-} from "../errors";
+import { InvalidLambdaResponseError, UserLambdaValidationError } from "../errors";
 import { LambdaService } from "./lambda";
 
 describe("Lambda function invoker", () => {
@@ -141,9 +131,7 @@ describe("Lambda function invoker", () => {
             userPoolId: "userPoolId",
             validationData: undefined,
           }),
-        ).rejects.toEqual(
-          new UserLambdaValidationError("Something bad happened"),
-        );
+        ).rejects.toEqual(new UserLambdaValidationError("Something bad happened"));
       });
 
       it("throws if the function returns an Unhandled error with a 200 status code and a errorMessage payload", async () => {
@@ -151,9 +139,7 @@ describe("Lambda function invoker", () => {
         const response = Promise.resolve({
           StatusCode: 200,
           FunctionError: "Unhandled",
-          Payload: encoder.encode(
-            '{"errorMessage":"Something bad in Userland"}',
-          ),
+          Payload: encoder.encode('{"errorMessage":"Something bad in Userland"}'),
         });
         mockLambdaClient.invoke.mockReturnValue(response as any);
         const lambda = new LambdaService(

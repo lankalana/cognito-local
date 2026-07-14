@@ -46,8 +46,7 @@ describe(
       });
 
       await client.getUserAttributeVerificationCode({
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         AttributeName: "email",
       });
 

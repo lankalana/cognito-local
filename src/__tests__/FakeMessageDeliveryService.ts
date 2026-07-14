@@ -1,8 +1,5 @@
 import type { Context } from "../services/context";
-import type {
-  DeliveryDetails,
-  MessageDelivery,
-} from "../services/messageDelivery/messageDelivery";
+import type { DeliveryDetails, MessageDelivery } from "../services/messageDelivery/messageDelivery";
 import type { Message } from "../services/messages";
 import type { User } from "../services/userPoolService";
 

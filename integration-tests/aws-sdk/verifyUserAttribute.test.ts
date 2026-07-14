@@ -58,8 +58,7 @@ describe(
 
       await client.verifyUserAttribute({
         AttributeName: "email",
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         Code: storedUser.AttributeVerificationCode as string,
       });
 

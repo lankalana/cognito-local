@@ -80,9 +80,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, "key1", 1);
       await dataStore.set(TestContext, "key2", 2);
 
-      const fileBefore = JSON.parse(
-        await readFile(`${path}/example.json`, "utf-8"),
-      );
+      const fileBefore = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(fileBefore).toEqual({
         key1: 1,
@@ -91,9 +89,7 @@ describe("Data Store", () => {
 
       await dataStore.delete(TestContext, "key1");
 
-      const fileAfter = JSON.parse(
-        await readFile(`${path}/example.json`, "utf-8"),
-      );
+      const fileAfter = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(fileAfter).toEqual({
         key2: 2,
@@ -107,9 +103,7 @@ describe("Data Store", () => {
       await dataStore.set(TestContext, ["key", "a", "c"], 2);
       await dataStore.set(TestContext, "key2", 3);
 
-      const fileBefore = JSON.parse(
-        await readFile(`${path}/example.json`, "utf-8"),
-      );
+      const fileBefore = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(fileBefore).toEqual({
         key: {
@@ -123,9 +117,7 @@ describe("Data Store", () => {
 
       await dataStore.delete(TestContext, ["key", "a", "b"]);
 
-      const fileAfter = JSON.parse(
-        await readFile(`${path}/example.json`, "utf-8"),
-      );
+      const fileAfter = JSON.parse(await readFile(`${path}/example.json`, "utf-8"));
 
       expect(fileAfter).toEqual({
         key: {
@@ -172,12 +164,8 @@ describe("Data Store", () => {
 
       const date = new Date();
 
-      await expect(
-        dataStore.set(TestContext, "SomethingDate", date.getTime()),
-      ).rejects.toEqual(
-        new Error(
-          "Serialize: Expected SomethingDate field to contain a Date, received a number",
-        ),
+      await expect(dataStore.set(TestContext, "SomethingDate", date.getTime())).rejects.toEqual(
+        new Error("Serialize: Expected SomethingDate field to contain a Date, received a number"),
       );
     });
 

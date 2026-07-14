@@ -4,11 +4,7 @@ import type {
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
 import * as uuid from "uuid";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  UsernameExistsError,
-} from "../errors";
+import { InvalidParameterError, MissingParameterError, UsernameExistsError } from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import type { Context } from "../services/context";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
@@ -67,14 +63,7 @@ const deliverWelcomeMessage = async (
 };
 
 export const SignUp =
-  ({
-    clock,
-    cognito,
-    messages,
-    otp,
-    triggers,
-    config,
-  }: SignUpServices): SignUpTarget =>
+  ({ clock, cognito, messages, otp, triggers, config }: SignUpServices): SignUpTarget =>
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");
@@ -114,22 +103,20 @@ export const SignUp =
     }
 
     if (triggers.enabled("PreSignUp")) {
-      const { autoConfirmUser, autoVerifyEmail, autoVerifyPhone } =
-        await triggers.preSignUp(ctx, {
-          clientId: req.ClientId,
-          clientMetadata: req.ClientMetadata,
-          source: "PreSignUp_SignUp",
-          userAttributes: attributes,
-          username,
-          userPoolId: userPool.options.Id,
-          validationData: undefined,
-        });
+      const { autoConfirmUser, autoVerifyEmail, autoVerifyPhone } = await triggers.preSignUp(ctx, {
+        clientId: req.ClientId,
+        clientMetadata: req.ClientMetadata,
+        source: "PreSignUp_SignUp",
+        userAttributes: attributes,
+        username,
+        userPoolId: userPool.options.Id,
+        validationData: undefined,
+      });
 
       if (autoConfirmUser) {
         userStatus = "CONFIRMED";
       }
-      const isEmailUsername =
-        config.UserPoolDefaults.UsernameAttributes?.includes("email");
+      const isEmailUsername = config.UserPoolDefaults.UsernameAttributes?.includes("email");
       const hasEmailAttribute = attributesInclude("email", attributes);
 
       if (isEmailUsername && !hasEmailAttribute) {
@@ -173,10 +160,7 @@ export const SignUp =
       ConfirmationCode: code,
     });
 
-    if (
-      updatedUser.UserStatus === "CONFIRMED" &&
-      triggers.enabled("PostConfirmation")
-    ) {
+    if (updatedUser.UserStatus === "CONFIRMED" && triggers.enabled("PostConfirmation")) {
       await triggers.postConfirmation(ctx, {
         clientId: req.ClientId,
         clientMetadata: req.ClientMetadata,

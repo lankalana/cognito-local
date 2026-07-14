@@ -1,12 +1,7 @@
 import { v4 } from "uuid";
 import type { AppClient } from "../services/appClient";
 import { USER_POOL_AWS_DEFAULTS } from "../services/cognitoService";
-import type {
-  Group,
-  IdentityProvider,
-  User,
-  UserPool,
-} from "../services/userPoolService";
+import type { Group, IdentityProvider, User, UserPool } from "../services/userPoolService";
 
 export const id = (prefix: string, number?: number) =>
   `${prefix}${number ?? Math.floor(Math.random() * 100000)}`;
@@ -47,9 +42,7 @@ export const group = (partial?: Partial<Group>): Group => ({
   members: partial?.members ?? undefined,
 });
 
-export const identityProvider = (
-  partial?: Partial<IdentityProvider>,
-): IdentityProvider => ({
+export const identityProvider = (partial?: Partial<IdentityProvider>): IdentityProvider => ({
   ProviderName: partial?.ProviderName ?? id("IdentityProvider"),
   ProviderType: partial?.ProviderType ?? undefined,
   ProviderDetails: partial?.ProviderDetails ?? undefined,
@@ -85,9 +78,7 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     AccountRecoverySetting: partial?.AccountRecoverySetting ?? undefined,
     AdminCreateUserConfig: partial?.AdminCreateUserConfig ?? undefined,
     AliasAttributes: partial?.AliasAttributes ?? undefined,
-    Arn:
-      partial?.Arn ??
-      `arn:aws:cognito-idp:local:000000000000:userpool/${userPoolId}`,
+    Arn: partial?.Arn ?? `arn:aws:cognito-idp:local:000000000000:userpool/${userPoolId}`,
     AutoVerifiedAttributes: partial?.AutoVerifiedAttributes ?? undefined,
     CreationDate: partial?.CreationDate ?? new Date(),
     CustomDomain: partial?.CustomDomain ?? undefined,
@@ -104,8 +95,7 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     MfaConfiguration: partial?.MfaConfiguration ?? undefined,
     Name: partial?.Name ?? undefined,
     Policies: partial?.Policies ?? undefined,
-    SchemaAttributes:
-      partial?.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes,
+    SchemaAttributes: partial?.SchemaAttributes ?? USER_POOL_AWS_DEFAULTS.SchemaAttributes,
     SmsAuthenticationMessage: partial?.SmsAuthenticationMessage ?? undefined,
     SmsConfiguration: partial?.SmsConfiguration ?? undefined,
     SmsConfigurationFailure: partial?.SmsConfigurationFailure ?? undefined,
@@ -115,7 +105,6 @@ export const userPool = (partial?: Partial<UserPool>): UserPool => {
     UsernameConfiguration: partial?.UsernameConfiguration ?? undefined,
     UserPoolAddOns: partial?.UserPoolAddOns ?? undefined,
     UserPoolTags: partial?.UserPoolTags ?? undefined,
-    VerificationMessageTemplate:
-      partial?.VerificationMessageTemplate ?? undefined,
+    VerificationMessageTemplate: partial?.VerificationMessageTemplate ?? undefined,
   };
 };

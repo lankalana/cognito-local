@@ -72,12 +72,7 @@ describe("Message Delivery", () => {
         message,
       );
 
-      expect(sender.sendSms).toHaveBeenCalledWith(
-        TestContext,
-        user,
-        "0123445670",
-        message,
-      );
+      expect(sender.sendSms).toHaveBeenCalledWith(TestContext, user, "0123445670", message);
       expect(sender.sendEmail).not.toHaveBeenCalled();
     });
   });

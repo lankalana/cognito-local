@@ -6,11 +6,7 @@ import { newMockCognitoService } from "../__tests__/mockCognitoService";
 import { newMockUserPoolService } from "../__tests__/mockUserPoolService";
 import { TestContext } from "../__tests__/testContext";
 import * as TDB from "../__tests__/testDataBuilder";
-import {
-  InvalidParameterError,
-  InvalidPasswordError,
-  NotAuthorizedError,
-} from "../errors";
+import { InvalidParameterError, InvalidPasswordError, NotAuthorizedError } from "../errors";
 import PrivateKey from "../keys/cognitoLocal.private.json";
 import type { UserPoolService } from "../services";
 import { ChangePassword, type ChangePasswordTarget } from "./changePassword";

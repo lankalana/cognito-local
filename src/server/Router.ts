@@ -13,9 +13,7 @@ export const Router =
   (target: string) => {
     if (!isSupportedTarget(target)) {
       return () =>
-        Promise.reject(
-          new UnsupportedError(`Unsupported x-amz-target header "${target}"`),
-        );
+        Promise.reject(new UnsupportedError(`Unsupported x-amz-target header "${target}"`));
     }
 
     const t = Targets[target](services);

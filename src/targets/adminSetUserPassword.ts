@@ -14,10 +14,7 @@ export type AdminSetUserPasswordTarget = Target<
 type AdminSetUserPasswordServices = Pick<Services, "clock" | "cognito">;
 
 export const AdminSetUserPassword =
-  ({
-    cognito,
-    clock,
-  }: AdminSetUserPasswordServices): AdminSetUserPasswordTarget =>
+  ({ cognito, clock }: AdminSetUserPasswordServices): AdminSetUserPasswordTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.Username) throw new MissingParameterError("Username");

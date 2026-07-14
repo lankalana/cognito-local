@@ -15,10 +15,7 @@ const translator = createTranslator(
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
 );
 
-export type CreateUserPoolTarget = Target<
-  CreateUserPoolRequest,
-  CreateUserPoolResponse
->;
+export type CreateUserPoolTarget = Target<CreateUserPoolRequest, CreateUserPoolResponse>;
 
 type CreateUserPoolServices = Pick<Services, "clock" | "cognito">;
 
@@ -34,9 +31,7 @@ const createSchemaAttributes = (
   defaultAttributes: SchemaAttributeType[],
   requestSchema: SchemaAttributeType[],
 ): SchemaAttributeType[] => {
-  const overrides = Object.fromEntries(
-    requestSchema.map((x) => [x.Name as string, x]),
-  );
+  const overrides = Object.fromEntries(requestSchema.map((x) => [x.Name as string, x]));
   const defaultAttributeNames = defaultAttributes.map((x) => x.Name);
   const overriddenAttributes = defaultAttributes.map((attr) => {
     if (!attr.Name) {
@@ -61,13 +56,9 @@ const createSchemaAttributes = (
         Mutable: attr.Mutable ?? true,
         Required: attr.Required ?? false,
         StringAttributeConstraints:
-          type === "String"
-            ? (attr.StringAttributeConstraints ?? {})
-            : undefined,
+          type === "String" ? (attr.StringAttributeConstraints ?? {}) : undefined,
         NumberAttributeConstraints:
-          type === "Number"
-            ? (attr.NumberAttributeConstraints ?? {})
-            : undefined,
+          type === "Number" ? (attr.NumberAttributeConstraints ?? {}) : undefined,
       };
     });
 

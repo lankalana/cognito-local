@@ -89,9 +89,7 @@ describe("GetUserAttributeVerificationCode target", () => {
         AttributeName: "email",
       }),
     ).rejects.toEqual(
-      new InvalidParameterError(
-        "User has no attribute matching desired auto verified attributes",
-      ),
+      new InvalidParameterError("User has no attribute matching desired auto verified attributes"),
     );
   });
 

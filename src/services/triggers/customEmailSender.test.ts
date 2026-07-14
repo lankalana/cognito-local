@@ -1,19 +1,9 @@
-import {
-  beforeEach,
-  describe,
-  expect,
-  it,
-  type MockedObject,
-  vi,
-} from "vitest";
+import { beforeEach, describe, expect, it, type MockedObject, vi } from "vitest";
 import { newMockLambda } from "../../__tests__/mockLambda";
 import { TestContext } from "../../__tests__/testContext";
 import type { CryptoService } from "../crypto";
 import type { Lambda } from "../lambda";
-import {
-  CustomEmailSender,
-  type CustomEmailSenderTrigger,
-} from "./customEmailSender";
+import { CustomEmailSender, type CustomEmailSenderTrigger } from "./customEmailSender";
 
 describe("CustomEmailSender trigger", () => {
   let mockLambda: MockedObject<Lambda>;
@@ -66,19 +56,15 @@ describe("CustomEmailSender trigger", () => {
         userPoolId: "userPoolId",
       });
 
-      expect(mockLambda.invoke).toHaveBeenCalledWith(
-        TestContext,
-        "CustomEmailSender",
-        {
-          code: "encryptedCode",
-          clientId: "clientId",
-          clientMetadata: { client: "metadata" },
-          triggerSource: "CustomEmailSender_ForgotPassword",
-          userAttributes: { user: "hello" },
-          username: "example@example.com",
-          userPoolId: "userPoolId",
-        },
-      );
+      expect(mockLambda.invoke).toHaveBeenCalledWith(TestContext, "CustomEmailSender", {
+        code: "encryptedCode",
+        clientId: "clientId",
+        clientMetadata: { client: "metadata" },
+        triggerSource: "CustomEmailSender_ForgotPassword",
+        userAttributes: { user: "hello" },
+        username: "example@example.com",
+        userPoolId: "userPoolId",
+      });
     });
   });
 });

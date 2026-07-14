@@ -3,11 +3,7 @@ import type {
   GetUserAttributeVerificationCodeResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 import jwt from "jsonwebtoken";
-import {
-  InvalidParameterError,
-  MissingParameterError,
-  UserNotFoundError,
-} from "../errors";
+import { InvalidParameterError, MissingParameterError, UserNotFoundError } from "../errors";
 import type { Messages, Services, UserPoolService } from "../services";
 import type { Context } from "../services/context";
 import { selectAppropriateDeliveryMethod } from "../services/messageDelivery/deliveryMethod";
@@ -51,10 +47,7 @@ export type GetUserAttributeVerificationCodeTarget = Target<
   GetUserAttributeVerificationCodeResponse
 >;
 
-type GetUserAttributeVerificationCodeServices = Pick<
-  Services,
-  "cognito" | "otp" | "messages"
->;
+type GetUserAttributeVerificationCodeServices = Pick<Services, "cognito" | "otp" | "messages">;
 
 export const GetUserAttributeVerificationCode =
   ({
@@ -71,10 +64,7 @@ export const GetUserAttributeVerificationCode =
       throw new InvalidParameterError();
     }
 
-    const userPool = await cognito.getUserPoolForClientId(
-      ctx,
-      decodedToken.client_id,
-    );
+    const userPool = await cognito.getUserPoolForClientId(ctx, decodedToken.client_id);
     const user = await userPool.getUserByUsername(ctx, decodedToken.sub);
     if (!user) {
       throw new UserNotFoundError();
@@ -87,14 +77,7 @@ export const GetUserAttributeVerificationCode =
       AttributeVerificationCode: code,
     });
 
-    await sendAttributeVerificationCode(
-      ctx,
-      userPool,
-      user,
-      messages,
-      req,
-      code,
-    );
+    await sendAttributeVerificationCode(ctx, userPool, user, messages, req, code);
 
     return {};
   };

@@ -28,10 +28,7 @@ type PostAuthenticationServices = {
 
 export const PostAuthentication =
   ({ lambda }: PostAuthenticationServices): PostAuthenticationTrigger =>
-  async (
-    ctx,
-    { clientId, clientMetadata, source, userAttributes, username, userPoolId },
-  ) => {
+  async (ctx, { clientId, clientMetadata, source, userAttributes, username, userPoolId }) => {
     try {
       await lambda.invoke(ctx, "PostAuthentication", {
         clientId,

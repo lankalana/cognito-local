@@ -3,11 +3,7 @@ import {
   type ConfirmForgotPasswordResponse,
   UserStatusType,
 } from "@aws-sdk/client-cognito-identity-provider";
-import {
-  CodeMismatchError,
-  MissingParameterError,
-  UserNotFoundError,
-} from "../errors";
+import { CodeMismatchError, MissingParameterError, UserNotFoundError } from "../errors";
 import type { Services } from "../services";
 import { attribute, attributesAppend } from "../services/userPoolService";
 import type { Target } from "./Target";
@@ -17,17 +13,10 @@ export type ConfirmForgotPasswordTarget = Target<
   ConfirmForgotPasswordResponse
 >;
 
-type ConfirmForgotPasswordServices = Pick<
-  Services,
-  "cognito" | "clock" | "triggers"
->;
+type ConfirmForgotPasswordServices = Pick<Services, "cognito" | "clock" | "triggers">;
 
 export const ConfirmForgotPassword =
-  ({
-    cognito,
-    clock,
-    triggers,
-  }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
+  ({ cognito, clock, triggers }: ConfirmForgotPasswordServices): ConfirmForgotPasswordTarget =>
   async (ctx, req) => {
     if (!req.ClientId) throw new MissingParameterError("ClientId");
     if (!req.Username) throw new MissingParameterError("Username");

@@ -58,8 +58,7 @@ describe(
       ]);
 
       await client.updateUserAttributes({
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         UserAttributes: [{ Name: "email", Value: "example2@example.com" }],
       });
 
@@ -139,8 +138,7 @@ describe(
 
       // start updating the email address, but it shouldn't be saved yet
       await client.updateUserAttributes({
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         UserAttributes: [{ Name: "email", Value: newEmail }],
       });
 
@@ -178,15 +176,12 @@ describe(
 
       // now verify the attribute with the confirmation code
       const messages = messageDelivery().collectedMessages;
-      const lastMessage = messages.length
-        ? messages[messages.length - 1]
-        : undefined;
+      const lastMessage = messages.length ? messages[messages.length - 1] : undefined;
       const code = lastMessage?.message?.__code;
       expect(code).toBeDefined();
 
       await client.verifyUserAttribute({
-        AccessToken: initiateAuthResponse.AuthenticationResult
-          ?.AccessToken as string,
+        AccessToken: initiateAuthResponse.AuthenticationResult?.AccessToken as string,
         AttributeName: "email",
         Code: code!,
       });

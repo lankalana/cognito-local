@@ -16,10 +16,7 @@ export type CreateUserPoolClientTarget = Target<
 type CreateUserPoolClientServices = Pick<Services, "clock" | "cognito">;
 
 export const CreateUserPoolClient =
-  ({
-    clock,
-    cognito,
-  }: CreateUserPoolClientServices): CreateUserPoolClientTarget =>
+  ({ clock, cognito }: CreateUserPoolClientServices): CreateUserPoolClientTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.ClientName) throw new MissingParameterError("ClientName");

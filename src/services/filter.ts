@@ -1,20 +1,12 @@
 import { InvalidParameterError } from "../errors.js";
 
-const FilterExpression = new RegExp(
-  /^\s*(?<attr>.*)\s+(?<type>\^?=)\s+"(?<value>.*)"\s*$/,
-);
+const FilterExpression = new RegExp(/^\s*(?<attr>.*)\s+(?<type>\^?=)\s+"(?<value>.*)"\s*$/);
 
 type Matcher<T> = (obj: T, filterType: "=" | "^=", value: string) => boolean;
 type FieldLookup<T> = (obj: T) => string | boolean | undefined;
 
-function compare<_T>(
-  fieldValue: string | undefined,
-  type: "=" | "^=",
-  value: string,
-) {
-  return type === "="
-    ? fieldValue === value
-    : (fieldValue?.startsWith(value) ?? false);
+function compare<_T>(fieldValue: string | undefined, type: "=" | "^=", value: string) {
+  return type === "=" ? fieldValue === value : (fieldValue?.startsWith(value) ?? false);
 }
 
 export class FilterConfig<T> {
@@ -24,11 +16,7 @@ export class FilterConfig<T> {
 
   static caseInsensitive<T>(field: FieldLookup<T>): Matcher<T> {
     return (obj, type, value) =>
-      compare(
-        field(obj)?.toString()?.toLocaleLowerCase(),
-        type,
-        value.toLocaleLowerCase(),
-      );
+      compare(field(obj)?.toString()?.toLocaleLowerCase(), type, value.toLocaleLowerCase());
   }
 
   readonly #fields: Record<string, Matcher<T>>;

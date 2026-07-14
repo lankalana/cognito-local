@@ -22,9 +22,7 @@ describe("PreSignUp trigger", () => {
   ] as const)("%s", (source) => {
     describe("when lambda invoke fails", () => {
       it("throws", async () => {
-        mockLambda.invoke.mockRejectedValue(
-          new Error("Something bad happened"),
-        );
+        mockLambda.invoke.mockRejectedValue(new Error("Something bad happened"));
 
         await expect(
           preSignUp(TestContext, {
@@ -58,23 +56,19 @@ describe("PreSignUp trigger", () => {
           },
         });
 
-        expect(mockLambda.invoke).toHaveBeenCalledWith(
-          TestContext,
-          "PreSignUp",
-          {
-            clientId: "clientId",
-            clientMetadata: {
-              client: "metadata",
-            },
-            triggerSource: source,
-            userAttributes: { email: "example@example.com" },
-            userPoolId: "userPoolId",
-            username: "example@example.com",
-            validationData: {
-              validation: "data",
-            },
+        expect(mockLambda.invoke).toHaveBeenCalledWith(TestContext, "PreSignUp", {
+          clientId: "clientId",
+          clientMetadata: {
+            client: "metadata",
           },
-        );
+          triggerSource: source,
+          userAttributes: { email: "example@example.com" },
+          userPoolId: "userPoolId",
+          username: "example@example.com",
+          validationData: {
+            validation: "data",
+          },
+        });
       });
     });
   });

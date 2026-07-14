@@ -108,15 +108,7 @@ export const PreTokenGeneration =
   ({ lambda }: PreTokenGenerationServices): PreTokenGenerationTrigger =>
   async (
     ctx,
-    {
-      clientId,
-      clientMetadata,
-      groupConfiguration,
-      source,
-      userAttributes,
-      username,
-      userPoolId,
-    },
+    { clientId, clientMetadata, groupConfiguration, source, userAttributes, username, userPoolId },
   ) =>
     lambda.invoke(ctx, "PreTokenGeneration", {
       clientId,

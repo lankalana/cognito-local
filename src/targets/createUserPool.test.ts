@@ -31,19 +31,16 @@ describe("CreateUserPool target", () => {
       PoolName: "test-pool",
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
-      TestContext,
-      {
-        Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
-        ),
-        CreationDate: originalDate,
-        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-        LastModifiedDate: originalDate,
-        Name: "test-pool",
-        SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
-      },
-    );
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
+      Arn: expect.stringMatching(
+        /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
+      ),
+      CreationDate: originalDate,
+      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+      LastModifiedDate: originalDate,
+      Name: "test-pool",
+      SchemaAttributes: USER_POOL_AWS_DEFAULTS.SchemaAttributes,
+    });
 
     expect(result).toEqual({
       UserPool: createdUserPool,
@@ -64,29 +61,26 @@ describe("CreateUserPool target", () => {
       ],
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
-      TestContext,
-      {
-        Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
-        ),
-        CreationDate: originalDate,
-        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-        LastModifiedDate: originalDate,
-        Name: "test-pool",
-        SchemaAttributes: [
-          ...(USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []),
-          {
-            Name: "custom:my_attribute",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {},
-          },
-        ],
-      },
-    );
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
+      Arn: expect.stringMatching(
+        /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
+      ),
+      CreationDate: originalDate,
+      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+      LastModifiedDate: originalDate,
+      Name: "test-pool",
+      SchemaAttributes: [
+        ...(USER_POOL_AWS_DEFAULTS.SchemaAttributes ?? []),
+        {
+          Name: "custom:my_attribute",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {},
+        },
+      ],
+    });
 
     expect(result).toEqual({
       UserPool: createdUserPool,
@@ -108,231 +102,228 @@ describe("CreateUserPool target", () => {
       ],
     });
 
-    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(
-      TestContext,
-      {
-        Arn: expect.stringMatching(
-          /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
-        ),
-        CreationDate: originalDate,
-        Id: expect.stringMatching(/^local_[\w\d]{8}$/),
-        LastModifiedDate: originalDate,
-        Name: "test-pool",
-        SchemaAttributes: [
-          {
-            Name: "sub",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: false,
-            Required: true,
-            StringAttributeConstraints: {
-              MinLength: "1",
-              MaxLength: "2048",
-            },
+    expect(mockCognitoService.createUserPool).toHaveBeenCalledWith(TestContext, {
+      Arn: expect.stringMatching(
+        /^arn:aws:cognito-idp:local:000000000000:userpool\/local_[\w\d]{8}$/,
+      ),
+      CreationDate: originalDate,
+      Id: expect.stringMatching(/^local_[\w\d]{8}$/),
+      LastModifiedDate: originalDate,
+      Name: "test-pool",
+      SchemaAttributes: [
+        {
+          Name: "sub",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: false,
+          Required: true,
+          StringAttributeConstraints: {
+            MinLength: "1",
+            MaxLength: "2048",
           },
-          {
-            Name: "name",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "name",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "given_name",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "given_name",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "family_name",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "family_name",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "middle_name",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "middle_name",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "nickname",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "nickname",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "preferred_username",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "preferred_username",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "profile",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "profile",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "picture",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "picture",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "website",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "website",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "email",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: true,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "email",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: true,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "email_verified",
-            AttributeDataType: "Boolean",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
+        },
+        {
+          Name: "email_verified",
+          AttributeDataType: "Boolean",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+        },
+        {
+          Name: "gender",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "gender",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "birthdate",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "10",
+            MaxLength: "10",
           },
-          {
-            Name: "birthdate",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "10",
-              MaxLength: "10",
-            },
+        },
+        {
+          Name: "zoneinfo",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "zoneinfo",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "locale",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "locale",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "phone_number",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "phone_number",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
+        },
+        {
+          Name: "phone_number_verified",
+          AttributeDataType: "Boolean",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+        },
+        {
+          Name: "address",
+          AttributeDataType: "String",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          StringAttributeConstraints: {
+            MinLength: "0",
+            MaxLength: "2048",
           },
-          {
-            Name: "phone_number_verified",
-            AttributeDataType: "Boolean",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
+        },
+        {
+          Name: "updated_at",
+          AttributeDataType: "Number",
+          DeveloperOnlyAttribute: false,
+          Mutable: true,
+          Required: false,
+          NumberAttributeConstraints: {
+            MinValue: "0",
           },
-          {
-            Name: "address",
-            AttributeDataType: "String",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            StringAttributeConstraints: {
-              MinLength: "0",
-              MaxLength: "2048",
-            },
-          },
-          {
-            Name: "updated_at",
-            AttributeDataType: "Number",
-            DeveloperOnlyAttribute: false,
-            Mutable: true,
-            Required: false,
-            NumberAttributeConstraints: {
-              MinValue: "0",
-            },
-          },
-        ],
-      } as UserPool,
-    );
+        },
+      ],
+    } as UserPool);
 
     expect(result).toEqual({
       UserPool: createdUserPool,

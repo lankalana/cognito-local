@@ -5,9 +5,7 @@ import type { Trigger } from "./trigger";
 
 export type PostConfirmationTrigger = Trigger<
   {
-    source:
-      | "PostConfirmation_ConfirmSignUp"
-      | "PostConfirmation_ConfirmForgotPassword";
+    source: "PostConfirmation_ConfirmSignUp" | "PostConfirmation_ConfirmForgotPassword";
     clientId: string | null;
 
     /**
@@ -31,10 +29,7 @@ interface PostConfirmationServices {
 
 export const PostConfirmation =
   ({ lambda }: PostConfirmationServices): PostConfirmationTrigger =>
-  async (
-    ctx,
-    { clientId, clientMetadata, source, userAttributes, username, userPoolId },
-  ) => {
+  async (ctx, { clientId, clientMetadata, source, userAttributes, username, userPoolId }) => {
     try {
       await lambda.invoke(ctx, "PostConfirmation", {
         clientId,

@@ -3,10 +3,7 @@ import type {
   AdminLinkProviderForUserResponse,
 } from "@aws-sdk/client-cognito-identity-provider";
 
-import {
-  IdentityProviderNotFoundError,
-  MissingParameterError,
-} from "../errors.js";
+import { IdentityProviderNotFoundError, MissingParameterError } from "../errors.js";
 import type { Services } from "../services/index.js";
 import type { Target } from "./Target.js";
 
@@ -18,9 +15,7 @@ export type AdminLinkProviderForUserTarget = Target<
 type AdminLinkProviderForUserServices = Pick<Services, "cognito">;
 
 export const AdminLinkProviderForUser =
-  ({
-    cognito,
-  }: AdminLinkProviderForUserServices): AdminLinkProviderForUserTarget =>
+  ({ cognito }: AdminLinkProviderForUserServices): AdminLinkProviderForUserTarget =>
   async (ctx, req) => {
     if (!req.UserPoolId) throw new MissingParameterError("UserPoolId");
     if (!req.SourceUser) throw new MissingParameterError("SourceUser");

@@ -18,7 +18,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         const createGroupResult = await client.createGroup({
           GroupName: "abc",
@@ -42,7 +42,7 @@ describe(
         const pool = await client.createUserPool({
           PoolName: "test",
         });
-        const userPoolId = pool.UserPool?.Id!;
+        const userPoolId = pool.UserPool!.Id!;
 
         const createGroupResult = await client.createGroup({
           Description: "Description",

@@ -1,3 +1,4 @@
 #!/bin/sh
 
 aube run lint
+aube run type-check
