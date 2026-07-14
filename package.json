@@ -10,12 +10,14 @@
     "lib"
   ],
   "scripts": {
-    "build": "rm -rf lib && tsc --emitDeclarationOnly --project tsconfig.build.json && esbuild $(find src -name '*.ts' ! -name '*.test.ts' ! -path '*/__tests__/*') --outdir=lib --platform=node --target=node24 --format=cjs && cp -r src/keys lib/keys",
+    "build": "rm -rf lib && esbuild src/bin/start.ts --outdir=lib --platform=node --target=node24 --bundle --minify",
     "lint": "biome check --write",
     "start": "COGNITO_LOCAL_DEVMODE=1 tsx src/bin/start.ts",
     "start:debug": "COGNITO_LOCAL_DEVMODE=1 DEBUG=1 tsx --inspect-brk src/bin/start.ts",
     "start:watch": "nodemon",
     "test": "vitest",
+    "test:unit-test": "vitest --run --dir src",
+    "test:integration-test": "vitest --run --dir integration-tests",
     "type-check": "tsc --target es2024 --moduleResolution bundler --esModuleInterop --resolveJsonModule --strict --noEmit",
     "prepare": "husky"
   },
@@ -27,6 +29,7 @@
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/lodash.mergewith": "^4.6.9",
+    "@types/ms": "^2.1.0",
     "@types/node": "^25.3.0",
     "@types/supertest": "^6.0.3",
     "@vitest/coverage-v8": "4.0.18",
