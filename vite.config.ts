@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 // lib/, so all deps must be inlined — hence ssr.noExternal).
 export default defineConfig({
   build: {
-    target: "node24",
+    target: "node26",
     minify: true,
     outDir: "lib",
     ssr: "src/bin/start.ts",
