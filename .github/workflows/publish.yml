@@ -42,7 +42,7 @@ jobs:
             VERSION="0.0.0-edge"
           fi
           echo "Setting package.json version to '$VERSION' (workspace only)"
-          yarn version --no-git-tag-version --new-version "$VERSION"
+          aube version --no-git-tag-version --new-version "$VERSION"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

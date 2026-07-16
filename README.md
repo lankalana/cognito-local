@@ -501,7 +501,7 @@ not with Docker_.
 If you just need more logs to understand what Cognito Local is doing, you can use the `DEBUG` environment variable.
 
 ```shell
-DEBUG=1 yarn start
+DEBUG=1 aube run start
 ```
 
 Which will print extra debug logs to the terminal (with `{...}` replaced by detailed information):
@@ -550,7 +550,7 @@ CLI command.
 Launch Cognito Local using the `start:debug` script:
 
 ```shell
-yarn start:debug
+aube run start:debug
 ```
 
 This will configure NodeJS to start the inspector on port `9230`.

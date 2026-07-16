@@ -11,7 +11,7 @@ PORT=$(scripts/get-free-port.sh)
 
 echo Using port $PORT
 
-PORT=$PORT yarn start &
+PORT=$PORT aube run start &
 YARN_PID=$!
 
 trap "kill $YARN_PID" SIGINT
