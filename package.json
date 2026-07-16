@@ -60,6 +60,7 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "markdown-toc": "^1.2.0",
+    "npm-check-updates": "^22.2.9",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.74.0",
     "pino-test": "^2.0.0",
