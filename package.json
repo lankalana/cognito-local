@@ -25,6 +25,8 @@
     "test:unit-test": "vitest --run --dir src",
     "test:integration-test": "vitest --run --dir integration-tests",
     "type-check": "tsc --target es2024 --moduleResolution bundler --esModuleInterop --resolveJsonModule --strict --noEmit",
+    "validate": "aube run type-check && aube test --run",
+    "auto-upgrade": "npm-check-updates --doctor --doctorInstall 'aube install' --doctorTest 'aube run validate' -u",
     "prepare": "husky"
   },
   "dependencies": {
