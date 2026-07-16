@@ -19,8 +19,7 @@
     "lint": "oxlint && oxfmt --check",
     "lint:fix": "oxlint --fix && oxfmt",
     "start": "COGNITO_LOCAL_DEVMODE=1 tsx src/bin/start.ts",
-    "start:debug": "COGNITO_LOCAL_DEVMODE=1 DEBUG=1 tsx --inspect-brk src/bin/start.ts",
-    "start:watch": "nodemon",
+    "start:watch": "COGNITO_LOCAL_DEVMODE=1 tsx watch src/bin/start.ts",
     "test": "vitest",
     "test:unit-test": "vitest --run --dir src",
     "test:integration-test": "vitest --run --dir integration-tests",
@@ -61,7 +60,6 @@
     "husky": "^9.1.7",
     "lint-staged": "^17.0.8",
     "markdown-toc": "^1.2.0",
-    "nodemon": "^3.1.14",
     "oxfmt": "^0.58.0",
     "oxlint": "^1.74.0",
     "pino-test": "^2.0.0",
@@ -79,20 +77,8 @@
     ],
     "README.md": "markdown-toc -i --bullets=- --maxdepth=3"
   },
-  "nodemonConfig": {
-    "exec": "yarn start",
-    "ext": "ts",
-    "ignore": [
-      "**/*.test.ts",
-      ".git",
-      "node_modules"
-    ],
-    "watch": [
-      "src"
-    ]
-  },
   "engines": {
-    "node": "*=26"
+    "node": ">=26"
   },
   "aube": {
     "allowBuilds": {
