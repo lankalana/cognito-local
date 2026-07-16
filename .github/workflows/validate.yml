@@ -15,49 +15,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
-    name: Lint
     timeout-minutes: 5
+    name: ${{ matrix.name }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Lint
+            command: lint
+          - name: Type Check
+            command: type-check
+          - name: Unit Test
+            command: test:unit-test
+          - name: Integration Test
+            command: test:integration-test
 
     steps:
       - uses: actions/checkout@v6
       - uses: jdx/mise-action@v4
       - run: aube ci
-      - run: aube run lint
-
-  type-check:
-    runs-on: ubuntu-latest
-    name: Type Check
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v4
-      - run: aube ci
-      - run: aube run type-check
-
-  unit_test:
-    runs-on: ubuntu-latest
-    name: Unit Test
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v4
-      - run: aube ci
-      - run: aube run test:unit-test
-
-  integration_test:
-    runs-on: ubuntu-latest
-    name: Integration Test
-    timeout-minutes: 5
-
-    steps:
-      - uses: actions/checkout@v6
-      - uses: jdx/mise-action@v4
-      - run: aube ci
-      - run: aube run test:integration-test
+      - run: aube run ${{ matrix.command }}
 
   smoke_test:
     runs-on: ubuntu-latest
