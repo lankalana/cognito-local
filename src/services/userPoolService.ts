@@ -395,9 +395,13 @@ export class UserPoolServiceImpl implements UserPoolService {
 
   async listIdentityProviders(ctx: Context): Promise<readonly IdentityProvider[]> {
     ctx.logger.debug("UserPoolServiceImpl.listIdentityProviders");
-    const groups = await this.dataStore.get<Record<string, IdentityProvider>>(ctx, "Groups", {});
+    const identityProviders = await this.dataStore.get<Record<string, IdentityProvider>>(
+      ctx,
+      "IdentityProviders",
+      {},
+    );
 
-    return Object.values(groups);
+    return Object.values(identityProviders);
   }
 
   public async addUserToGroup(ctx: Context, group: Group, user: User): Promise<void> {
