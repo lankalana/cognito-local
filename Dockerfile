@@ -1,5 +1,5 @@
 FROM node:26-alpine AS builder
-ARG MISE_VERSION=v2026.7.5
+ARG MISE_VERSION=v2026.9.12
 ARG TARGETARCH
 RUN case "${TARGETARCH}" in \
       amd64) MISE_ARCH="x64" ;; \
