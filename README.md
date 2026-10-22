@@ -105,7 +105,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | ListUserImportJobs               | ❌                   |
 | ListUserPoolClients              | ✅¹                  |
 | ListUserPools                    | ✅¹                  |
-| ListUsers                        | ✅¹                  |
+| ListUsers                        | ✅³                  |
 | ListUsersInGroup                 | ✅¹                  |
 | ResendConfirmationCode           | ❌                   |
 | RespondToAuthChallenge           | 🕒 (partial support) |
@@ -135,6 +135,8 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 > ¹ does not support pagination or attribute filters, all results and attributes will be returned in the first request.
 >
 > ² "requires developer credentials" is not enforced
+>
+> ³ does not support `AttributesToGet`, all attributes will be returned. `email` filters are case-insensitive.
 
 Additional supported features:
 
