@@ -356,7 +356,7 @@ export class UserPoolServiceImpl implements UserPoolService {
 
     const filterConfig = new FilterConfig<User>({
       username: FilterConfig.caseSensitive((x) => x.Username),
-      email: FilterConfig.caseSensitive((x) => attributeValue("email", x.Attributes)),
+      email: FilterConfig.caseInsensitive((x) => attributeValue("email", x.Attributes)),
       phone_number: FilterConfig.caseSensitive((x) => attributeValue("phone_number", x.Attributes)),
       name: FilterConfig.caseSensitive((x) => attributeValue("name", x.Attributes)),
       given_name: FilterConfig.caseSensitive((x) => attributeValue("given_name", x.Attributes)),

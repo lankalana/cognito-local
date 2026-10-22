@@ -376,6 +376,7 @@ describe("User Pool Service", () => {
     });
     const user2 = TDB.user({
       Username: "2",
+      Attributes: [{ Name: "email", Value: "Alice@Example.com" }],
     });
 
     let userPool: UserPoolService;
@@ -417,6 +418,12 @@ describe("User Pool Service", () => {
       const users = await userPool.listUsers(TestContext, 'username = "2"');
 
       expect(users).not.toBeNull();
+      expect(users).toEqual([user2]);
+    });
+
+    it("filters email case-insensitively", async () => {
+      const users = await userPool.listUsers(TestContext, 'email ^= "aLiCe@"');
+
       expect(users).toEqual([user2]);
     });
   });

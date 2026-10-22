@@ -26,6 +26,43 @@ describe("FilterConfig", () => {
     expect(expr({})).toBe(true);
   });
 
+  it.each([
+    'first_name = "abc"',
+    'first_name="abc"',
+    '"first_name"="abc"',
+    '  "first_name" ^= "ab"  ',
+  ])("parses the filter syntax variant: %s", (input) => {
+    const expr = new FilterConfig<{ FirstName: string }>({
+      first_name: FilterConfig.caseSensitive((x) => x.FirstName),
+    }).parse(input);
+
+    expect(expr({ FirstName: "abc" })).toBe(true);
+  });
+
+  it.each([
+    [String.raw`first_name = "a\"b"`, 'a"b'],
+    [String.raw`first_name = "a\\b"`, String.raw`a\b`],
+    [String.raw`first_name = "a\""`, 'a"'],
+  ])("unescapes backslash-escaped characters in %s", (input, value) => {
+    const expr = new FilterConfig<{ FirstName: string }>({
+      first_name: FilterConfig.caseSensitive((x) => x.FirstName),
+    }).parse(input);
+
+    expect(expr({ FirstName: value })).toBe(true);
+    expect(expr({ FirstName: input })).toBe(false);
+  });
+
+  it.each(['first_name = "a"b"', '"first_name = "a"', String.raw`first_name = "a\"`])(
+    "throws on unescaped or unbalanced quotes: %s",
+    (input) => {
+      expect(() =>
+        new FilterConfig<{ FirstName: string }>({
+          first_name: FilterConfig.caseSensitive((x) => x.FirstName),
+        }).parse(input),
+      ).toThrowError(new InvalidParameterError("Error while parsing filter"));
+    },
+  );
+
   describe("equality", () => {
     describe("case-sensitive", () => {
       it.each`
