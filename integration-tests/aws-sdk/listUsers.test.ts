@@ -79,6 +79,44 @@ describe(
         });
       });
 
+      it("paginates filtered users", async () => {
+        const client = Cognito();
+
+        const pool = await client.createUserPool({
+          PoolName: "test",
+        });
+        const userPoolId = pool.UserPool!.Id!;
+
+        for (const [Username, email] of [
+          ["c", "ALICE3@example.com"],
+          ["a", "alice1@example.com"],
+          ["x", "bob@example.com"],
+          ["b", "Alice2@example.com"],
+        ]) {
+          await client.adminCreateUser({
+            UserAttributes: [{ Name: "email", Value: email }],
+            DesiredDeliveryMediums: ["EMAIL"],
+            Username,
+            UserPoolId: userPoolId,
+          });
+        }
+
+        const usernames: string[] = [];
+        let PaginationToken: string | undefined;
+        do {
+          const result = await client.listUsers({
+            UserPoolId: userPoolId,
+            Filter: '"email"^="alice"',
+            Limit: 2,
+            PaginationToken,
+          });
+          usernames.push(...result.Users!.map((user) => user.Username!));
+          PaginationToken = result.PaginationToken;
+        } while (PaginationToken);
+
+        expect(usernames).toEqual(["a", "b", "c"]);
+      });
+
       it("handles no users", async () => {
         const client = Cognito();
 

@@ -1,6 +1,8 @@
 import { InvalidParameterError } from "../errors.js";
 
-const FilterExpression = new RegExp(/^\s*(?<attr>.*)\s+(?<type>\^?=)\s+"(?<value>.*)"\s*$/);
+// Attribute names may be quoted (`"email"^="a"`), quotes in values are escaped with a backslash.
+const FilterExpression =
+  /^\s*(?<quote>"?)(?<attr>[^\s"=^]+)\k<quote>\s*(?<type>\^?=)\s*"(?<value>(?:[^"\\]|\\.)*)"\s*$/;
 
 type Matcher<T> = (obj: T, filterType: "=" | "^=", value: string) => boolean;
 type FieldLookup<T> = (obj: T) => string | boolean | undefined;
@@ -46,6 +48,7 @@ export class FilterConfig<T> {
       throw new InvalidParameterError(`Invalid search attribute: ${attr}`);
     }
 
-    return (obj) => field(obj, type, value);
+    const unescaped = value.replace(/\\(.)/g, "$1");
+    return (obj) => field(obj, type, unescaped);
   }
 }
