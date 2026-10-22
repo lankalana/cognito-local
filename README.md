@@ -90,7 +90,7 @@ A _Good Enough_ offline emulator for [Amazon Cognito](https://aws.amazon.com/cog
 | GetDevice                        | ❌                   |
 | GetGroup                         | ✅²                  |
 | GetIdentityProviderByIdentifier  | ✅                   |
-| GetSigningCertificate            | ❌                   |
+| GetSigningCertificate            | ✅                   |
 | GetUICustomization               | ❌                   |
 | GetUser                          | ✅                   |
 | GetUserAttributeVerificationCode | ✅                   |
