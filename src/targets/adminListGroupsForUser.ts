@@ -27,10 +27,7 @@ export const AdminListGroupsForUser =
     }
 
     const groups = await userPool.listGroups(ctx);
-    const usersGroups = groups.filter((x) =>
-      // biome-ignore lint/style/noNonNullAssertion: TypeScript requirement
-      x.members?.includes(req.Username!),
-    );
+    const usersGroups = groups.filter((x) => x.members?.includes(user.Username));
 
     return {
       Groups: usersGroups.map(groupToResponseObject(req.UserPoolId)),
