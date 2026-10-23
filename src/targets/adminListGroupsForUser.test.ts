@@ -70,6 +70,27 @@ describe("AdminListGroupsForUser target", () => {
     ]);
   });
 
+  it("matches members by the resolved username when the request uses an alias", async () => {
+    // Members are stored by the resolved username, which differs from req.Username when it is an
+    // alias (e.g. email in a pool with UsernameAttributes, where the username is the sub)
+    const existingUser = TDB.user();
+    const existingGroup = TDB.group({
+      members: [existingUser.Username],
+    });
+    const alias = "user@example.com";
+
+    mockUserPoolService.getUserByUsername.mockResolvedValue(existingUser);
+    mockUserPoolService.listGroups.mockResolvedValue([existingGroup]);
+
+    const result = await adminListGroupsForUser(TestContext, {
+      Username: alias,
+      UserPoolId: "test",
+    });
+
+    expect(mockUserPoolService.getUserByUsername).toHaveBeenCalledWith(TestContext, alias);
+    expect(result.Groups?.map((x) => x.GroupName)).toEqual([existingGroup.GroupName]);
+  });
+
   it("throws if the user doesn't exist", async () => {
     mockUserPoolService.getUserByUsername.mockResolvedValue(null);
 
